@@ -24,7 +24,7 @@
 		<module>beecomb-executor</module>
 <!-- 		<module>beecomb-executor-sample</module> -->
 		<module>beecomb-client-java</module>
-<!-- 		<module>beecomb-test</module> -->
+		<module>beecomb-test</module>
     </modules>
     
     <build>
