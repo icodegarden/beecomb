@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO">
+		<id property="id" column="id" />
+		<result property="uuid" column="uuid" />
+		<result property="name" column="name" />
+		<result property="type" column="type" />
+		<result property="executorName" column="executor_name" />
+		<result property="jobHandlerName" column="job_handler_name" />
+		<result property="priority" column="priority" />
+		<result property="weight" column="weight" />
+		<result property="parallel" column="is_parallel" />
+		<result property="maxParallelShards" column="max_parallel_shards" />
+		<result property="queued" column="is_queued" />
+		<result property="queuedAt" column="queued_at" />
+		<result property="queuedAtInstance" column="queued_at_instance" />
+		<result property="lastTrigAt" column="last_trig_at" />
+		<result property="lastTrigResult" column="last_trig_result" />
+		<result property="lastExecuteExecutor" column="last_execute_executor" />
+		<result property="lastExecuteReturns" column="last_execute_returns" />
+		<result property="lastExecuteSuccess" column="is_last_execute_success" />
+		<result property="executeTimeout" column="execute_timeout" />
+		<result property="nextTrigAt" column="next_trig_at" />
+		<result property="end" column="is_end" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
+	
+	<resultMap id="JobDOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.JobDO">
+		<association property="jobMain" columnPrefix="jm_" resultMap="baseMap">
+        </association>
+        <association property="jobDetail" columnPrefix="jd_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.JobDetailMapper.baseMap">
+        </association>
+        <association property="delayJob" columnPrefix="dj_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper.baseMap">
+        </association>
+        <association property="scheduleJob" columnPrefix="sj_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper.baseMap">
+        </association>
+	</resultMap>
+
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO" useGeneratedKeys="true" keyProperty="id">
+		insert into `job_main` (
+		<if test="uuid != null">`uuid`,</if>
+		<if test="name != null">`name`,</if>
+		<if test="type != null">`type`,</if>
+		<if test="executorName != null">`executor_name`,</if>
+		<if test="jobHandlerName != null">`job_handler_name`,</if>
+		<if test="priority != null">`priority`,</if>
+		<if test="weight != null">`weight`,</if>
+		<if test="parallel != null">`is_parallel`,</if>
+		<if test="maxParallelShards != null">`max_parallel_shards`,</if>
+		<if test="queued != null">`is_queued`,</if>
+		<if test="queuedAt != null">`queued_at`,</if>
+		<if test="queuedAtInstance != null">`queued_at_instance`,</if>
+		<if test="lastTrigAt != null">`last_trig_at`,</if>
+		<if test="lastTrigResult != null">`last_trig_result`,</if>
+		<if test="lastExecuteExecutor != null">`last_execute_executor`,</if>
+		<if test="lastExecuteReturns != null">`last_execute_returns`,</if>
+		<if test="lastExecuteSuccess != null">`is_last_execute_success`,</if>
+		<if test="executeTimeout != null">`execute_timeout`,</if>
+		<if test="nextTrigAt != null">`next_trig_at`,</if>
+		<if test="end != null">`is_end`,</if>
+		<if test="createdAt != null">`created_at`,</if>
+		`created_by`
+		)
+		values (
+		<if test="uuid != null">#{uuid},</if>
+		<if test="name != null">#{name},</if>
+		<if test="type != null">#{type},</if>
+		<if test="executorName != null">#{executorName},</if>
+		<if test="jobHandlerName != null">#{jobHandlerName},</if>
+		<if test="priority != null">#{priority},</if>
+		<if test="weight != null">#{weight},</if>
+		<if test="parallel != null">#{parallel},</if>
+		<if test="maxParallelShards != null">#{maxParallelShards},</if>
+		<if test="queued != null">#{queued},</if>
+		<if test="queuedAt != null">#{queuedAt},</if>
+		<if test="queuedAtInstance != null">#{queuedAtInstance},</if>
+		<if test="lastTrigAt != null">#{lastTrigAt},</if>
+		<if test="lastTrigResult != null">#{lastTrigResult},</if>
+		<if test="lastExecuteExecutor != null">#{lastExecuteExecutor},</if>
+		<if test="lastExecuteReturns != null">#{lastExecuteReturns},</if>
+		<if test="lastExecuteSuccess != null">#{lastExecuteSuccess},</if>
+		<if test="executeTimeout != null">#{executeTimeout},</if>
+		<if test="nextTrigAt != null">#{nextTrigAt},</if>
+		<if test="end != null">#{end},</if>
+		<if test="createdAt != null">#{createdAt},</if>
+		#{createdBy}
+		)
+	</insert>
+	
+	<sql id="findPrefix">
+		select 
+			a.id as jm_id,
+			a.uuid as jm_uuid,
+			a.name as jm_name,
+			a.type as jm_type,
+			a.executor_name as jm_executor_name,
+			a.job_handler_name as jm_job_handler_name,
+			a.priority as jm_priority,
+			a.weight as jm_weight,
+			a.is_parallel as jm_is_parallel,
+			a.max_parallel_shards as jm_max_parallel_shards,
+			a.is_queued as jm_is_queued,
+			a.last_trig_at as jm_last_trig_at,
+			a.execute_timeout as jm_execute_timeout,
+			a.next_trig_at as jm_next_trig_at,
+			a.is_end as jm_is_end,
+			a.is_last_execute_success as jm_is_last_execute_success
+			<if test="with != null and with.jobMain != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="with.jobMain.queuedAt == true">a.queued_at as jm_queued_at,</if>
+					<if test="with.jobMain.queuedAtInstance == true">a.queued_at_instance as jm_queued_at_instance,</if>
+					<if test="with.jobMain.lastTrigResult == true">a.last_trig_result as jm_last_trig_result,</if>
+					<if test="with.jobMain.lastExecuteExecutor == true">a.last_execute_executor as jm_last_execute_executor,</if>
+					<if test="with.jobMain.lastExecuteReturns == true">a.last_execute_returns as jm_last_execute_returns,</if>
+					<if test="with.jobMain.createdBy == true">a.created_by as jm_created_by,</if>
+					<if test="with.jobMain.createdAt == true">a.created_at as jm_created_at,</if>
+				</trim>
+			</if>
+			<if test="with != null and with.jobDetail != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="with.jobDetail.params == true">b.params as jd_params,</if>
+					<if test="with.jobDetail.desc == true">b.desc as jd_desc,</if>
+				</trim>
+			</if>
+			<if test="with != null and with.delayJob != null">
+				<trim prefix="," suffixOverrides=",">
+					c.delay as dj_delay,
+					c.retry_on_execute_failed as dj_retry_on_execute_failed,
+					c.retry_backoff_on_execute_failed as dj_retry_backoff_on_execute_failed,
+					c.retried_times_on_execute_failed as dj_retried_times_on_execute_failed,
+					c.retry_on_no_qualified as dj_retry_on_no_qualified,
+					c.retry_backoff_on_no_qualified as dj_retry_backoff_on_no_qualified,
+					c.retried_times_on_no_qualified as dj_retried_times_on_no_qualified
+				</trim>
+			</if>
+			<if test="with != null and with.scheduleJob != null">
+				<trim prefix="," suffixOverrides=",">
+					d.schedule_fix_rate as sj_schedule_fix_rate,
+					d.schedule_fix_delay as sj_schedule_fix_delay,
+					d.shedule_cron as sj_shedule_cron,
+					d.scheduled_times as sj_scheduled_times
+				</trim>
+			</if>
+			
+		from 
+		`job_main` a
+		
+		<if test="with != null and with.jobDetail != null">
+			left join `job_detail` b on a.id = b.job_id
+		</if>
+		<if test="with != null and with.delayJob != null">
+			left join `delay_job` c on a.id = c.job_id
+		</if>
+		<if test="with != null and with.scheduleJob != null">
+			left join `schedule_job` d on a.id = d.job_id
+		</if>
+	</sql>
+	
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery" resultMap="JobDOMap">
+		<include refid="findPrefix"/>
+		
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="uuid != null">
+				and a.uuid = #{uuid}
+			</if>
+			<if test="end != null">
+				and a.is_end = #{end}
+			</if>
+			<if test="queued != null">
+				and a.is_queued = #{queued}
+			</if>
+			<if test="createdBy != null">
+				and a.created_by = #{createdBy}
+			</if>
+			<if test="nameLike != null">
+				and a.name LIKE CONCAT(#{nameLike},'%')
+			</if>
+			<if test="type != null">
+				and a.type = #{type}
+			</if>
+			<if test="parallel != null">
+				and a.is_parallel = #{parallel}
+			</if>
+			<if test="lastExecuteSuccess != null">
+				and a.is_last_execute_success = #{lastExecuteSuccess}
+			</if>
+			<if test="createdAtGte != null">
+				and a.created_at &gt;= #{createdAtGte}
+			</if>
+			<if test="createdAtLte != null">
+				and a.created_at &lt;= #{createdAtLte}
+			</if>
+			<if test="lastTrigAtGte != null">
+				and a.last_trig_at &gt;= #{lastTrigAtGte}
+			</if>
+			<if test="lastTrigAtLte != null">
+				and a.last_trig_at &lt;= #{lastTrigAtLte}
+			</if>
+			
+			<if test="nextTrigAtLt != null">
+				and a.next_trig_at &lt; #{nextTrigAtLt}
+			</if>
+		</trim>
+		<if test="sort != null">
+			${sort}
+		</if>
+		<if test="limit != null">
+			${limit}
+		</if>
+	</select>
+	
+	<select id="findOne" resultMap="JobDOMap">
+		<include refid="findPrefix"/>
+		where a.id = #{id}
+	</select>
+	
+	<select id="findByUUID" resultMap="JobDOMap">
+		<include refid="findPrefix"/>
+		where a.uuid = #{uuid}
+	</select>
+	
+	<!-- 只能更新非end的任务 -->
+	<update id="update" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO$Update">
+		update job_main 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="name != null">name = #{name},</if>
+			<if test="priority != null">priority = #{priority},</if>
+			<if test="weight != null">weight = #{weight},</if>
+			<if test="parallel != null">is_parallel = #{parallel},</if>
+			<if test="maxParallelShards != null">max_parallel_shards = #{maxParallelShards},</if>
+			<if test="queued != null">is_queued = #{queued},</if>
+			<if test="queuedAt != null">queued_at = #{queuedAt},</if>
+			<if test="queuedAtInstance != null">queued_at_instance = #{queuedAtInstance},</if>
+			<if test="lastTrigAt != null">last_trig_at = #{lastTrigAt},</if>
+			<if test="lastTrigResult != null">last_trig_result = #{lastTrigResult},</if>
+			<if test="lastExecuteExecutor != null">last_execute_executor = #{lastExecuteExecutor},</if>
+			<if test="lastExecuteReturns != null">last_execute_returns = #{lastExecuteReturns},</if>
+			<if test="lastExecuteSuccess != null">is_last_execute_success = #{lastExecuteSuccess},</if>
+			<if test="executeTimeout != null">execute_timeout = #{executeTimeout},</if>
+			<if test="nextTrigAt != null">next_trig_at = #{nextTrigAt},</if>
+			<if test="end != null">is_end = #{end},</if>
+			<if test="nextTrigAtNull == true">next_trig_at = null,</if>
+		</trim>
+		where id = #{id} and is_end = 0
+	</update>
+	
+	<delete id="delete">
+		delete from job_main where id = #{id}
+	</delete>
+	
+	<!-- next_trig_at超过给定的时间，实际上已不在队列中 -->
+	<!-- 尽管这里只使用nextTrigAtLt作为识别条件，会把已经end的任务也进行处理，但这是正确的，end的任务也是实际上noQueued，任务恢复不会把end的任务查出 -->
+	<update id="updateToNoQueued">
+		update job_main 
+		set is_queued = 0, next_trig_at = null
+		where next_trig_at &lt; #{nextTrigAtLt}
+	</update>
+</mapper>

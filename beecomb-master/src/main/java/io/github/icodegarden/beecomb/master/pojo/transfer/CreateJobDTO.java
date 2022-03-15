@@ -1,0 +1,71 @@
+package io.github.icodegarden.beecomb.master.pojo.transfer;
+
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import io.github.icodegarden.beecomb.common.enums.JobType;
+import io.github.icodegarden.beecomb.master.MasterConstants;
+import lombok.Data;
+
+/**
+ * 
+ * @author Fangfang.Xu
+ *
+ */
+@Data
+public class CreateJobDTO {
+
+	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
+	@NotEmpty
+	@Size(max = 30)
+	private String name;// varchar(30) NOT NULL,
+	@NotNull
+	private JobType type;// tinyint NOT NULL comment '任务类型 0延时 1调度',
+	@NotNull
+	@Size(max = 30)
+	private String executorName;// varchar(30) NOT NULL,
+	@NotNull
+	@Size(max = 30)
+	private String jobHandlerName;// varchar(30) NOT NULL,
+	@Min(1)
+	@Max(10)
+	private Integer priority;// tinyint NOT NULL default 5 comment '1-10仅当资源不足时起作用',
+	@Min(1)
+	@Max(5)
+	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级1-5',
+	private Boolean parallel;
+	@Min(2)
+	@Max(64)
+	private Integer maxParallelShards;
+	@Min(MasterConstants.MIN_EXECUTE_TIMEOUT)
+	@Max(MasterConstants.MAX_EXECUTE_TIMEOUT)
+	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
+	@Max(65535) 
+	private String params;// TEXT comment '任务参数',
+	@Max(200) 
+	private String desc;// varchar(200) comment '任务描述',
+
+	private Delay delay;
+	private Schedule schedule;
+
+	@Data
+	public static class Delay {
+		@NotNull
+		private Integer delay;// int comment 'ms',
+		private Integer retryOnExecuteFailed = 0;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
+		private Integer retryBackoffOnExecuteFailed = 3000;// int NOT NULL DEFAULT 3000 comment 'ms要求 gte 1000',
+		private Integer retryOnNoQualified = 0;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时重试次数，包括不在线、超载时',
+		private Integer retryBackoffOnNoQualified = 30000;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
+	}
+
+	@Data
+	public static class Schedule {
+		private Integer scheduleFixRate;// int comment 'ms',
+		private Integer scheduleFixDelay;// int comment 'ms',
+		private String sheduleCron;// varchar(20),
+	}
+
+}

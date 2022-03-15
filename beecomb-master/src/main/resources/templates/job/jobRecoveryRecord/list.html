@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('任务恢复记录列表')" />
+	<th:block th:include="include :: layout-latest-css" />
+	<th:block th:include="include :: ztree-css" />
+</head>
+<body class="gray-bg">
+	<div class="ui-layout-center">
+		<div class="container-div">
+			<div class="row">
+				<div class="col-sm-12 search-collapse">
+					<form id="user-form">
+<!-- 						<input type="hidden" id="withCreatedBy" name="withCreatedBy" value="true"> -->
+<!-- 		                <input type="hidden" id="withCreatedAt" name="withCreatedAt" value="true"> -->
+						<div class="select-list">
+							<ul>
+								<li>
+									任务编号：<input type="text" name="jobId" th:value="${jobId}"/>
+								</li>
+								<li>
+									恢复是否成功：<select name="success">
+										<option value="">所有</option>
+										<option th:text="是" th:value="true"></option>
+										<option th:text="否" th:value="false"></option>
+									</select>
+								</li>
+								<li>
+									<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								    <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+								</li>
+							</ul>
+						</div>
+					</form>
+				</div>
+				
+		        <div class="btn-group-sm" id="toolbar" role="group">
+<!-- 		        	<a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="system:user:add"> -->
+<!-- 		                <i class="fa fa-plus"></i> 新增 -->
+<!-- 		            </a> -->
+<!-- 		             <a class="btn btn-primary single disabled" onclick="$.operate.editTab()" shiro:hasPermission="system:user:edit"> -->
+<!-- 			            <i class="fa fa-edit"></i> 修改 -->
+<!-- 			        </a> -->
+<!-- 		            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:user:remove"> -->
+<!-- 		                <i class="fa fa-remove"></i> 删除 -->
+<!-- 		            </a> -->
+		        </div>
+		        
+		        <div class="col-sm-12 select-table table-striped">
+				    <table id="bootstrap-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: layout-latest-js" />
+	<th:block th:include="include :: ztree-js" />
+	<script th:inline="javascript">
+		var editFlag = true;
+		var removeFlag = true;
+		var resetPwdFlag = true;
+		var prefix = ctx + "api/jobRecoveryRecord";
+
+		$(function() {
+		    var panehHidden = false;
+		    if ($(this).width() < 769) {
+		        panehHidden = true;
+		    }
+		    $('body').layout({ initClosed: panehHidden, west__size: 185 });
+	     	// 回到顶部绑定
+	    	if ($.fn.toTop !== undefined) {
+	    		var opt = {
+	    			win:$('.ui-layout-center'),
+	    			doc:$('.ui-layout-center')
+	    		};
+	    		$('#scroll-up').toTop(opt);
+	    	}
+		    queryUserList();
+// 		    queryDeptTree();
+		});
+
+		function queryUserList() {
+		    var options = {
+		        url: prefix + "/list",
+		        detailUrl: "/view/jobRecoveryRecord/jobs/{id}/detail",
+		        createUrl: "/view/user/create",
+		        updateUrl: "/view/user/{id}/update",
+		        removeUrl: prefix + "/remove",
+		        exportUrl: prefix + "/export",
+		        importUrl: prefix + "/importData",
+		        importTemplateUrl: prefix + "/importTemplate",
+		        sortName: "createTime",
+		        sortOrder: "desc",
+		        modalName: "任务恢复",
+		        columns: [{
+		            checkbox: false
+		        },
+		        {
+		            field: 'jobId',
+		            title: '任务编号'
+		        },
+		        {
+		        	title: '任务名',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		return row.job.name;
+		        	}
+		        },
+		        {
+		        	title: '任务类型',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		return row.job.type;
+		        	}
+		        },
+		        {
+		        	title: '任务uuid',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		return row.job.uuid;
+		        	}
+		        },
+		        {
+		        	title: '恢复是否成功',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		return row.success ? '<span style="color:green;">是</span>':'<span style="color:red;">否</span>';
+		        		
+		        	}
+		        },
+		        {
+		            field: 'recoveryAt',
+		            title: '恢复时间'		            
+		        },
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+// 		                if (row.userId != 1) {
+// 		                	var actions = [];
+// 			                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.userId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+// 			                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.userId + '\')"><i class="fa fa-remove"></i>删除</a> ');
+// 			                var more = [];
+// 			                more.push("<a class='btn btn-default btn-xs " + resetPwdFlag + "' href='javascript:void(0)' onclick='resetPwd(" + row.userId + ")'><i class='fa fa-key'></i>重置密码</a> ");
+// 			                more.push("<a class='btn btn-default btn-xs " + editFlag + "' href='javascript:void(0)' onclick='authRole(" + row.userId + ")'><i class='fa fa-check-square-o'></i>分配角色</a>");
+// 			                actions.push('<a tabindex="0" class="btn btn-info btn-xs" role="button" data-container="body" data-placement="left" data-toggle="popover" data-html="true" data-trigger="hover" data-content="' + more.join('') + '"><i class="fa fa-chevron-circle-right"></i>更多操作</a>');
+// 			                return actions.join('');
+// 		            	} else {
+// 		                    return "";
+// 		                }
+
+		            	var actions = [];
+		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.operate.detail(\'' + row.jobId + '\')"></i>明细</a> ');
+// 		                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+// 		                actions.push("<a class='btn btn-default btn-xs " + resetPwdFlag + "' href='javascript:void(0)' onclick='resetPwd(" + row.id + ")'><i class='fa fa-key'></i>修改密码</a> ");
+// 		                var more = [];
+// 		                actions.push('<a tabindex="0" class="btn btn-info btn-xs" role="button" data-container="body" data-placement="left" data-toggle="popover" data-html="true" data-trigger="hover" data-content="' + more.join('') + '"><i class="fa fa-chevron-circle-right"></i>更多操作</a>');
+		                return actions.join('');
+		            }
+		        }
+		        ]
+		    };
+		    $.table.init(options);
+		}
+		
+		$('#btnExpand').click(function() {
+			$._tree.expandAll(true);
+		    $(this).hide();
+		    $('#btnCollapse').show();
+		});
+		
+		$('#btnCollapse').click(function() {
+			$._tree.expandAll(false);
+		    $(this).hide();
+		    $('#btnExpand').show();
+		});
+		
+		$('#btnRefresh').click(function() {
+			queryDeptTree();
+		});
+	</script>
+</body>
+<!-- 导入区域 -->
+<script id="importTpl" type="text/template">
+<form enctype="multipart/form-data" class="mt20 mb10">
+	<div class="col-xs-offset-1">
+		<input type="file" id="file" name="file"/>
+		<div class="mt10 pt5">
+			<input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据
+			 &nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
+		</div>
+		<font color="red" class="pull-left mt10">
+			提示：仅允许导入“xls”或“xlsx”格式文件！
+		</font>
+	</div>
+</form>
+</script>
+</html>

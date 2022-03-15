@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.master.mapper.JobRecoveryRecordMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.master.pojo.persistence.JobRecoveryRecordPO">
+		<id property="jobId" column="job_id" />
+		<result property="success" column="is_success" />
+		<result property="desc" column="desc" />
+		<result property="recoveryAt" column="recovery_at" />
+	</resultMap>
+	
+	<resultMap id="JobRecoveryRecordDOMap" type="io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO">
+		<association property="jobRecoveryRecord" columnPrefix="jrr_" resultMap="baseMap">
+        </association>
+        <association property="jobMain" columnPrefix="jm_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper.baseMap">
+        </association>
+	</resultMap>
+	
+	<insert id="addOrUpdate" parameterType="io.github.icodegarden.beecomb.master.pojo.persistence.JobRecoveryRecordPO" useGeneratedKeys="true" keyProperty="id">
+		insert into `job_recovery_record` (
+		<if test="jobId != null">`job_id`,</if>
+		<if test="success != null">`is_success`,</if>
+		<if test="desc != null">`desc`,</if>
+		`recovery_at`
+		)
+		values (
+		<if test="jobId != null">#{jobId},</if>
+		<if test="success != null">#{success},</if>
+		<if test="desc != null">#{desc},</if>
+		#{recoveryAt}
+		)
+		
+		on duplicate key update
+		<trim suffixOverrides=",">
+			<if test="success != null">`is_success` = #{success},</if>
+			<if test="desc != null">`desc` = #{desc},</if>
+			<if test="recoveryAt != null">`recovery_at` = #{recoveryAt},</if>
+		</trim>
+	</insert>
+	
+	<sql id="findPrefix">
+		select 
+			a.job_id as jrr_job_id,
+			a.is_success as jrr_is_success,
+			a.recovery_at as jrr_recovery_at
+			
+			<if test="with != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="with.desc == true">a.desc as jrr_desc,</if>
+				</trim>
+			</if>
+			<if test="with != null and with.jobMain != null">
+				<trim prefix="," suffixOverrides=",">
+					b.id as jm_id,
+					b.uuid as jm_uuid,
+					b.name as jm_name,
+					b.type as jm_type,
+					b.executor_name as jm_executor_name,
+					b.job_handler_name as jm_job_handler_name,
+					b.priority as jm_priority,
+					b.weight as jm_weight,
+					b.is_parallel as jm_is_parallel,
+					b.max_parallel_shards as jm_max_parallel_shards,
+					b.is_queued as jm_is_queued,
+					b.last_trig_at as jm_last_trig_at,
+					b.execute_timeout as jm_execute_timeout,
+					b.next_trig_at as jm_next_trig_at,
+					b.is_end as jm_is_end
+				</trim>
+			</if>
+			
+		from `job_recovery_record` a
+		<if test="with != null and with.jobMain != null">
+			join `job_main` b on a.job_id = b.id
+		</if>
+	</sql>
+	
+	<select id="findOne" resultMap="JobRecoveryRecordDOMap">
+		<include refid="findPrefix"/>
+		where a.job_id = #{jobId}
+	</select>
+	
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery" resultMap="JobRecoveryRecordDOMap">
+		<include refid="findPrefix"/>
+		
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="jobId != null">
+				and a.job_id = #{jobId}
+			</if>
+			<if test="success != null">
+				and a.is_success = #{success}
+			</if>
+			
+			<if test="with != null and with.jobMain != null"><!-- 条件判断需要判断是否有join -->
+				<if test="jobCreatedBy != null">
+					and b.created_by = #{jobCreatedBy}
+				</if>
+			</if>
+		</trim>
+		<if test="sort != null">
+			${sort}
+		</if>
+		<if test="limit != null">
+			${limit}
+		</if>
+		
+	</select>
+	
+</mapper>

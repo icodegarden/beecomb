@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.master.mapper.UserMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.master.pojo.persistence.UserPO">
+		<id property="id" column="id" />
+		<result property="username" column="username" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="phone" column="phone" />
+		<result property="actived" column="is_actived" />
+		<result property="platformRole" column="platform_role" />
+		<result property="createdBy" column="created_by" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedBy" column="updated_by" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+	
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.master.pojo.persistence.UserPO" useGeneratedKeys="true" keyProperty="id">
+		insert into `user` (
+		<if test="username != null">`username`,</if>
+		<if test="password != null">`password`,</if>
+		<if test="name != null">`name`,</if>
+		<if test="email != null">`email`,</if>
+		<if test="phone != null">`phone`,</if>
+		<if test="actived != null">`is_actived`,</if>
+		<if test="platformRole != null">`platform_role`,</if>
+		<if test="createdBy != null">`created_by`,</if>
+		<if test="createdAt != null">`created_at`,</if>
+		<if test="updatedBy != null">`updated_by`,</if>
+		`updated_at`
+		)
+		values (
+		<if test="username != null">#{username},</if>
+		<if test="password != null">#{password},</if>
+		<if test="name != null">#{name},</if>
+		<if test="email != null">#{email},</if>
+		<if test="phone != null">#{phone},</if>
+		<if test="actived != null">#{actived},</if>
+		<if test="platformRole != null">#{platformRole},</if>
+		<if test="createdBy != null">#{createdBy},</if>
+		<if test="createdAt != null">#{createdAt},</if>
+		<if test="updatedBy != null">#{updatedBy},</if>
+		#{updatedAt}
+		)
+	</insert>
+	
+	<sql id="findPrefix">
+		select 
+			a.id,
+			a.username,
+			a.password,
+			a.name,
+			a.email,
+			a.phone,
+			a.is_actived,
+			a.platform_role
+			<if test="with != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="with.createdBy == true">a.created_by,</if>
+					<if test="with.createdAt == true">a.created_at,</if>
+					<if test="with.updatedBy == true">a.updated_by,</if>
+					<if test="with.updatedAt == true">a.updated_at,</if>
+				</trim>
+			</if>
+		from `user` a
+	</sql>
+	
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.master.pojo.query.UserQuery" resultMap="baseMap">
+		<include refid="findPrefix"/>
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="usernameLike != null">
+				and a.username LIKE CONCAT(#{usernameLike},'%')
+			</if>
+			<if test="nameLike != null">
+				and a.name LIKE CONCAT(#{nameLike},'%')
+			</if>
+			<if test="phone != null">
+				and a.phone = #{phone}
+			</if>
+			<if test="actived != null">
+				and a.is_actived = #{actived}
+			</if>
+			<if test="platformRole != null">
+				and a.platform_role = #{platformRole}
+			</if>
+		</trim>
+		<if test="sort != null">
+			${sort}
+		</if>
+		<if test="limit != null">
+			${limit}
+		</if>
+	</select>
+	
+	<select id="findOne" resultMap="baseMap">
+		<include refid="findPrefix"/>
+		where a.id = #{id}
+	</select>
+	
+	<select id="findByUsername" resultMap="baseMap">
+		<include refid="findPrefix"/>
+		where a.username = #{username}
+	</select>
+	
+	<update id="update" parameterType="io.github.icodegarden.beecomb.master.pojo.persistence.UserPO$Update">
+		update `user`
+		<trim prefix="set" suffixOverrides=",">
+			<if test="password != null">`password` = #{password},</if>
+			<if test="name != null">`name` = #{name},</if>
+			<if test="email != null">`email` = #{email},</if>
+			<if test="phone != null">`phone` = #{phone},</if>
+			<if test="actived != null">`is_actived` = #{actived},</if>
+			<if test="platformRole != null">`platform_role` = #{platformRole},</if>
+			<if test="updatedBy != null">`updated_by` = #{updatedBy},</if>
+			<if test="updatedAt != null">`updated_at` = #{updatedAt},</if>
+		</trim>
+		where id = #{id}
+	</update>
+</mapper>

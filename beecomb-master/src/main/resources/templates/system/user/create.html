@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('新增用户')" />
+	<th:block th:include="include :: select2-css" />
+</head>
+<body>
+    <div class="main-content">
+        <form id="form-user-add" class="form-horizontal">
+            <input name="deptId" type="hidden" id="treeId"/>
+            <h4 class="form-header h4">基本信息</h4>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">用户名：</label>
+                        <div class="col-sm-8">
+                            <input name="username" placeholder="请输入用户名" class="form-control" type="text" maxlength="24" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">姓名：</label>
+                        <div class="col-sm-8">
+                            <input name="name" placeholder="请输入姓名" class="form-control" type="text" maxlength="64" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">登录密码：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="password" name="password" placeholder="请输入登录密码" maxlength="24" class="form-control" type="password" required>
+                                <span class="input-group-addon" title="登录密码,鼠标按下显示密码"
+                                    onmousedown="$('#password').attr('type','text')"
+                                    onmouseup="$('#password').attr('type','password')"><i class="fa fa-key"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">平台角色：</label>
+                        <div class="col-sm-8">
+							<select name="platformRole" required class="form-control">
+								<option th:text="Admin" th:value="Admin"></option>
+								<option th:text="User" th:value="User" th:selected="true"></option>
+							</select>
+						</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">电话：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="phone" name="phone" placeholder="请输入电话" class="form-control" type="text" maxlength="11">
+                                <span class="input-group-addon"><i class="fa fa-mobile"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">邮箱：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="email" name="email" class="form-control email" type="text" maxlength="50" placeholder="请输入邮箱">
+                                <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+      
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: select2-js" />
+	<script>
+		var prefix = ctx + "api/user";
+	
+        $("#form-user-add").validate({
+        	onkeyup: false,
+        	rules:{
+        		password:{
+        			minlength: 5,
+        			maxlength: 20
+        		}
+        	},
+        	messages: {
+                "loginName": {
+                    remote: "用户已经存在"
+                },
+        		"email": {
+                    remote: "Email已经存在"
+                },
+        		"phonenumber":{
+                	remote: "手机号码已经存在"
+        		}
+            },
+            focusCleanup: true
+        });
+        
+        function submitHandler() {
+			var password = $("#password").val();
+// 	        if ($.validate.form() && checkpwd(chrtype, password)) {
+	        if ($.validate.form()) {
+	        	var data = $("#form-user-add").serializeArray();
+	        	var status = $("input[id='status']").is(':checked') == true ? 0 : 1;
+	        	var roleIds = $.form.selectCheckeds("role");
+	        	var postIds = $.form.selectSelects("post");
+	        	data.push({"name": "status", "value": status});
+	        	data.push({"name": "roleIds", "value": roleIds});
+	        	data.push({"name": "postIds", "value": postIds});
+	        	$.operate.saveTab(prefix + "/create", data);
+	        }
+	    }
+         
+        /* 用户管理-新增-选择部门树 */
+        function selectDeptTree() {
+        	var treeId = $("#treeId").val();
+        	var deptId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
+        	var url = ctx + "system/dept/selectDeptTree/" + deptId;
+			var options = {
+				title: '选择部门',
+				width: "380",
+				url: url,
+				callBack: doSubmit
+			};
+			$.modal.openOptions(options);
+		}
+		
+		function doSubmit(index, layero){
+			var tree = layero.find("iframe")[0].contentWindow.$._tree;
+			var body = $.modal.getChildFrame(index);
+   			$("#treeId").val(body.find('#treeId').val());
+   			$("#treeName").val(body.find('#treeName').val());
+   			$.modal.close(index);
+		}
+
+		$(function() {
+            $('#post').select2({
+                placeholder: "请选择岗位",
+                allowClear: true
+            });
+        })
+    </script>
+</body>
+</html>

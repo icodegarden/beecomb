@@ -1,0 +1,37 @@
+
+mybatis.mapper-locations: classpath*:mapper/*Mapper.xml
+
+pagehelper.helperDialect: mysql
+pagehelper.reasonable: true
+pagehelper.supportMethodsArguments: true
+pagehelper.params=count: countSql
+
+
+server:
+  port: 9898
+  #生产环境只关注大于该值的sql
+#  sqlUnhealthMillis: 150
+zookeeper:
+  connectString: 192.168.80.128:2181
+  
+spring:
+  application:
+    name: beecomb-master
+  mvc.servlet.load-on-startup: 1  
+  #关闭thymeleaf的缓存
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:mysql://172.22.122.23:53306/beecomb?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 20
+#      max-lifetime: 1800000
+#      idle-timeout: 600000
+#      connection-timeout: 3000
+#      connection-test-query: SELECT 1  
+  

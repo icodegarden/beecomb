@@ -1,0 +1,77 @@
+dataSources:
+  ds0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://172.22.122.23:53306/sharding_db0
+    username: root
+    password: 123456
+  ds1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    jdbcUrl: jdbc:mysql://172.22.122.23:53306/sharding_db1
+    username: root
+    password: 123456
+
+
+rules:
+- !SHARDING
+  tables: 
+    t_order: 
+      actualDataNodes: ds${0..1}.t_order
+      databaseStrategy: 
+        standard: 
+          shardingColumn: order_id
+          shardingAlgorithmName: dsinline
+#      tableStrategy: 
+#        standard: 
+#          shardingColumn: order_id
+#          shardingAlgorithmName: t_order_table
+      keyGenerateStrategy: 
+        column: order_id
+        keyGeneratorName: my_SNOWFLAKE
+        
+    t_order_item: 
+      actualDataNodes: ds${0..1}.t_order_item
+      databaseStrategy: 
+        standard: 
+          shardingColumn: order_id
+          shardingAlgorithmName: dsinline
+        
+#  autoTables: # 自动分片表规则配置
+#    t_order_auto: # 逻辑表名称
+#      actualDataSources (?): # 数据源名称
+#      shardingStrategy: # 切分策略
+#        standard: # 用于单分片键的标准分片场景
+#          shardingColumn: # 分片列名称
+#          shardingAlgorithmName: # 自动分片算法名称
+#  bindingTables (+): # 绑定表规则列表
+#    - <logic_table_name_1, logic_table_name_2, ...> 
+#    - <logic_table_name_1, logic_table_name_2, ...> 
+#  broadcastTables: # 广播表规则列表
+#    - t_config
+#  defaultDatabaseStrategy: # 默认数据库分片策略
+#  defaultTableStrategy: # 默认表分片策略
+#  defaultKeyGenerateStrategy: # 默认的分布式序列策略
+#  defaultShardingColumn: # 默认分片列名称
+  
+#  defaultDatabaseStrategy:
+#    standard:
+#      shardingColumn: user_id
+#      shardingAlgorithmName: t_order_ds
+  
+  # 分片算法配置
+  shardingAlgorithms:
+    dsinline: 
+      type: INLINE 
+      props: 
+        algorithm-expression: ds${order_id % 2} 
+      # ...
+  
+  # 分布式序列算法配置
+  keyGenerators:
+    my_SNOWFLAKE: 
+      type: SNOWFLAKE 
+#      props: # 分布式序列算法属性配置
+#      # ...
+    
+

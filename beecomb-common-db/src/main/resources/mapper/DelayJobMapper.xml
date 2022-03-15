@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO">
+		<id property="jobId" column="job_id" />
+		<result property="delay" column="delay" />
+		<result property="retryOnExecuteFailed" column="retry_on_execute_failed" />
+		<result property="retryBackoffOnExecuteFailed" column="retry_backoff_on_execute_failed" />
+		<result property="retriedTimesOnExecuteFailed" column="retried_times_on_execute_failed" />
+		<result property="retryOnNoQualified" column="retry_on_no_qualified" />
+		<result property="retryBackoffOnNoQualified" column="retry_backoff_on_no_qualified" />
+		<result property="retriedTimesOnNoQualified" column="retried_times_on_no_qualified" />
+	</resultMap>
+
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO">
+		insert into `delay_job` (
+		<trim prefix="" suffixOverrides=",">
+		  <if test="jobId != null">`job_id`,</if>
+		  <if test="delay != null">`delay`,</if>
+		  <if test="retryOnExecuteFailed != null">`retry_on_execute_failed`,</if>
+		  <if test="retryBackoffOnExecuteFailed != null">`retry_backoff_on_execute_failed`,</if>
+		  <if test="retriedTimesOnExecuteFailed != null">`retried_times_on_execute_failed`,</if>
+		  <if test="retryOnNoQualified != null">`retry_on_no_qualified`,</if>
+		  <if test="retryBackoffOnNoQualified != null">`retry_backoff_on_no_qualified`,</if>
+		  <if test="retriedTimesOnNoQualified != null">`retried_times_on_no_qualified`,</if>
+		</trim>
+		)
+		values (
+		<trim prefix="" suffixOverrides=",">
+		    <if test="jobId != null">#{jobId},</if>
+			<if test="delay != null">#{delay},</if>
+			<if test="retryOnExecuteFailed != null">#{retryOnExecuteFailed},</if>
+			<if test="retryBackoffOnExecuteFailed != null">#{retryBackoffOnExecuteFailed},</if>
+			<if test="retriedTimesOnExecuteFailed != null">#{retriedTimesOnExecuteFailed},</if>
+			<if test="retryOnNoQualified != null">#{retryOnNoQualified},</if>
+			<if test="retryBackoffOnNoQualified != null">#{retryBackoffOnNoQualified},</if>
+			<if test="retriedTimesOnNoQualified != null">#{retriedTimesOnNoQualified},</if>
+		</trim>
+		)
+	</insert>
+	
+	<select id="findOne" resultMap="baseMap">
+		select a.* from `delay_job` a where a.job_id = #{jobId}
+	</select>
+	
+	<update id="update" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO$Update">
+		update `delay_job`
+		<trim prefix="set" suffixOverrides=",">
+			<if test="retryOnExecuteFailed != null">`retry_on_execute_failed` = #{retryOnExecuteFailed},</if>
+			<if test="retryBackoffOnExecuteFailed != null">`retry_backoff_on_execute_failed` = #{retryBackoffOnExecuteFailed},</if>
+			<if test="retriedTimesOnExecuteFailed != null">`retried_times_on_execute_failed` = #{retriedTimesOnExecuteFailed},</if>
+			<if test="retryOnNoQualified != null">`retry_on_no_qualified` = #{retryOnNoQualified},</if>
+			<if test="retryBackoffOnNoQualified != null">`retry_backoff_on_no_qualified` = #{retryBackoffOnNoQualified},</if>
+			<if test="retriedTimesOnNoQualified != null">`retried_times_on_no_qualified` = #{retriedTimesOnNoQualified},</if>
+		</trim>
+		where job_id = #{jobId}
+	</update>
+</mapper>

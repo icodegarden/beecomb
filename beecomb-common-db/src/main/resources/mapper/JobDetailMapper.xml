@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.JobDetailMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO">
+		<id property="jobId" column="job_id" />
+		<result property="params" column="params" />
+		<result property="desc" column="desc" />
+	</resultMap>
+
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO">
+		insert into `job_detail` (
+		  `job_id`,
+		  `params`,
+		  `desc`
+		)
+		values (
+		#{jobId},
+		#{params},
+		#{desc}
+		)
+	</insert>
+	
+	<select id="findOne" resultMap="baseMap">
+		select a.* from `job_detail` a where a.job_id = #{jobId}
+	</select>
+	
+	<update id="update" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO$Update">
+		update `job_detail`
+		<trim prefix="set" suffixOverrides=",">
+			<if test="params != null">`params` = #{params},</if>
+			<if test="desc != null">`desc` = #{desc},</if>
+		</trim>
+		where job_id = #{jobId}
+	</update>
+</mapper>

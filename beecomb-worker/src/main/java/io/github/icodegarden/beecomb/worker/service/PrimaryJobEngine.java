@@ -1,0 +1,68 @@
+package io.github.icodegarden.beecomb.worker.service;
+
+import java.util.Map;
+
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+
+import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.worker.core.JobEngine;
+import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
+import io.github.icodegarden.commons.lang.result.Result3;
+
+/**
+ * 
+ * @author Fangfang.Xu
+ *
+ */
+@Primary
+@Service
+public class PrimaryJobEngine implements JobEngine {
+	
+	@Override
+	public String shutdownName() {
+		return "primary";
+	}
+
+	private JobEngine getJobEngine(ExecutableJobBO job) {
+		String typeName = job.getType().name().toLowerCase();
+		JobEngine jobEngine = SpringBeans.getBean(typeName, JobEngine.class);
+		return jobEngine;
+	}
+
+	@Override
+	public boolean allowEnQueue(ExecutableJobBO job) {
+		JobEngine jobEngine = getJobEngine(job);
+		return jobEngine.allowEnQueue(job);
+	}
+
+	@Override
+	public Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueue(ExecutableJobBO job) {
+		JobEngine jobEngine = getJobEngine(job);
+		return jobEngine.enQueue(job);
+	}
+
+	@Override
+	public boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult) {
+		ExecutableJobBO job = enQueueResult.getT1();
+		JobEngine jobEngine = getJobEngine(job);
+		return jobEngine.removeQueue(enQueueResult);
+	}
+
+	@Override
+	public int queuedSize() {
+		Map<String, JobEngine> beansOfType = SpringBeans.getBeansOfType(JobEngine.class);
+		return beansOfType.values().stream().filter(je -> {
+			return !(je.getClass() == PrimaryJobEngine.class
+					|| je.getClass().getSuperclass() == PrimaryJobEngine.class);
+		}).mapToInt(JobEngine::queuedSize).sum();
+	}
+	
+	@Override
+	public void shutdown() {
+	}
+	
+	@Override
+	public void shutdownBlocking(long blockTimeoutMillis) {
+	}
+}

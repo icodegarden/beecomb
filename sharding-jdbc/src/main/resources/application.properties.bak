@@ -1,0 +1,31 @@
+mybatis.mapper-locations=classpath*:mapper/*Mapper.xml
+
+spring.shardingsphere.datasource.names=ds0,ds1
+
+spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
+spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds0.jdbcUrl=jdbc:mysql://172.22.122.23:3306/sharding_db0
+spring.shardingsphere.datasource.ds0.username=root
+spring.shardingsphere.datasource.ds0.password=aq1sw2de
+
+spring.shardingsphere.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
+spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds1.jdbcUrl=jdbc:mysql://172.22.122.23:3306/sharding_db1
+spring.shardingsphere.datasource.ds1.username=root
+spring.shardingsphere.datasource.ds1.password=aq1sw2de
+
+spring.shardingsphere.sharding.tables.t_order.actual-data-nodes=ds$->{0..1}.t_order$->{0..1}
+spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.sharding-column=order_id
+spring.shardingsphere.sharding.tables.t_order.table-strategy.inline.algorithm-expression=t_order$->{order_id % 2}
+spring.shardingsphere.sharding.tables.t_order.key-generator.column=order_id
+spring.shardingsphere.sharding.tables.t_order.key-generator.type=SNOWFLAKE
+spring.shardingsphere.sharding.tables.t_order_item.actual-data-nodes=ds$->{0..1}.t_order_item$->{0..1}
+spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.sharding-column=order_id
+spring.shardingsphere.sharding.tables.t_order_item.table-strategy.inline.algorithm-expression=t_order_item$->{order_id % 2}
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.column=order_item_id
+spring.shardingsphere.sharding.tables.t_order_item.key-generator.type=SNOWFLAKE
+spring.shardingsphere.sharding.binding-tables=t_order,t_order_item
+spring.shardingsphere.sharding.broadcast-tables=t_config
+
+spring.shardingsphere.sharding.default-database-strategy.inline.sharding-column=user_id
+spring.shardingsphere.sharding.default-database-strategy.inline.algorithm-expression=ds$->{user_id % 2}

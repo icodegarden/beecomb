@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+	<th:block th:include="include :: header('Node列表')" />
+	<th:block th:include="include :: layout-latest-css" />
+	<th:block th:include="include :: ztree-css" />
+</head>
+<body class="gray-bg">
+	<div class="ui-layout-center">
+		<div class="container-div">
+			<div class="row">
+				<div class="col-sm-12 search-collapse">
+					<form id="user-form">
+						<input type="hidden" id="deptId" name="deptId">
+		                <input type="hidden" id="parentId" name="parentId">
+						<div class="select-list">
+							<ul>
+								<li>
+									节点名：<select name="serviceName">
+										<option th:text="Master" th:value="master" selected></option>
+										<option th:text="Worker" th:value="worker"></option>
+										<option th:text="Executor" th:value="executor"></option>
+									</select>
+								</li>
+								<li>
+									ip：<input type="text" name="ip"/>
+								</li>
+								<li>
+									<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								    <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+								</li>
+							</ul>
+						</div>
+					</form>
+				</div>
+				
+		        <div class="btn-group-sm" id="toolbar" role="group">
+<!-- 		        	<a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="system:user:add"> -->
+<!-- 		                <i class="fa fa-plus"></i> 新增 -->
+<!-- 		            </a> -->
+<!-- 		             <a class="btn btn-primary single disabled" onclick="$.operate.editTab()" shiro:hasPermission="system:user:edit"> -->
+<!-- 			            <i class="fa fa-edit"></i> 修改 -->
+<!-- 			        </a> -->
+<!-- 		            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:user:remove"> -->
+<!-- 		                <i class="fa fa-remove"></i> 删除 -->
+<!-- 		            </a> -->
+		        </div>
+		        
+		        <div class="col-sm-12 select-table table-striped">
+				    <table id="bootstrap-table"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: layout-latest-js" />
+	<th:block th:include="include :: ztree-js" />
+	<script th:inline="javascript">
+		var editFlag = true;
+		var removeFlag = true;
+		var resetPwdFlag = true;
+		var prefix = ctx + "api/node";
+
+		$(function() {
+		    var panehHidden = false;
+		    if ($(this).width() < 769) {
+		        panehHidden = true;
+		    }
+		    $('body').layout({ initClosed: panehHidden, west__size: 185 });
+	     	// 回到顶部绑定
+	    	if ($.fn.toTop !== undefined) {
+	    		var opt = {
+	    			win:$('.ui-layout-center'),
+	    			doc:$('.ui-layout-center')
+	    		};
+	    		$('#scroll-up').toTop(opt);
+	    	}
+		    queryUserList();
+// 		    queryDeptTree();
+		});
+
+		function queryUserList() {
+		    var options = {
+		        url: prefix + "/list",
+		        createUrl: "/view/user/create",
+		        updateUrl: "/view/user/{id}/update",
+		        removeUrl: prefix + "/remove",
+		        exportUrl: prefix + "/export",
+		        importUrl: prefix + "/importData",
+		        importTemplateUrl: prefix + "/importTemplate",
+		        sortName: "createTime",
+		        sortOrder: "desc",
+		        modalName: "Node",
+		        columns: [{
+		            checkbox: true
+		        },
+		        {
+		        	visible: false,
+		            field: 'id',
+		            title: '编号'
+		        },
+		        {
+		            field: 'serviceName',
+		            title: '节点名'
+		        },
+		        {
+		            field: 'instanceName',
+		            title: '实例名'		            
+		        },
+		        {
+		            field: 'ip',
+		            title: 'ip'		            
+		        },
+		        {
+		            field: 'port',
+		            title: 'port'		            
+		        },
+		        {
+		        	title: 'cpu使用率',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		if(row.metricsDimensions != null){
+		        			for(metricsDimension of row.metricsDimensions){
+		        				if(metricsDimension.name == 'cpu'){
+		        					return metricsDimension.used.toFixed(2);
+		        				}
+		        			}
+		        		}
+		        		return '-';
+		        	}
+		        },
+		        {
+		        	title: 'JVM内存',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		if(row.metricsDimensions != null){
+		        			for(metricsDimension of row.metricsDimensions){
+		        				if(metricsDimension.name == 'memory'){
+		        					return metricsDimension.used+'MB/'+metricsDimension.max+'MB';
+		        				}
+		        			}
+		        		}
+		        		return '-';
+		        	}
+		        },
+		        {
+		        	title: '负载',
+		        	align: 'center',
+		        	formatter: function (value, row, index) {
+		        		var arr = [];
+		        		if(row.metricsDimensions != null){
+		        			for(metricsDimension of row.metricsDimensions){
+		        				if(metricsDimension.weight != 0){
+									arr.push(metricsDimension);
+		        				}
+		        			}
+		        		}
+		        		if(arr.length > 0){
+		        			return JSON.stringify(arr);		        			
+		        		}
+		        		return '-';
+		        	}
+		        }
+		        ]
+		    };
+		    $.table.init(options);
+		}
+		
+		$('#btnExpand').click(function() {
+			$._tree.expandAll(true);
+		    $(this).hide();
+		    $('#btnCollapse').show();
+		});
+		
+		$('#btnCollapse').click(function() {
+			$._tree.expandAll(false);
+		    $(this).hide();
+		    $('#btnExpand').show();
+		});
+		
+		$('#btnRefresh').click(function() {
+			queryDeptTree();
+		});
+	</script>
+</body>
+<!-- 导入区域 -->
+<script id="importTpl" type="text/template">
+<form enctype="multipart/form-data" class="mt20 mb10">
+	<div class="col-xs-offset-1">
+		<input type="file" id="file" name="file"/>
+		<div class="mt10 pt5">
+			<input type="checkbox" id="updateSupport" name="updateSupport" title="如果登录账户已经存在，更新这条数据。"> 是否更新已经存在的用户数据
+			 &nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
+		</div>
+		<font color="red" class="pull-left mt10">
+			提示：仅允许导入“xls”或“xlsx”格式文件！
+		</font>
+	</div>
+</form>
+</script>
+</html>

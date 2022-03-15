@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO">
+		<id property="jobId" column="job_id" />
+		<result property="scheduleFixRate" column="schedule_fix_rate" />
+		<result property="scheduleFixDelay" column="schedule_fix_delay" />
+		<result property="sheduleCron" column="shedule_cron" />
+		<result property="scheduledTimes" column="scheduled_times" />
+	</resultMap>
+
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO">
+		insert into `schedule_job` (
+		<trim prefix="" suffixOverrides=",">
+		  <if test="jobId != null">`job_id`,</if>
+		  <if test="scheduleFixRate != null">`schedule_fix_rate`,</if>
+		  <if test="scheduleFixDelay != null">`schedule_fix_delay`,</if>
+		  <if test="sheduleCron != null">`shedule_cron`,</if>
+		  <if test="scheduledTimes != null">`scheduled_times`,</if>
+		</trim>
+		)
+		values (
+		<trim prefix="" suffixOverrides=",">
+		  <if test="jobId != null">#{jobId},</if>
+		  <if test="scheduleFixRate != null">#{scheduleFixRate},</if>
+		  <if test="scheduleFixDelay != null">#{scheduleFixDelay},</if>
+		  <if test="sheduleCron != null">#{sheduleCron},</if>
+		  <if test="scheduledTimes != null">#{scheduledTimes}</if>
+		</trim>
+		)
+	</insert>
+	
+	<select id="findOne" resultMap="baseMap">
+		select a.* from `schedule_job` a where a.job_id = #{jobId}
+	</select>
+	
+	<update id="update" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO$Update">
+		update `schedule_job`
+		<trim prefix="set" suffixOverrides=",">
+			<if test="scheduleFixRate != null">`schedule_fix_rate` = #{scheduleFixRate},</if>
+			<if test="scheduleFixDelay != null">`schedule_fix_delay` = #{scheduleFixDelay},</if>
+			<if test="sheduleCron != null">`shedule_cron` = #{sheduleCron},</if>
+		</trim>
+		where job_id = #{jobId}
+	</update>
+	
+	<update id="updateAndIncrementScheduledTimes" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO$Update">
+		update `schedule_job` 
+		<trim prefix="set" suffixOverrides=",">
+			<if test="1==1">scheduled_times = scheduled_times + 1 ,</if>
+			<if test="scheduleFixRate != null">`schedule_fix_rate` = #{scheduleFixRate},</if>
+			<if test="scheduleFixDelay != null">`schedule_fix_delay` = #{scheduleFixDelay},</if>
+			<if test="sheduleCron != null">`shedule_cron` = #{sheduleCron},</if>
+		</trim>
+		where job_id = #{jobId}
+	</update>
+	
+</mapper>
