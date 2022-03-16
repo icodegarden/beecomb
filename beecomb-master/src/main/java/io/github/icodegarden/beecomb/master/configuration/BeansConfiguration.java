@@ -11,9 +11,11 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.zookeeper.client.ZKClientConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
@@ -33,7 +35,10 @@ import io.github.icodegarden.commons.lang.metrics.NamesCachedInstanceMetrics;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
+import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
+import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
+import io.github.icodegarden.commons.springboot.web.util.MappingJackson2HttpMessageConverters;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
 import io.github.icodegarden.commons.zookeeper.concurrent.lock.ZooKeeperLock;
@@ -65,6 +70,21 @@ public class BeansConfiguration {
 
 	@Autowired
 	private InstanceProperties instanceProperties;
+
+	@Bean
+	public SpringContext springContext() {
+		return new SpringContext();
+	}
+
+	@Bean
+	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+		return MappingJackson2HttpMessageConverters.simple();
+	}
+	
+	@Bean
+	public SmartLifecycle gracefullyShutdownLifecycle() {
+		return new GracefullyShutdownLifecycle();
+	}
 
 	@Bean
 	public SqlPerformanceInterceptor sqlPerformanceInterceptor() {

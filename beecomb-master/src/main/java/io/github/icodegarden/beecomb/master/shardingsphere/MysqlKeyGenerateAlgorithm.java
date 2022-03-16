@@ -8,9 +8,9 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.springframework.util.Assert;
 
-import io.github.icodegarden.beecomb.master.util.SpringUtils;
 import io.github.icodegarden.commons.lang.sequence.MysqlSequenceManager;
 import io.github.icodegarden.commons.lang.sequence.SequenceManager;
+import io.github.icodegarden.commons.springboot.SpringContext;
 
 /**
  * 
@@ -41,7 +41,8 @@ public class MysqlKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
 	@Override
 	public Comparable<?> generateKey() {
 		if (sequenceManager == null) {
-			ShardingSphereDataSource sdataSource = (ShardingSphereDataSource) SpringUtils.getBean(DataSource.class);
+			ShardingSphereDataSource sdataSource = (ShardingSphereDataSource) SpringContext.getApplicationContext()
+					.getBean(DataSource.class);
 			DataSource dataSource = DataSourceUtils.firstDataSource(sdataSource);
 			sequenceManager = new MysqlSequenceManager(moduleName, dataSource);
 		}

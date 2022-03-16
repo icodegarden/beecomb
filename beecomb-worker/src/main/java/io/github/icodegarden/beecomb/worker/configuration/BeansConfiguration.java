@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,6 +34,8 @@ import io.github.icodegarden.commons.lang.tuple.NullableTuples;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
+import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
+import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
@@ -59,6 +62,16 @@ public class BeansConfiguration {
 
 	@Autowired
 	private InstanceProperties instanceProperties;
+	
+	@Bean
+	public SpringContext springContext() {
+		return new SpringContext();
+	}
+	
+	@Bean
+	public SmartLifecycle gracefullyShutdownLifecycle() {
+		return new GracefullyShutdownLifecycle();
+	}
 
 	@Bean
 	public SqlPerformanceInterceptor sqlPerformanceInterceptor() {

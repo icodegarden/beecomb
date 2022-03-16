@@ -9,6 +9,7 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.commons.lang.result.Result3;
+import io.github.icodegarden.commons.springboot.SpringContext;
 
 /**
  * 
@@ -18,7 +19,7 @@ import io.github.icodegarden.commons.lang.result.Result3;
 @Primary
 @Service
 public class PrimaryJobEngine implements JobEngine {
-	
+
 	@Override
 	public String shutdownName() {
 		return "primary";
@@ -26,7 +27,7 @@ public class PrimaryJobEngine implements JobEngine {
 
 	private JobEngine getJobEngine(ExecutableJobBO job) {
 		String typeName = job.getType().name().toLowerCase();
-		JobEngine jobEngine = SpringBeans.getBean(typeName, JobEngine.class);
+		JobEngine jobEngine = SpringContext.getApplicationContext().getBean(typeName, JobEngine.class);
 		return jobEngine;
 	}
 
@@ -51,17 +52,17 @@ public class PrimaryJobEngine implements JobEngine {
 
 	@Override
 	public int queuedSize() {
-		Map<String, JobEngine> beansOfType = SpringBeans.getBeansOfType(JobEngine.class);
+		Map<String, JobEngine> beansOfType = SpringContext.getApplicationContext().getBeansOfType(JobEngine.class);
 		return beansOfType.values().stream().filter(je -> {
 			return !(je.getClass() == PrimaryJobEngine.class
 					|| je.getClass().getSuperclass() == PrimaryJobEngine.class);
 		}).mapToInt(JobEngine::queuedSize).sum();
 	}
-	
+
 	@Override
 	public void shutdown() {
 	}
-	
+
 	@Override
 	public void shutdownBlocking(long blockTimeoutMillis) {
 	}
