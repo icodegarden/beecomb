@@ -21,6 +21,8 @@ import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.service.UserService;
+import io.github.icodegarden.commons.springboot.security.AccessDeniedHandler;
+import io.github.icodegarden.commons.springboot.security.Http401UnauthorizedEntryPoint;
 
 /**
  * @author Fangfang.Xu
@@ -31,8 +33,6 @@ import io.github.icodegarden.beecomb.master.service.UserService;
 //@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	
-    @Autowired
-    private Http401UnauthorizedEntryPoint authenticationEntryPoint;
     @Autowired
     private UserDetailsService userDetailsService;
     @Autowired
@@ -80,7 +80,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             //.sessionRegistry(sessionRegistry)
             .and()
             .exceptionHandling()
-            .authenticationEntryPoint(authenticationEntryPoint)
+            .authenticationEntryPoint(new Http401UnauthorizedEntryPoint())
             .accessDeniedHandler(new AccessDeniedHandler())
         .and()
             .csrf()
@@ -97,7 +97,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/**").authenticated()
             .antMatchers("/openapi/**").authenticated()
         .and()
-        	.addFilterBefore(new JWTFilter(jwtProperties, Arrays.asList("/api/**","/view/**")).setCookieEnable(true),
+        	.addFilterBefore(new JWTAuthenticationFilter(jwtProperties, Arrays.asList("/api/**","/view/**")).setCookieEnable(true),
         			UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(
 						new BasicAuthenticationFilter(userService,

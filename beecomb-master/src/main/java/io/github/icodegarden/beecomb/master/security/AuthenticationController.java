@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
 import io.github.icodegarden.beecomb.master.pojo.view.UserVO;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

@@ -23,7 +23,6 @@ import io.github.icodegarden.beecomb.master.ruoyi.SysMenu;
 import io.github.icodegarden.beecomb.master.ruoyi.SysUser;
 import io.github.icodegarden.beecomb.master.security.JWTProperties;
 import io.github.icodegarden.beecomb.master.security.JWTResolver;
-import io.github.icodegarden.beecomb.master.security.SecurityUtils;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 

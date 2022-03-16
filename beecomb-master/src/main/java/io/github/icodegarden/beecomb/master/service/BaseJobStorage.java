@@ -22,8 +22,8 @@ import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith.JobMain;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith.ScheduleJob;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.security.SecurityUtils;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
  * 

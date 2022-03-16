@@ -22,8 +22,8 @@ import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.beecomb.master.security.SecurityUtils;
 import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**

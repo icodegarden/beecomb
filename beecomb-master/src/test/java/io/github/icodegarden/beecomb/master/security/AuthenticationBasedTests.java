@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
  * 

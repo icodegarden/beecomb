@@ -23,12 +23,13 @@ import org.springframework.web.filter.GenericFilterBean;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
  * @author Fangfang.Xu
  */
-public class JWTFilter extends GenericFilterBean {
+public class JWTAuthenticationFilter extends GenericFilterBean {
 
 	private JWTProperties jwtProperties;
 
@@ -36,14 +37,14 @@ public class JWTFilter extends GenericFilterBean {
 
 	private RequestMatcher pathMatcher;
 
-	public JWTFilter(JWTProperties jwtProperties, List<String> matchPaths) {
+	public JWTAuthenticationFilter(JWTProperties jwtProperties, List<String> matchPaths) {
 		this.jwtProperties = jwtProperties;
 
 		List<RequestMatcher> list = matchPaths.stream().map(AntPathRequestMatcher::new).collect(Collectors.toList());
 		pathMatcher = new OrRequestMatcher(list);
 	}
 
-	public JWTFilter setCookieEnable(boolean cookieEnable) {
+	public JWTAuthenticationFilter setCookieEnable(boolean cookieEnable) {
 		this.cookieEnable = cookieEnable;
 		return this;
 	}

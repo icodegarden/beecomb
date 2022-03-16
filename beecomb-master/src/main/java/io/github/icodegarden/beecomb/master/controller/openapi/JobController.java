@@ -26,10 +26,10 @@ import io.github.icodegarden.beecomb.master.core.JobReceiver;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
-import io.github.icodegarden.beecomb.master.security.SecurityUtils;
 import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**

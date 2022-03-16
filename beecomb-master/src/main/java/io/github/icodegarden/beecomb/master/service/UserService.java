@@ -19,11 +19,12 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordNonOldDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateUserDTO;
-import io.github.icodegarden.beecomb.master.security.SecurityUtils;
+import io.github.icodegarden.beecomb.master.security.UserUtils;
 import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ClientParameterInvalidErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
  * 
@@ -112,7 +113,7 @@ public class UserService {
 			throw new ClientParameterInvalidErrorCodeException(
 					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(), "user not found");
 		}
-		Long cUserId = SecurityUtils.getUserId();
+		Long cUserId = UserUtils.getUserId();
 		if(!user.getId().equals(cUserId)) {
 			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND,
 					"Not Found, Ownership");
