@@ -76,16 +76,6 @@ class JobMainMapperTests {
 	}
 
 	@Test
-	void add() {
-		for(;;) {
-			JobMainPO jobPO = create();
-			assertThat(jobPO).isNotNull();
-			assertThat(jobPO.getId()).isNotNull();
-		}
-		
-	}
-
-	@Test
 	void findOne() {
 		JobMainPO j1 = new JobMainPO();
 		j1.setCreatedBy("FangfangXu");
@@ -248,8 +238,10 @@ class JobMainMapperTests {
 				.jobMain(JobMain.builder().createdAt(true).createdBy(true).lastExecuteExecutor(true)
 						.lastExecuteReturns(true).lastTrigResult(true).queuedAt(true)
 						.queuedAtInstance(true).build())
-				.jobDetail(JobDetail.builder().params(true).desc(true).build()).delayJob(DelayJob.builder().build())
-				.scheduleJob(ScheduleJob.builder().build()).build();
+				.jobDetail(JobDetail.builder().params(true).desc(true).build())
+				.delayJob(DelayJob.builder().build())
+				.scheduleJob(ScheduleJob.builder().build())
+				.build();
 
 		JobDO job = jobMainMapper.findOne(id, with);
 		JobMainPO findOne = job.getJobMain();

@@ -41,6 +41,7 @@
 
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO" useGeneratedKeys="true" keyProperty="id">
 		insert into `job_main` (
+		<if test="id != null">`id`,</if>
 		<if test="uuid != null">`uuid`,</if>
 		<if test="name != null">`name`,</if>
 		<if test="type != null">`type`,</if>
@@ -65,6 +66,7 @@
 		`created_by`
 		)
 		values (
+		<if test="id != null">#{id},</if>
 		<if test="uuid != null">#{uuid},</if>
 		<if test="name != null">#{name},</if>
 		<if test="type != null">#{type},</if>

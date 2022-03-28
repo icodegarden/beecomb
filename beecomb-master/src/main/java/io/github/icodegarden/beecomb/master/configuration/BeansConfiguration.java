@@ -86,16 +86,16 @@ public class BeansConfiguration {
 		return new GracefullyShutdownLifecycle();
 	}
 
-	@Bean
-	public SqlPerformanceInterceptor sqlPerformanceInterceptor() {
-		SqlPerformanceInterceptor sqlPerformanceInterceptor = new SqlPerformanceInterceptor();
-		sqlPerformanceInterceptor.setFormat(true);
-		sqlPerformanceInterceptor.setUnhealthMillis(instanceProperties.getServer().getSqlUnhealthMillis());
-		sqlPerformanceInterceptor.setUnhealthSqlConsumer(sql -> {
-			log.warn("unhealth sql : {}", sql);
-		});
-		return sqlPerformanceInterceptor;
-	}
+//	@Bean
+//	public SqlPerformanceInterceptor sqlPerformanceInterceptor() {
+//		SqlPerformanceInterceptor sqlPerformanceInterceptor = new SqlPerformanceInterceptor();
+//		sqlPerformanceInterceptor.setFormat(true);
+//		sqlPerformanceInterceptor.setUnhealthMillis(instanceProperties.getServer().getSqlUnhealthMillis());
+//		sqlPerformanceInterceptor.setUnhealthSqlConsumer(sql -> {
+//			log.warn("unhealth sql : {}", sql);
+//		});
+//		return sqlPerformanceInterceptor;
+//	}
 
 	@Bean
 	public ZooKeeperHolder zooKeeperHolder() {

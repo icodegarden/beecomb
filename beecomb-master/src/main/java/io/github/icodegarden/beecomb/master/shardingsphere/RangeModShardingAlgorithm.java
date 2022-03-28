@@ -28,9 +28,9 @@ public class RangeModShardingAlgorithm implements StandardShardingAlgorithm<Comp
 
 	private static final String GROUPS_KEY = "groups";
 
-	private static final String RANGEGTE_KEY = "rangeGte";
-	private static final String RANGELT_KEY = "rangeLt";
-	private static final String MOD_KEY = "mod";
+//	private static final String RANGEGTE_KEY = "rangeGte";
+//	private static final String RANGELT_KEY = "rangeLt";
+//	private static final String MOD_KEY = "mod";
 	private static final String MOD_LOAD_BALANCE_KEY = "modLoadBalance";
 
 	private List<Group> groups;
@@ -98,7 +98,10 @@ public class RangeModShardingAlgorithm implements StandardShardingAlgorithm<Comp
 			}
 		}
 
-		return null;
+//		return null;
+		throw new IllegalArgumentException("no target match for value:" + shardingValue.getValue());
+
+//		return "";//应该表示的是路由到第一个datasource
 	}
 
 	@Override
