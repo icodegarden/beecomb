@@ -3,7 +3,6 @@ package io.github.icodegarden.beecomb.master.security;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +26,6 @@ import io.github.icodegarden.commons.springboot.security.Http401UnauthorizedEntr
 /**
  * @author Fangfang.Xu
  */
-@ConditionalOnProperty(value = "ros.security.default.enabled", havingValue = "true", matchIfMissing = true)
 @Configuration
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)

@@ -26,6 +26,8 @@ public class ScheduleJobStorage extends BaseJobStorage {
 
 	@Autowired
 	private ScheduleJobMapper scheduleJobMapper;
+	@Autowired
+	private JobExecuteRecordService jobExecuteRecordService;
 
 	@Transactional
 	@Override
@@ -42,6 +44,8 @@ public class ScheduleJobStorage extends BaseJobStorage {
 			if (b) {
 				scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId()).build();
 				scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
+				
+				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
 				return Results.of(true, false, null);
 			}
 
@@ -71,6 +75,8 @@ public class ScheduleJobStorage extends BaseJobStorage {
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
 					.nextTrigAt(update.getNextTrigAt()).build();
 			boolean b = jobMainMapper.update(mainUpdate) == 1;
+			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+			
 			ScheduleJobPO.Update scheduleUpdate = null;
 			if (b) {
 				scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId()).build();
@@ -103,6 +109,8 @@ public class ScheduleJobStorage extends BaseJobStorage {
 					.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(update.getNextTrigAt())
 					.build();
 			boolean b = jobMainMapper.update(mainUpdate) == 1;
+			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+			
 			ScheduleJobPO.Update scheduleUpdate = null;
 			if (b) {
 				scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId()).build();

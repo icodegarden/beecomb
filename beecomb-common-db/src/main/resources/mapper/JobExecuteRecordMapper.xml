@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.JobExecuteRecordMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobExecuteRecordPO">
+		<id property="id" column="id" />
+		<result property="jobId" column="job_id" />
+		<result property="trigAt" column="trig_at" />
+		<result property="trigResult" column="trig_result" />
+		<result property="executeExecutor" column="execute_executor" />
+		<result property="executeReturns" column="execute_returns" />
+		<result property="success" column="is_success" />
+	</resultMap>
+	
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.JobExecuteRecordDO">
+		<association property="jobExecuteRecord" columnPrefix="a_" resultMap="baseMap">
+        </association>
+	</resultMap>
+	
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobExecuteRecordPO" useGeneratedKeys="true" keyProperty="id">
+		insert into `job_execute_record` (
+		<if test="id != null">`id`,</if>
+		<if test="jobId != null">`job_id`,</if>
+		<if test="trigAt != null">`trig_at`,</if>
+		<if test="trigResult != null">`trig_result`,</if>
+		<if test="executeExecutor != null">`execute_executor`,</if>
+		<if test="executeReturns != null">`execute_returns`,</if>
+		`is_success`
+		)
+		values (
+		<if test="id != null">#{id},</if>
+		<if test="jobId != null">#{jobId},</if>
+		<if test="trigAt != null">#{trigAt},</if>
+		<if test="trigResult != null">#{trigResult},</if>
+		<if test="executeExecutor != null">#{executeExecutor},</if>
+		<if test="executeReturns != null">#{executeReturns},</if>
+		#{success}
+		)
+	</insert>
+	
+	<sql id="findPrefix">
+		select 
+			a.id as a_id,
+			a.job_id as a_job_id,
+			a.trig_at as a_trig_at,
+			a.execute_executor as a_execute_executor,
+			a.is_success as a_is_success
+			<if test="with != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="with.trigResult == true">a.trig_result as a_trig_result,</if>
+					<if test="with.executeReturns == true">a.execute_returns as a_execute_returns,</if>
+				</trim>
+			</if>
+			
+		from `job_execute_record` a
+	</sql>
+	
+	<select id="findOne" resultMap="DOMap">
+		<include refid="findPrefix"/>
+		where a.id = #{id}
+	</select>
+	
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.db.pojo.query.JobExecuteRecordQuery" resultMap="DOMap">
+		<include refid="findPrefix"/>
+		
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="jobId != null">
+				and a.job_id = #{jobId}
+			</if>
+			<if test="success != null">
+				and a.is_success = #{success}
+			</if>
+		</trim>
+		<if test="sort != null">
+			${sort}
+		</if>
+		<if test="limit != null">
+			${limit}
+		</if>
+		
+	</select>
+	
+</mapper>

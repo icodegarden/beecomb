@@ -31,6 +31,8 @@ public class DelayJobStorage extends BaseJobStorage {
 
 	@Autowired
 	private DelayJobMapper delayJobMapper;
+	@Autowired
+	private JobExecuteRecordService jobExecuteRecordService;
 
 	@Transactional
 	@Override
@@ -78,6 +80,8 @@ public class DelayJobStorage extends BaseJobStorage {
 				}
 
 				RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
+				
+				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
 
 				return Results.of(true, thresholdReached, null);
 			}
@@ -104,6 +108,8 @@ public class DelayJobStorage extends BaseJobStorage {
 			}
 
 			RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
+			
+			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
 
 			return Results.of(true, null);
 		} catch (RuntimeException e) {
@@ -159,6 +165,8 @@ public class DelayJobStorage extends BaseJobStorage {
 					}
 
 					RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
+					
+					jobExecuteRecordService.createOnJobUpdate(mainUpdate);
 
 					return Results.of(true, thresholdReached, null);
 				} else {
@@ -179,6 +187,8 @@ public class DelayJobStorage extends BaseJobStorage {
 					}
 
 					RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
+					
+					jobExecuteRecordService.createOnJobUpdate(mainUpdate);
 
 					return Results.of(true, true, null);
 				}

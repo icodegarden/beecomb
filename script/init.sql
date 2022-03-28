@@ -74,6 +74,19 @@ CREATE TABLE `schedule_job` (
   PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `job_execute_record`;
+CREATE TABLE `job_execute_record` (
+  `id` bigint unsigned NOT NULL,
+  `job_id` bigint unsigned NOT NULL,
+  `trig_at` timestamp NOT NULL comment '任务调度触发时间',
+  `trig_result` text comment '触发结果,例如没有可选的executor实例64K',
+  `execute_executor` varchar(21) comment 'ip:port',
+  `execute_returns` varchar(200),
+  `is_success` bit(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_job_id`(`job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 DROP TABLE IF EXISTS `job_recovery_record`;
 CREATE TABLE `job_recovery_record` (
   `job_id` bigint unsigned NOT NULL,

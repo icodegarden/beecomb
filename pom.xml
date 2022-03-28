@@ -13,7 +13,7 @@
 	
 	<properties>
         <revision>0.0.1-SNAPSHOT</revision>
-        <commons-version>0.1.0</commons-version>
+        <commons-version>0.1.3</commons-version>
     </properties>
 	
 	<modules>
