@@ -5,13 +5,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
+import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.commons.lang.result.Result1;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
-import io.github.icodegarden.commons.lang.tuple.NullableTuples;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,15 +38,18 @@ public class ScheduleJobStorage extends BaseJobStorage {
 			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
 					.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
 					.nextTrigAt(update.getNextTrigAt()).build();
-			boolean b = jobMainMapper.update(mainUpdate) == 1;
-			ScheduleJobPO.Update scheduleUpdate = null;
-			if (b) {
-				scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId()).build();
-				scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
-				
+
+			RETRY_TEMPLATE.execute(ctx -> {
 				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-				return Results.of(true, false, null);
-			}
+				boolean b = jobMainMapper.update(mainUpdate) == 1;
+				if (b) {
+					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
+							.build();
+					scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
+				}
+
+				return null;
+			});
 
 			if (update.getCallback() != null) {
 				JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
@@ -74,15 +76,18 @@ public class ScheduleJobStorage extends BaseJobStorage {
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
 					.nextTrigAt(update.getNextTrigAt()).build();
-			boolean b = jobMainMapper.update(mainUpdate) == 1;
-			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-			
-			ScheduleJobPO.Update scheduleUpdate = null;
-			if (b) {
-				scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId()).build();
-				scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
-				return Results.of(true, null);
-			}
+
+			RETRY_TEMPLATE.execute(ctx -> {
+				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+				boolean b = jobMainMapper.update(mainUpdate) == 1;
+				if (b) {
+					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
+							.build();
+					scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
+				}
+
+				return null;
+			});
 
 			if (update.getCallback() != null) {
 				JobFreshParams params = new JobFreshParams(mainUpdate.getLastExecuteExecutor(),
@@ -108,15 +113,18 @@ public class ScheduleJobStorage extends BaseJobStorage {
 			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
 					.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(update.getNextTrigAt())
 					.build();
-			boolean b = jobMainMapper.update(mainUpdate) == 1;
-			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-			
-			ScheduleJobPO.Update scheduleUpdate = null;
-			if (b) {
-				scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId()).build();
-				scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
-				return Results.of(true, false, null);
-			}
+
+			RETRY_TEMPLATE.execute(ctx -> {
+				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+				boolean b = jobMainMapper.update(mainUpdate) == 1;
+				if (b) {
+					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
+							.build();
+					scheduleJobMapper.updateAndIncrementScheduledTimes(scheduleUpdate);
+				}
+
+				return null;
+			});
 
 			if (update.getCallback() != null) {
 				JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),

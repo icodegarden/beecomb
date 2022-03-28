@@ -79,9 +79,10 @@ public class DelayJobStorage extends BaseJobStorage {
 					update.getCallback().accept(params);
 				}
 
-				RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
-				
-				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+				RETRY_TEMPLATE.execute(ctx -> {
+					jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+					return jobMainMapper.update(mainUpdate);
+				});
 
 				return Results.of(true, thresholdReached, null);
 			}
@@ -107,8 +108,11 @@ public class DelayJobStorage extends BaseJobStorage {
 				update.getCallback().accept(params);
 			}
 
-			RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
-			
+			RETRY_TEMPLATE.execute(ctx -> {
+				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+				return jobMainMapper.update(mainUpdate);
+			});
+
 			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
 
 			return Results.of(true, null);
@@ -164,9 +168,10 @@ public class DelayJobStorage extends BaseJobStorage {
 						update.getCallback().accept(params);
 					}
 
-					RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
-					
-					jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+					RETRY_TEMPLATE.execute(ctx -> {
+						jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+						return jobMainMapper.update(mainUpdate);
+					});
 
 					return Results.of(true, thresholdReached, null);
 				} else {
@@ -186,9 +191,10 @@ public class DelayJobStorage extends BaseJobStorage {
 						update.getCallback().accept(params);
 					}
 
-					RETRY_TEMPLATE.execute(ctx -> jobMainMapper.update(mainUpdate));
-					
-					jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+					RETRY_TEMPLATE.execute(ctx -> {
+						jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+						return jobMainMapper.update(mainUpdate);
+					});
 
 					return Results.of(true, true, null);
 				}

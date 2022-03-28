@@ -219,7 +219,8 @@
 	
 	<select id="findByUUID" resultMap="JobDOMap">
 		<include refid="findPrefix"/>
-		where a.uuid = #{uuid}
+		where a.uuid = #{uuid} 
+		limit 1
 	</select>
 	
 	<!-- 只能更新非end的任务 -->

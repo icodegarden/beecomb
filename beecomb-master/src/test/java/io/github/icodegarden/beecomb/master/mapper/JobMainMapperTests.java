@@ -35,6 +35,7 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
  * @author Fangfang.Xu
  *
  */
+@Transactional
 @SpringBootTest
 class JobMainMapperTests {
 

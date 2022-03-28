@@ -6,8 +6,8 @@ USE beecomb;
 
 DROP TABLE IF EXISTS `job_main`;
 CREATE TABLE `job_main` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(64) UNIQUE comment '用户可以指定,默认null',
+  `id` bigint unsigned NOT NULL,
+  `uuid` varchar(64) comment '用户可以指定,默认null',
   `name` varchar(30) NOT NULL,
   `type` enum('Delay','Schedule') NOT NULL,
   `executor_name` varchar(30) NOT NULL,

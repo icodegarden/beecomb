@@ -18,24 +18,24 @@ import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
 public interface JobMainMapper {
 
 	void add(JobMainPO po);
-	
+
 	List<JobDO> findAll(JobQuery query);
 
 	/**
 	 * 
-	 * @param id NotNull
+	 * @param id   NotNull
 	 * @param with Nullable
 	 * @return
 	 */
-	JobDO findOne(@Param("id") Long id,@Param("with") JobWith with);
-	
+	JobDO findOne(@Param("id") Long id, @Param("with") JobWith with);
+
 	/**
 	 * 
 	 * @param uuid NotNull
 	 * @param with Nullable
 	 * @return
 	 */
-	JobDO findByUUID(@Param("uuid") String uuid,@Param("with") JobWith with);
+	JobDO findByUUID(@Param("uuid") String uuid, @Param("with") JobWith with);
 
 	int update(JobMainPO.Update update);
 
