@@ -94,56 +94,56 @@
 	
 	<sql id="findPrefix">
 		select 
-			a.id as jm_id,
-			a.uuid as jm_uuid,
-			a.name as jm_name,
-			a.type as jm_type,
-			a.executor_name as jm_executor_name,
-			a.job_handler_name as jm_job_handler_name,
-			a.priority as jm_priority,
-			a.weight as jm_weight,
-			a.is_parallel as jm_is_parallel,
-			a.max_parallel_shards as jm_max_parallel_shards,
-			a.is_queued as jm_is_queued,
-			a.last_trig_at as jm_last_trig_at,
-			a.execute_timeout as jm_execute_timeout,
-			a.next_trig_at as jm_next_trig_at,
-			a.is_end as jm_is_end,
-			a.is_last_execute_success as jm_is_last_execute_success
+			a.`id` as jm_id,
+			a.`uuid` as jm_uuid,
+			a.`name` as jm_name,
+			a.`type` as jm_type,
+			a.`executor_name` as jm_executor_name,
+			a.`job_handler_name` as jm_job_handler_name,
+			a.`priority` as jm_priority,
+			a.`weight` as jm_weight,
+			a.`is_parallel` as jm_is_parallel,
+			a.`max_parallel_shards` as jm_max_parallel_shards,
+			a.`is_queued` as jm_is_queued,
+			a.`last_trig_at` as jm_last_trig_at,
+			a.`execute_timeout` as jm_execute_timeout,
+			a.`next_trig_at` as jm_next_trig_at,
+			a.`is_end` as jm_is_end,
+			a.`is_last_execute_success` as jm_is_last_execute_success
 			<if test="with != null and with.jobMain != null">
 				<trim prefix="," suffixOverrides=",">
-					<if test="with.jobMain.queuedAt == true">a.queued_at as jm_queued_at,</if>
-					<if test="with.jobMain.queuedAtInstance == true">a.queued_at_instance as jm_queued_at_instance,</if>
-					<if test="with.jobMain.lastTrigResult == true">a.last_trig_result as jm_last_trig_result,</if>
-					<if test="with.jobMain.lastExecuteExecutor == true">a.last_execute_executor as jm_last_execute_executor,</if>
-					<if test="with.jobMain.lastExecuteReturns == true">a.last_execute_returns as jm_last_execute_returns,</if>
-					<if test="with.jobMain.createdBy == true">a.created_by as jm_created_by,</if>
-					<if test="with.jobMain.createdAt == true">a.created_at as jm_created_at,</if>
+					<if test="with.jobMain.queuedAt == true">a.`queued_at` as jm_queued_at,</if>
+					<if test="with.jobMain.queuedAtInstance == true">a.`queued_at_instance` as jm_queued_at_instance,</if>
+					<if test="with.jobMain.lastTrigResult == true">a.`last_trig_result` as jm_last_trig_result,</if>
+					<if test="with.jobMain.lastExecuteExecutor == true">a.`last_execute_executor` as jm_last_execute_executor,</if>
+					<if test="with.jobMain.lastExecuteReturns == true">a.`last_execute_returns` as jm_last_execute_returns,</if>
+					<if test="with.jobMain.createdBy == true">a.`created_by` as jm_created_by,</if>
+					<if test="with.jobMain.createdAt == true">a.`created_at` as jm_created_at,</if>
 				</trim>
 			</if>
 			<if test="with != null and with.jobDetail != null">
 				<trim prefix="," suffixOverrides=",">
-					<if test="with.jobDetail.params == true">b.params as jd_params,</if>
-					<if test="with.jobDetail.desc == true">b.desc as jd_desc,</if>
+					<if test="with.jobDetail.params == true">b.`params` as jd_params,</if>
+					<if test="with.jobDetail.desc == true">b.`desc` as jd_desc,</if>
 				</trim>
 			</if>
 			<if test="with != null and with.delayJob != null">
 				<trim prefix="," suffixOverrides=",">
-					c.delay as dj_delay,
-					c.retry_on_execute_failed as dj_retry_on_execute_failed,
-					c.retry_backoff_on_execute_failed as dj_retry_backoff_on_execute_failed,
-					c.retried_times_on_execute_failed as dj_retried_times_on_execute_failed,
-					c.retry_on_no_qualified as dj_retry_on_no_qualified,
-					c.retry_backoff_on_no_qualified as dj_retry_backoff_on_no_qualified,
-					c.retried_times_on_no_qualified as dj_retried_times_on_no_qualified
+					c.`delay` as dj_delay,
+					c.`retry_on_execute_failed` as dj_retry_on_execute_failed,
+					c.`retry_backoff_on_execute_failed` as dj_retry_backoff_on_execute_failed,
+					c.`retried_times_on_execute_failed` as dj_retried_times_on_execute_failed,
+					c.`retry_on_no_qualified` as dj_retry_on_no_qualified,
+					c.`retry_backoff_on_no_qualified` as dj_retry_backoff_on_no_qualified,
+					c.`retried_times_on_no_qualified` as dj_retried_times_on_no_qualified
 				</trim>
 			</if>
 			<if test="with != null and with.scheduleJob != null">
 				<trim prefix="," suffixOverrides=",">
-					d.schedule_fix_rate as sj_schedule_fix_rate,
-					d.schedule_fix_delay as sj_schedule_fix_delay,
-					d.shedule_cron as sj_shedule_cron,
-					d.scheduled_times as sj_scheduled_times
+					d.`schedule_fix_rate` as sj_schedule_fix_rate,
+					d.`schedule_fix_delay` as sj_schedule_fix_delay,
+					d.`shedule_cron` as sj_shedule_cron,
+					d.`scheduled_times` as sj_scheduled_times
 				</trim>
 			</if>
 			
