@@ -9,6 +9,7 @@ PRIMARY KEY (NAME)
 
 INSERT INTO id_sequence(name,current_value,increment) VALUES ('GLOBAL', 0, 100);
 INSERT INTO id_sequence(name,current_value,increment) VALUES ('job_main', 0, 20);
+INSERT INTO id_sequence(name,current_value,increment) VALUES ('job_execute_record', 0, 100);
 
 
 DROP FUNCTION IF EXISTS `id_seq_currval`;

@@ -12,8 +12,8 @@ import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
  */
 public interface ExecutorInstanceDiscovery<T extends ExecutorRegisteredInstance> extends InstanceDiscovery<T> {
 
-	@Override
-	default List<T> listInstances(String ignore) {
-		return listNamedObjects(ignore);
-	}
+//	@Override
+//	default List<T> listInstances(String ignore) {
+//		return listNamedObjects(ignore);
+//	}
 }

@@ -34,7 +34,9 @@ import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.service.DelayJobStorage;
 import io.github.icodegarden.commons.exchange.nio.NioProtocol;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
+import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
+import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
 import io.github.icodegarden.commons.lang.result.Result3;
 import io.github.icodegarden.commons.lang.result.Results;
 import io.github.icodegarden.commons.nio.pool.NioClientPool;
@@ -126,6 +128,9 @@ class DelayJobEngineTests extends PropertiesConfig {
 		assertThat(delayJobEngine.queuedSize()).isEqualTo(0);// 最后是0
 	}
 
+	/**
+	 * 有实例且成功
+	 */
 	@Test
 	void runJob_ok() {
 		DelayJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new",
@@ -139,10 +144,18 @@ class DelayJobEngineTests extends PropertiesConfig {
 		jobHandlerRegistration1.setJobHandlerName(JOB_HANDLER_NAME);
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
+		
+		/**
+		 * lb需要
+		 */
+		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
+		metrics.setServiceName(NodeRole.Executor.getRoleName());
+		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
+		
 		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
-
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
+		
 		doReturn(Results.of(true, null)).when(delayJobStorage).updateOnExecuteSuccess(any());
 
 		ExecutableJobBO job = getJob();
@@ -157,6 +170,9 @@ class DelayJobEngineTests extends PropertiesConfig {
 		DelayJobEngine.protocol_for_Test = null;
 	}
 
+	/**
+	 * 有实例，但exchange失败
+	 */
 	@Test
 	void runJob_nok_noThreshold() {
 		DelayJobEngine.protocol_for_Test = new NioProtocol(
@@ -170,10 +186,22 @@ class DelayJobEngineTests extends PropertiesConfig {
 		jobHandlerRegistration1.setJobHandlerName(JOB_HANDLER_NAME);
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
+		
+		/**
+		 * lb需要
+		 */
+		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
+		metrics.setServiceName(NodeRole.Executor.getRoleName());
+		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
+		/**
+		 * lb需要
+		 */
 		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
-
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
+		/**
+		 * 需要返回值
+		 */
 		doReturn(Results.of(true, false/* 没到阈值 */, null)).when(delayJobStorage).updateOnExecuteFailed(any());
 
 		ExecutableJobBO job = getJob();
@@ -188,6 +216,9 @@ class DelayJobEngineTests extends PropertiesConfig {
 		DelayJobEngine.protocol_for_Test = null;
 	}
 
+	/**
+	 * 有实例但exchange失败
+	 */
 	@Test
 	void runJob_nok_threshold() {
 		DelayJobEngine.protocol_for_Test = new NioProtocol(
@@ -203,10 +234,18 @@ class DelayJobEngineTests extends PropertiesConfig {
 		jobHandlerRegistration1.setJobHandlerName(JOB_HANDLER_NAME);
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
+		
+		/**
+		 * lb需要
+		 */
+		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
+		metrics.setServiceName(NodeRole.Executor.getRoleName());
+		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
+		
 		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
-
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
+		
 		doReturn(Results.of(true, true/* 到阈值 */, null)).when(delayJobStorage).updateOnExecuteFailed(any());
 
 		ExecutableJobBO job = getJob();
