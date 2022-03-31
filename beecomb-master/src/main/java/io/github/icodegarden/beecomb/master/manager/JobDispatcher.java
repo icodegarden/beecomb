@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.core;
+package io.github.icodegarden.beecomb.master.manager;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;

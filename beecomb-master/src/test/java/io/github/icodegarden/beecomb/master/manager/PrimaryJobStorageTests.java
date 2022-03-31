@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,10 +23,10 @@ import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.manager.DelayJobStorage;
+import io.github.icodegarden.beecomb.master.manager.PrimaryJobStorage;
+import io.github.icodegarden.beecomb.master.manager.ScheduleJobStorage;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.service.DelayJobStorage;
-import io.github.icodegarden.beecomb.master.service.PrimaryJobStorage;
-import io.github.icodegarden.beecomb.master.service.ScheduleJobStorage;
 
 /**
  * 

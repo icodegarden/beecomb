@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -14,6 +14,7 @@ import io.github.icodegarden.beecomb.common.db.exception.SQLIntegrityConstraintE
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.manager.DelayJobStorage;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 /**
  * 

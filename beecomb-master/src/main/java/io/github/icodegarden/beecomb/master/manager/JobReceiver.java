@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.core;
+package io.github.icodegarden.beecomb.master.manager;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.service.JobStorage;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;

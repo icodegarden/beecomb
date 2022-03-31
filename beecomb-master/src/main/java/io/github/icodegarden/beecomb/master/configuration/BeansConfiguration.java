@@ -19,11 +19,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
-import io.github.icodegarden.beecomb.master.core.JobDispatcher;
-import io.github.icodegarden.beecomb.master.core.JobReceiver;
-import io.github.icodegarden.beecomb.master.schedule.JobRecovery;
+import io.github.icodegarden.beecomb.master.manager.JobDispatcher;
+import io.github.icodegarden.beecomb.master.manager.JobReceiver;
+import io.github.icodegarden.beecomb.master.manager.JobStorage;
+import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
 import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
-import io.github.icodegarden.beecomb.master.service.JobStorage;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
  * <br>
  * 定时获取worker的度量缓存数据{@link BeansConfiguration#zooKeeperInstanceMetrics(ZooKeeperHolder)}<br>
  * <br>
- * 开启任务恢复{@link BeansConfiguration#jobRecovery(DistributedLock, JobStorage)},{@link io.github.icodegarden.beecomb.master.schedule.JobRecovery}<br>
+ * 开启任务恢复{@link BeansConfiguration#jobRecovery(DistributedLock, JobStorage)},{@link io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule}<br>
  * 
  * <br>
  * 
@@ -200,11 +200,11 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobRecovery jobRecovery(CuratorFramework client, JobStorage jobStorage, JobDispatcher jobDispatcher,
+	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobStorage jobStorage, JobDispatcher jobDispatcher,
 			JobRecoveryRecordService jobRecoveryRecordService) {
 		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
 
-		JobRecovery jobRecovery = new JobRecovery(lock, jobStorage, jobDispatcher, jobRecoveryRecordService);
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher, jobRecoveryRecordService);
 		jobRecovery.start(instanceProperties.getJob().getRecoveryScheduleMillis());
 
 		/**

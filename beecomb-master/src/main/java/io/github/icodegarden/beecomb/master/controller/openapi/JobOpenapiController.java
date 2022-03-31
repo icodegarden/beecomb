@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.master.controller.openapi;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.Max;
 
@@ -22,10 +23,12 @@ import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.core.JobReceiver;
+import io.github.icodegarden.beecomb.master.manager.JobReceiver;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.GetJobOpenapiVO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.PageJobsOpenapiVO;
 import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
@@ -39,7 +42,7 @@ import io.github.icodegarden.commons.springboot.web.util.WebUtils;
  */
 @Validated
 @RestController
-public class JobController {
+public class JobOpenapiController {
 
 	@Autowired
 	private JobReceiver jobReceiver;
@@ -47,7 +50,7 @@ public class JobController {
 	private JobService jobService;
 
 	@PostMapping(value = { "openapi/v1/jobs" })
-	public ResponseEntity<CreateJobVO> createJob(@RequestParam(defaultValue = "true") boolean async,
+	public ResponseEntity<CreateJobOpenapiVO> createJob(@RequestParam(defaultValue = "true") boolean async,
 			@RequestBody @Validated CreateJobDTO dto) {
 		Result2<ExecutableJobBO, ErrorCodeException> result2;
 		if (async) {
@@ -57,25 +60,22 @@ public class JobController {
 		}
 
 		if (result2.isSuccess()) {
-			ExecutableJobBO jobVO = result2.getT1();
+			ExecutableJobBO bo = result2.getT1();
 			ErrorCodeException errorCodeException = result2.getT2();
 
-			CreateJobVO createJobVO = new CreateJobVO();
-			createJobVO.setJob(new CreateJobVO.Job(jobVO));
-			if (errorCodeException != null) {
-				createJobVO.setDispatchException(errorCodeException.getMessage());
-			}
-			return ResponseEntity.ok(createJobVO);
+			CreateJobOpenapiVO vo = CreateJobOpenapiVO.builder().job(CreateJobOpenapiVO.Job.of(bo))
+					.dispatchException(errorCodeException != null ? errorCodeException.getMessage() : null).build();
+
+			return ResponseEntity.ok(vo);
 		} else {
 			ErrorCodeException errorCodeException = result2.getT2();
-			CreateJobVO createJobVO = new CreateJobVO();
-			createJobVO.setDispatchException(errorCodeException.getMessage());
-			return ResponseEntity.status(errorCodeException.httpStatus()).body(createJobVO);
+			return (ResponseEntity) ResponseEntity.status(errorCodeException.httpStatus())
+					.body(errorCodeException.getMessage());
 		}
 	}
 
 	@GetMapping(value = { "openapi/v1/jobs" })
-	public ResponseEntity<List<JobVO>> pageJobs(@RequestParam(required = false) String uuid,
+	public ResponseEntity<List<PageJobsOpenapiVO>> pageJobs(@RequestParam(required = false) String uuid,
 			@RequestParam(required = false) String nameLike, @RequestParam(required = false) JobType type,
 			@RequestParam(required = false) Boolean parallel,
 			@RequestParam(required = false) Boolean lastExecuteSuccess,
@@ -121,34 +121,41 @@ public class JobController {
 
 		Page<JobVO> p = jobService.page(query);
 
-		return new ResponseEntity<List<JobVO>>(p.getResult(), WebUtils.pageHeaders(p.getPages(), p.getTotal()),
+		List<PageJobsOpenapiVO> list = p.getResult().stream().map(one -> PageJobsOpenapiVO.of(one))
+				.collect(Collectors.toList());
+
+		return new ResponseEntity<List<PageJobsOpenapiVO>>(list, WebUtils.pageHeaders(p.getPages(), p.getTotal()),
 				HttpStatus.OK);
 	}
 
 	@GetMapping(value = { "openapi/v1/jobs/{id}" })
-	public ResponseEntity<JobVO> findOne(@PathVariable Long id) {
-		JobVO vo = jobService.findOne(id, JobWith.WITH_MOST);
+	public ResponseEntity<GetJobOpenapiVO> getJob(@PathVariable Long id) {
+		JobVO one = jobService.findOne(id, JobWith.WITH_MOST);
 
 		/**
 		 * 校验归属权
 		 */
-		if (!SecurityUtils.getUsername().equals(vo.getCreatedBy())) {
+		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
+
+		GetJobOpenapiVO vo = GetJobOpenapiVO.of(one);
 
 		return ResponseEntity.ok(vo);
 	}
 
 	@GetMapping(value = { "openapi/v1/jobs/uuid/{uuid}" })
-	public ResponseEntity<JobVO> findByUUID(@PathVariable String uuid) {
-		JobVO vo = jobService.findByUUID(uuid, JobWith.WITH_MOST);
+	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(@PathVariable String uuid) {
+		JobVO one = jobService.findByUUID(uuid, JobWith.WITH_MOST);
 
 		/**
 		 * 校验归属权
 		 */
-		if (!SecurityUtils.getUsername().equals(vo.getCreatedBy())) {
+		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
+
+		GetJobOpenapiVO vo = GetJobOpenapiVO.of(one);
 
 		return ResponseEntity.ok(vo);
 	}

@@ -15,9 +15,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.core.JobDispatcher;
+import io.github.icodegarden.beecomb.master.manager.JobDispatcher;
+import io.github.icodegarden.beecomb.master.manager.JobStorage;
 import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
-import io.github.icodegarden.beecomb.master.service.JobStorage;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
 
 /**
@@ -25,7 +25,7 @@ import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
  * @author Fangfang.Xu
  *
  */
-public class JobRecoveryTests {
+public class JobRecoveryScheduleTests {
 
 	@Test
 	void start() throws Exception {
@@ -41,7 +41,7 @@ public class JobRecoveryTests {
 		doReturn(Arrays.asList(new ExecutableJobBO()), Collections.emptyList()).when(jobStorage)
 				.listJobsShouldRecovery(0, 10);// 第一次获取到有需要恢复的，第二次没有了
 
-		JobRecovery jobRecovery = new JobRecovery(lock, jobStorage, jobDispatcher, jobRecoveryRecordService);
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher, jobRecoveryRecordService);
 		boolean start = jobRecovery.start(1000);
 
 		Assertions.assertThat(start).isTrue();

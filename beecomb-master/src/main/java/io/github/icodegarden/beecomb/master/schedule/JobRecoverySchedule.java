@@ -11,10 +11,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.MasterConstants;
-import io.github.icodegarden.beecomb.master.core.JobDispatcher;
+import io.github.icodegarden.beecomb.master.manager.JobDispatcher;
+import io.github.icodegarden.beecomb.master.manager.JobStorage;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
 import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
-import io.github.icodegarden.beecomb.master.service.JobStorage;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoSwitchableExchangeException;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class JobRecovery implements Closeable {
+public class JobRecoverySchedule implements Closeable {
 
 	private final ScheduledThreadPoolExecutor scheduleRecoveryThreadPool = ThreadPoolUtils
 			.newSingleScheduledThreadPool("JobRecovery-recovery");
@@ -44,7 +44,7 @@ public class JobRecovery implements Closeable {
 
 	private ScheduledFuture<?> future;
 
-	public JobRecovery(DistributedLock lock, JobStorage jobStorage, JobDispatcher jobDispatcher,
+	public JobRecoverySchedule(DistributedLock lock, JobStorage jobStorage, JobDispatcher jobDispatcher,
 			JobRecoveryRecordService jobRecoveryRecordService) {
 		this.lock = lock;
 		this.jobStorage = jobStorage;
@@ -55,7 +55,7 @@ public class JobRecovery implements Closeable {
 	public boolean start(long scheduleMillis) {
 		if (closed.compareAndSet(true, false)) {
 			future = scheduleRecoveryThreadPool.scheduleWithFixedDelay(() -> {
-				synchronized(JobRecovery.this) {
+				synchronized(JobRecoverySchedule.this) {
 					if(closed.get()) {
 						/**
 						 * 如果已关闭，终止执行
