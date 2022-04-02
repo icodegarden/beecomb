@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.pojo.view;
+package io.github.icodegarden.beecomb.common.db.pojo.view;
 
 import java.time.LocalDateTime;
 
@@ -14,11 +14,8 @@ import lombok.Data;
  *
  */
 @Data
-public class JobVO {
+public class JobMainVO {
 
-	/**
-	 * main
-	 */
 	private Long id;// bigint NOT NULL AUTO_INCREMENT,
 	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
 	private String name;// varchar(30) NOT NULL,
@@ -43,46 +40,22 @@ public class JobVO {
 	private String createdBy;// varchar(30) comment '租户名',
 	private LocalDateTime createdAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-	/**
-	 * detail
-	 */
-	private String params;// TEXT comment '任务参数',
-	private String desc;// varchar(200) comment '任务描述',
+	private JobDetailVO jobDetail;
+	private DelayJobVO delayJob;
+	private ScheduleJobVO scheduleJob;
 
-	/**
-	 * delay
-	 */
-	private Integer delay;// int comment 'ms',
-	private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
-	private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
-	private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
-	private Integer retryOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时重试次数，包括不在线、超载时',
-	private Integer retryBackoffOnNoQualified;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
-	private Integer retriedTimesOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时已重试次数',
-
-	/**
-	 * schedule
-	 */
-	private Integer scheduleFixRate;// int comment 'ms',
-	private Integer scheduleFixDelay;// int comment 'ms',
-	private String sheduleCron;// varchar(20),
-	private Long scheduledTimes;// bigint,
-
-	public static JobVO of(JobMainDO jobDO) {
-		if (jobDO == null) {
+	public static JobMainVO of(JobMainDO one) {
+		if (one == null) {
 			return null;
 		}
-		JobVO jobVO = new JobVO();
-		BeanUtils.copyProperties(jobDO, jobVO);
-		if (jobDO.getJobDetail() != null) {
-			BeanUtils.copyProperties(jobDO.getJobDetail(), jobVO);
-		}
-		if (jobDO.getDelayJob() != null) {
-			BeanUtils.copyProperties(jobDO.getDelayJob(), jobVO);
-		}
-		if (jobDO.getScheduleJob() != null) {
-			BeanUtils.copyProperties(jobDO.getScheduleJob(), jobVO);
-		}
-		return jobVO;
+		JobMainVO vo = new JobMainVO();
+
+		BeanUtils.copyProperties(one, vo);
+
+		vo.setJobDetail(JobDetailVO.of(one.getJobDetail()));
+		vo.setDelayJob(DelayJobVO.of(one.getDelayJob()));
+		vo.setScheduleJob(ScheduleJobVO.of(one.getScheduleJob()));
+
+		return vo;
 	}
 }

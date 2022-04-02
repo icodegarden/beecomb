@@ -12,6 +12,9 @@
 		<result property="retryBackoffOnNoQualified" column="retry_backoff_on_no_qualified" />
 		<result property="retriedTimesOnNoQualified" column="retried_times_on_no_qualified" />
 	</resultMap>
+	
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.DelayJobDO" extends="baseMap">
+	</resultMap>
 
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO">
 		insert into `delay_job` (
@@ -40,7 +43,7 @@
 		)
 	</insert>
 	
-	<select id="findOne" resultMap="baseMap">
+	<select id="findOne" resultMap="DOMap">
 		select a.* from `delay_job` a where a.job_id = #{jobId}
 	</select>
 	

@@ -10,10 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
@@ -36,6 +37,8 @@ class JobReceiverTests extends Properties4Test {
 	JobEngine jobEngine;
 	@Autowired
 	JobMainMapper jobMainMapper;
+	@Autowired
+	JobMainManager jobMainManager;
 
 	ExecutableJobBO job;
 
@@ -74,8 +77,7 @@ class JobReceiverTests extends Properties4Test {
 	@Test
 	void receiveFailOn_enQueueFailed() {
 		JobMainPO mainPO = create();
-		JobDO find = jobMainMapper.findOne(mainPO.getId(), null);
-		JobMainPO findOne = find.getJobMain();
+		JobMainVO findOne = jobMainManager.findOne(mainPO.getId(), null);
 		assertThat(findOne.getQueued()).isFalse();
 		assertThat(findOne.getQueuedAt()).isNull();
 
@@ -87,8 +89,7 @@ class JobReceiverTests extends Properties4Test {
 				.withMessage("ex on job en queue").withCauseExactlyInstanceOf(RuntimeException.class);
 
 		// 验证事务的回滚
-		find = jobMainMapper.findOne(mainPO.getId(), null);
-		findOne = find.getJobMain();
+		findOne = jobMainManager.findOne(mainPO.getId(), null);
 		assertThat(findOne.getQueued()).isFalse();
 		assertThat(findOne.getQueuedAt()).isNull();
 
@@ -99,8 +100,7 @@ class JobReceiverTests extends Properties4Test {
 	@Test
 	void receive_success() {
 		JobMainPO mainPO = create();
-		JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-		JobMainPO findOne = find.getJobMain();
+		JobMainVO findOne = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(findOne.getQueued()).isFalse();
 		assertThat(findOne.getQueuedAt()).isNull();
 
@@ -110,8 +110,7 @@ class JobReceiverTests extends Properties4Test {
 		jobReceiver.receive(job);
 
 		// 验证事务的提交
-		find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-		findOne = find.getJobMain();
+		findOne = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(findOne.getQueued()).isTrue();
 		assertThat(findOne.getQueuedAt()).isNotNull();
 

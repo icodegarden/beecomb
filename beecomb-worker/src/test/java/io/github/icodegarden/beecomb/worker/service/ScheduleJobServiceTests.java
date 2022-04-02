@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnNoQualifiedExecutor;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
 import io.github.icodegarden.commons.exchange.exception.AllInstanceFailedExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoQualifiedInstanceExchangeException;
 import io.github.icodegarden.commons.lang.result.Result1;
@@ -32,10 +32,10 @@ import io.github.icodegarden.commons.lang.result.Result2;
  */
 @Transactional
 @SpringBootTest
-class ScheduleJobStorageTests {
+class ScheduleJobServiceTests {
 
 	@Autowired
-	ScheduleJobStorage scheduleJobStorage;
+	ScheduleJobService scheduleJobStorage;
 	@Autowired
 	JobMainMapper jobMainMapper;
 	@Autowired
@@ -82,8 +82,7 @@ class ScheduleJobStorageTests {
 			assertThat(result2.isSuccess()).isEqualTo(true);
 			assertThat(result2.getT1()).isEqualTo(false);// 始终是false
 
-			JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-			JobMainPO main = find.getJobMain();
+			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 			assertThat(main.getEnd()).isEqualTo(false);// 始终不会结束
@@ -106,8 +105,7 @@ class ScheduleJobStorageTests {
 			Result1<RuntimeException> result1 = scheduleJobStorage.updateOnExecuteSuccess(update);
 			assertThat(result1.isSuccess()).isEqualTo(true);
 
-			JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-			JobMainPO main = find.getJobMain();
+			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(false);// 不会结束
@@ -132,8 +130,7 @@ class ScheduleJobStorageTests {
 			Result1<RuntimeException> result1 = scheduleJobStorage.updateOnExecuteSuccess(update);
 			assertThat(result1.isSuccess()).isEqualTo(true);
 
-			JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-			JobMainPO main = find.getJobMain();
+			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(true);// 结束
@@ -160,8 +157,7 @@ class ScheduleJobStorageTests {
 			assertThat(result2.isSuccess()).isEqualTo(true);
 			assertThat(result2.getT1()).isEqualTo(false);// 始终不会到失败阈值
 
-			JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-			JobMainPO main = find.getJobMain();
+			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																										// Instance

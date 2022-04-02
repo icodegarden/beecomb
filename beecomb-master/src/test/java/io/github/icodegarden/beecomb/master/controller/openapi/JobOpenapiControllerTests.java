@@ -24,7 +24,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.manager.JobManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
@@ -115,7 +115,7 @@ public class JobOpenapiControllerTests {
 	@Test
 	public void getJob() throws Exception {
 		createJob();
-		Long id = jobService.page(JobQuery.builder().build()).get(0).getId();
+		Long id = jobService.page(JobMainQuery.builder().build()).get(0).getId();
 
 		mvc.perform(get("/openapi/v1/jobs/" + id)
 //               .with(user("blaze").password("Q1w2e3r4"))
@@ -137,7 +137,7 @@ public class JobOpenapiControllerTests {
 	@Test
 	public void getJobByUUID() throws Exception {
 		createJob();
-		String uuid = jobService.page(JobQuery.builder().build()).get(0).getUuid();
+		String uuid = jobService.page(JobMainQuery.builder().build()).get(0).getUuid();
 
 		mvc.perform(get("/openapi/v1/jobs/uuid/" + uuid)
 //               .with(user("blaze").password("Q1w2e3r4"))

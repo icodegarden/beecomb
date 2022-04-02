@@ -16,13 +16,16 @@ import io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper;
 import io.github.icodegarden.beecomb.common.db.mapper.JobDetailMapper;
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.DelayJobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobDetailQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.ScheduleJobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 
 /**
@@ -102,19 +105,18 @@ class JobMainMapperTests {
 		dj1.setDelay(3000);
 		delayJobMapper.add(dj1);
 
-		JobQuery.With with = JobQuery.With.builder()
-				.jobMain(JobQuery.With.JobMain.builder().createdAt(true).createdBy(true).lastExecuteExecutor(true)
-						.lastExecuteReturns(true).lastTrigResult(true).queuedAt(true).queuedAtInstance(true).build())
-				.jobDetail(JobQuery.With.JobDetail.builder().params(true).desc(true).build())
-				.delayJob(JobQuery.With.DelayJob.builder().build())
-				.scheduleJob(JobQuery.With.ScheduleJob.builder().build()).build();
+		JobMainQuery.With with = JobMainQuery.With.builder()
+				.createdAt(true).createdBy(true).lastExecuteExecutor(true)
+				.lastExecuteReturns(true).lastTrigResult(true).queuedAt(true).queuedAtInstance(true)
+				.jobDetail(JobDetailQuery.With.builder().params(true).desc(true).build())
+				.delayJob(DelayJobQuery.With.builder().build())
+				.scheduleJob(ScheduleJobQuery.With.builder().build()).build();
 
-		JobDO job = jobMainMapper.findOne(j1.getId(), with);
-		assertThat(job.getJobMain()).isNotNull();
+		JobMainDO job = jobMainMapper.findOne(j1.getId(), with);
 		assertThat(job.getJobDetail()).isNotNull();
 		assertThat(job.getDelayJob()).isNotNull();
 
-		JobMainPO findOne = job.getJobMain();
+		JobMainPO findOne = job;
 
 		assertThat(findOne).isNotNull();
 		assertThat(findOne.getId()).isEqualTo(j1.getId());
@@ -177,42 +179,38 @@ class JobMainMapperTests {
 		scheduleJobMapper.add(sj2);
 
 		// 不关联查询-------------------------------------
-		JobQuery query = JobQuery.builder().sort("order by a.id asc").limit("limit 0,10").build();
-		List<JobDO> list = jobMainMapper.findAll(query);
+		JobMainQuery query = JobMainQuery.builder().sort("order by a.id asc").limit("limit 0,10").build();
+		List<JobMainDO> list = jobMainMapper.findAll(query);
 
 		assertThat(list).hasSize(2);
-		JobDO job = list.get(0);
+		JobMainDO job = list.get(0);
 		System.out.println(job);
-		assertThat(job.getJobMain()).isNotNull();
 		assertThat(job.getJobDetail()).isNull();
 		assertThat(job.getDelayJob()).isNull();
 		assertThat(job.getScheduleJob()).isNull();
 		job = list.get(1);
 		System.out.println(job);
-		assertThat(job.getJobMain()).isNotNull();
 		assertThat(job.getJobDetail()).isNull();
 		assertThat(job.getScheduleJob()).isNull();
 		assertThat(job.getDelayJob()).isNull();
 
 		// 关联查询-------------------------------------
-		query = JobQuery.builder()
-				.with(JobQuery.With.builder()
-						.jobDetail(JobQuery.With.JobDetail.builder().params(true).desc(true).build())
-						.delayJob(JobQuery.With.DelayJob.builder().build())
-						.scheduleJob(JobQuery.With.ScheduleJob.builder().build()).build())
+		query = JobMainQuery.builder()
+				.with(JobMainQuery.With.builder()
+						.jobDetail(JobDetailQuery.With.builder().params(true).desc(true).build())
+						.delayJob(DelayJobQuery.With.builder().build())
+						.scheduleJob(ScheduleJobQuery.With.builder().build()).build())
 				.sort("order by a.id asc").limit("limit 0,10").build();
 		list = jobMainMapper.findAll(query);
 
 		assertThat(list).hasSize(2);
 		job = list.get(0);
 		System.out.println(job);
-		assertThat(job.getJobMain()).isNotNull();
 		assertThat(job.getJobDetail()).isNotNull();
 		assertThat(job.getDelayJob()).isNotNull();
 		assertThat(job.getScheduleJob()).isNull();
 		job = list.get(1);
 		System.out.println(job);
-		assertThat(job.getJobMain()).isNotNull();
 		assertThat(job.getJobDetail()).isNotNull();
 		assertThat(job.getScheduleJob()).isNotNull();
 		assertThat(job.getDelayJob()).isNull();
@@ -231,15 +229,16 @@ class JobMainMapperTests {
 
 		jobMainMapper.update(update);
 
-		JobQuery.With with = JobQuery.With.builder()
-				.jobMain(JobQuery.With.JobMain.builder().createdAt(true).createdBy(true).lastExecuteExecutor(true)
-						.lastExecuteReturns(true).lastTrigResult(true).queuedAt(true).queuedAtInstance(true).build())
-				.jobDetail(JobQuery.With.JobDetail.builder().params(true).desc(true).build())
-				.delayJob(JobQuery.With.DelayJob.builder().build())
-				.scheduleJob(JobQuery.With.ScheduleJob.builder().build()).build();
+		JobMainQuery.With with = JobMainQuery.With.builder()
+				.createdAt(true).createdBy(true).lastExecuteExecutor(true)
+				.lastExecuteReturns(true).lastTrigResult(true).queuedAt(true).queuedAtInstance(true)
+				
+				.jobDetail(JobDetailQuery.With.builder().params(true).desc(true).build())
+				.delayJob(DelayJobQuery.With.builder().build())
+				.scheduleJob(ScheduleJobQuery.With.builder().build()).build();
 
-		JobDO job = jobMainMapper.findOne(id, with);
-		JobMainPO findOne = job.getJobMain();
+		JobMainDO job = jobMainMapper.findOne(id, with);
+		JobMainPO findOne = job;
 
 		assertThat(findOne).isNotNull();
 		assertThat(findOne.getId()).isEqualTo(id);
@@ -260,7 +259,7 @@ class JobMainMapperTests {
 		jobMainMapper.update(update);
 
 		job = jobMainMapper.findOne(id, with);
-		findOne = job.getJobMain();
+		findOne = job;
 		assertThat(findOne.getNextTrigAt()).isNull();
 	}
 
@@ -271,7 +270,7 @@ class JobMainMapperTests {
 
 		jobMainMapper.delete(id);
 
-		JobDO findOne = jobMainMapper.findOne(id, null);
+		JobMainDO findOne = jobMainMapper.findOne(id, null);
 		assertThat(findOne).isNull();
 	}
 
@@ -292,15 +291,15 @@ class JobMainMapperTests {
 		// 时间参数不满足，不会更新-------------------------
 		jobMainMapper.updateToNoQueued(LocalDateTime.now().minusSeconds(60));
 
-		JobDO job = jobMainMapper.findOne(job2.getId(), null);
-		JobMainPO findJob2 = job.getJobMain();
+		JobMainDO job = jobMainMapper.findOne(job2.getId(), null);
+		JobMainPO findJob2 = job;
 		Assertions.assertThat(findJob2.getQueued()).isTrue();
 		Assertions.assertThat(findJob2.getNextTrigAt()).isNotNull();
 
 		// 时间参数满足，更新成功---------------------------------------
 		jobMainMapper.updateToNoQueued(LocalDateTime.now().minusSeconds(29));
 		job = jobMainMapper.findOne(job2.getId(), null);
-		findJob2 = job.getJobMain();
+		findJob2 = job;
 		Assertions.assertThat(findJob2.getQueued()).isFalse();
 		Assertions.assertThat(findJob2.getNextTrigAt()).isNull();
 	}

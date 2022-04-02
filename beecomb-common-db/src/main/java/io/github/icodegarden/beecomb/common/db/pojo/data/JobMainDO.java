@@ -9,30 +9,32 @@ import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
-@Data
-public class JobDO {
+@Setter
+@Getter
+@ToString
+public class JobMainDO extends JobMainPO {
 
-	private JobMainPO jobMain;
-	private JobDetailPO jobDetail;
-	private DelayJobPO delayJob;
-	private ScheduleJobPO scheduleJob;
+	private JobDetailDO jobDetail;
+	private DelayJobDO delayJob;
+	private ScheduleJobDO scheduleJob;
 
 	public ExecutableJobBO toExecutableJobBO() {
-		JobMainPO jobMain = getJobMain();
 		JobDetailPO jobDetail = getJobDetail();
 		DelayJobPO delayJob = getDelayJob();
 		ScheduleJobPO scheduleJob = getScheduleJob();
 
 		ExecutableJobBO executableJobBO = new ExecutableJobBO();
 
-		BeanUtils.copyProperties(jobMain, executableJobBO);
+		BeanUtils.copyProperties(this, executableJobBO);
 		if (jobDetail != null) {
 			BeanUtils.copyProperties(jobDetail, executableJobBO);
 		}

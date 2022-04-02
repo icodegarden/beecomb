@@ -19,9 +19,9 @@ import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.server.JobReceiver;
 import io.github.icodegarden.beecomb.worker.server.WorkerServer;
-import io.github.icodegarden.beecomb.worker.service.DelayJobStorage;
-import io.github.icodegarden.beecomb.worker.service.JobStorage;
-import io.github.icodegarden.beecomb.worker.service.ScheduleJobStorage;
+import io.github.icodegarden.beecomb.worker.service.DelayJobService;
+import io.github.icodegarden.beecomb.worker.service.JobService;
+import io.github.icodegarden.beecomb.worker.service.ScheduleJobService;
 import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
@@ -176,20 +176,20 @@ public class BeansConfiguration {
 
 	@Bean("delay")
 	public JobEngine delayJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobStorage delayJobStorage) {
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage) {
 		return new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
 				instanceProperties);
 	}
 
 	@Bean("schedule")
 	public JobEngine scheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobStorage scheduleJobStorage) {
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage) {
 		return new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, scheduleJobStorage,
 				instanceProperties);
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobStorage jobStorage, JobEngine jobEngine) {
+	public JobReceiver jobReceiver(JobService jobStorage, JobEngine jobEngine) {
 		return new JobReceiver(jobStorage, jobEngine);
 	}
 

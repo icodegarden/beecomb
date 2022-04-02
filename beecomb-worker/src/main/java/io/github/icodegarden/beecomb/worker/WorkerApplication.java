@@ -13,7 +13,8 @@ import io.github.icodegarden.commons.lang.spec.response.ServerErrorCodeException
  * @author Fangfang.Xu
  *
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = { "io.github.icodegarden.beecomb.worker",
+		"io.github.icodegarden.beecomb.common.db.manager" })
 public class WorkerApplication {
 
 	public static void main(String[] args) throws IOException, InterruptedException {

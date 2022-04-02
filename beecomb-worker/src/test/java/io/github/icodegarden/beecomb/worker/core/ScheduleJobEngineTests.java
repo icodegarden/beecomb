@@ -31,7 +31,7 @@ import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
-import io.github.icodegarden.beecomb.worker.service.ScheduleJobStorage;
+import io.github.icodegarden.beecomb.worker.service.ScheduleJobService;
 import io.github.icodegarden.commons.exchange.nio.NioProtocol;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
@@ -54,7 +54,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	ExecutorInstanceDiscovery<ExecutorRegisteredInstance> executorInstanceDiscovery;
 	InstanceMetrics instanceMetrics;
 	MetricsOverload jobOverload;
-	ScheduleJobStorage scheduleJobStorage;
+	ScheduleJobService scheduleJobStorage;
 	ScheduleJobEngine scheduleJobEngine;
 
 	@BeforeEach
@@ -62,7 +62,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		executorInstanceDiscovery = mock(ExecutorInstanceDiscovery.class);
 		instanceMetrics = mock(InstanceMetrics.class);
 		jobOverload = mock(MetricsOverload.class);
-		scheduleJobStorage = mock(ScheduleJobStorage.class);
+		scheduleJobStorage = mock(ScheduleJobService.class);
 
 		scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
 				scheduleJobStorage, instanceProperties);

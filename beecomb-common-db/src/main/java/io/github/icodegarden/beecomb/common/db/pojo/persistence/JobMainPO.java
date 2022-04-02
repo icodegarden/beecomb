@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 
 
@@ -15,7 +15,9 @@ import lombok.ToString;
  * @author Fangfang.Xu
  *
  */
-@Data
+@Setter
+@Getter
+@ToString
 public class JobMainPO {
 
 	private Long id;// bigint NOT NULL AUTO_INCREMENT,
@@ -42,10 +44,11 @@ public class JobMainPO {
 	private String createdBy;// varchar(30) comment '租户名',
 	private LocalDateTime createdAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	
+	@Setter
 	@Getter
 	@ToString
 	public static class Update{
-		@NonNull
+
 		private Long id;// bigint NOT NULL AUTO_INCREMENT,
 		private String name;// varchar(30) NOT NULL,
 		private Integer priority;// tinyint NOT NULL default 3 comment '1-5仅当资源不足时起作用',
@@ -69,6 +72,8 @@ public class JobMainPO {
 		 */
 		private boolean nextTrigAtNull;
 		
+		public Update() {}
+		
 		@Builder
 		private Update(@NonNull Long id, String name, Integer priority, Integer weight, Boolean queued,
 				LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastTrigResult,
@@ -90,18 +95,17 @@ public class JobMainPO {
 			this.nextTrigAt = nextTrigAt;
 			this.nextTrigAtNull = nextTrigAtNull;
 
-			if(end != null) {
-				setEnd(end);
-			}
+			setEnd(end);
 		}
 		
 		/**
 		 * 
 		 * @param end 当end true时，自动处理与其相关的字段更新
 		 */
-		public void setEnd(boolean end) {
+		public void setEnd(Boolean end) {
 			this.end = end;
-			if(end) {
+			
+			if(Boolean.TRUE.equals(end)) {
 				queued = false;
 				nextTrigAtNull = true;
 			}

@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 
 /**
  * 
@@ -18,7 +18,7 @@ public interface JobMainMapper {
 
 	void add(JobMainPO po);
 
-	List<JobDO> findAll(JobQuery query);
+	List<JobMainDO> findAll(JobMainQuery query);
 
 	/**
 	 * 
@@ -26,7 +26,7 @@ public interface JobMainMapper {
 	 * @param with Nullable
 	 * @return
 	 */
-	JobDO findOne(@Param("id") Long id, @Param("with") JobQuery.With with);
+	JobMainDO findOne(@Param("id") Long id, @Param("with") JobMainQuery.With with);
 
 	/**
 	 * 
@@ -34,7 +34,7 @@ public interface JobMainMapper {
 	 * @param with Nullable
 	 * @return
 	 */
-	JobDO findByUUID(@Param("uuid") String uuid, @Param("with") JobQuery.With with);
+	JobMainDO findByUUID(@Param("uuid") String uuid, @Param("with") JobMainQuery.With with);
 
 	int update(JobMainPO.Update update);
 

@@ -18,10 +18,10 @@ import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineExcep
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBalance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnNoQualifiedExecutor;
-import io.github.icodegarden.beecomb.worker.service.ScheduleJobStorage;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
+import io.github.icodegarden.beecomb.worker.service.ScheduleJobService;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.ParallelExchangeResult;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
@@ -49,12 +49,12 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 	private ExecutorInstanceDiscovery executorInstanceDiscovery;
 	private InstanceMetrics instanceMetrics;
-	private ScheduleJobStorage scheduleJobStorage;
+	private ScheduleJobService scheduleJobStorage;
 
 	private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
 	public ScheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery, InstanceMetrics instanceMetrics,
-			MetricsOverload jobOverload, ScheduleJobStorage scheduleJobStorage, InstanceProperties instanceProperties) {
+			MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage, InstanceProperties instanceProperties) {
 		super(jobOverload, instanceProperties);
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;

@@ -5,9 +5,8 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.support.RetryTemplate;
 
-import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainEnQueueDTO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -18,14 +17,14 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
  * @author Fangfang.Xu
  *
  */
-public abstract class BaseJobStorage implements JobStorage {
+public abstract class BaseJobService implements JobService {
 	protected static final RetryTemplate RETRY_TEMPLATE = RetryTemplate.builder().fixedBackoff(1000).maxAttempts(3)
 			.retryOn(Exception.class).build();
 
 	protected static final String IP = SystemUtils.getIp();
 
 	@Autowired
-	protected JobMainMapper jobMainMapper;
+	protected JobMainManager jobMainManager;
 	@Autowired
 	protected InstanceProperties instanceProperties;
 
@@ -39,9 +38,10 @@ public abstract class BaseJobStorage implements JobStorage {
 
 		String queuedAtInstance = SystemUtils.formatIpPort(instanceProperties.getServer().getBindIp(),
 				instanceProperties.getServer().getPort());
-		Update update = JobMainPO.Update.builder().id(jobId).queued(true).queuedAt(SystemUtils.now())
-				.queuedAtInstance(queuedAtInstance).nextTrigAt(nextTrigAt).build();
-		jobMainMapper.update(update);
+		UpdateJobMainEnQueueDTO update = UpdateJobMainEnQueueDTO.builder().id(jobId).queuedAtInstance(queuedAtInstance)
+				.nextTrigAt(nextTrigAt).build();
+
+		jobMainManager.updateEnQueue(update);
 	}
 
 	protected String buildLastTrigResult(ExchangeException e) {
@@ -55,5 +55,5 @@ public abstract class BaseJobStorage implements JobStorage {
 		}
 		return lastTrigResult;
 	}
-	
+
 }

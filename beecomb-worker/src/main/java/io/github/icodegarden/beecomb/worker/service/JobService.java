@@ -18,7 +18,7 @@ import lombok.NonNull;
  * @author Fangfang.Xu
  *
  */
-public interface JobStorage {
+public interface JobService {
 
 	void updateEnQueue(ExecutableJobBO job);
 

@@ -9,10 +9,10 @@ import com.github.pagehelper.PageHelper;
 import io.github.icodegarden.beecomb.common.db.exception.SQLIntegrityConstraintException;
 import io.github.icodegarden.beecomb.common.db.mapper.JobDetailMapper;
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
@@ -71,26 +71,26 @@ public abstract class AbstractJobManager implements JobManager {
 
 	@Override
 	public ExecutableJobBO findOneExecutableJob(Long id) {
-		JobDO jobDO = jobMainMapper.findOne(id, JobQuery.With.WITH_EXECUTABLE);
+		JobMainDO jobDO = jobMainMapper.findOne(id, JobMainQuery.With.WITH_EXECUTABLE);
 		return jobDO.toExecutableJobBO();
 	}
 
-	public Page<JobVO> page(JobQuery query) {
+	public Page<JobVO> page(JobMainQuery query) {
 		PageHelper.startPage(query.getPage(), query.getSize());
 
-		Page<JobDO> page = (Page<JobDO>) jobMainMapper.findAll(query);
+		Page<JobMainDO> page = (Page<JobMainDO>) jobMainMapper.findAll(query);
 
 		Page<JobVO> p = PageHelperUtils.ofPage(page, jobDO -> JobVO.of(jobDO));
 		return p;
 	}
 
-	public JobVO findOne(Long id, JobQuery.With with) {
-		JobDO jobDO = jobMainMapper.findOne(id, with);
+	public JobVO findOne(Long id, JobMainQuery.With with) {
+		JobMainDO jobDO = jobMainMapper.findOne(id, with);
 		return JobVO.of(jobDO);
 	}
 
-	public JobVO findByUUID(String uuid, JobQuery.With with) {
-		JobDO jobDO = jobMainMapper.findByUUID(uuid, with);
+	public JobVO findByUUID(String uuid, JobMainQuery.With with) {
+		JobMainDO jobDO = jobMainMapper.findByUUID(uuid, with);
 		return JobVO.of(jobDO);
 	}
 }

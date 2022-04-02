@@ -10,17 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper;
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery.With;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnNoQualifiedExecutor;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
 import io.github.icodegarden.commons.exchange.exception.AllInstanceFailedExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoQualifiedInstanceExchangeException;
 import io.github.icodegarden.commons.lang.result.Result1;
@@ -33,10 +33,12 @@ import io.github.icodegarden.commons.lang.result.Result2;
  */
 @Transactional
 @SpringBootTest
-class DelayJobStorageTests {
+class DelayJobServiceTests {
 
 	@Autowired
-	DelayJobStorage delayJobStorage;
+	DelayJobService delayJobStorage;
+	@Autowired
+	JobMainManager jobMainManager;
 	@Autowired
 	JobMainMapper jobMainMapper;
 	@Autowired
@@ -54,7 +56,7 @@ class DelayJobStorageTests {
 		mainPO.setExecutorName("n");
 		mainPO.setJobHandlerName("j");
 		mainPO.setQueued(true);
-		jobMainMapper.add(mainPO);
+		jobMainMapper.add(mainPO);// TODO 不要使用mapper
 		return mainPO;
 	}
 
@@ -81,8 +83,7 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(false);// 没到失败阈值
 
-		JobDO find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		JobMainPO main = find.getJobMain();
+		JobMainVO main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
@@ -97,8 +98,7 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(false);// 没到失败阈值
 
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
@@ -113,8 +113,7 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(true);// 到失败阈值
 
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
@@ -129,15 +128,14 @@ class DelayJobStorageTests {
 		result2 = delayJobStorage.updateOnNoQualifiedExecutor(update);
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(true);// 到失败阈值
-		
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 
 		delayJob = delayJobMapper.findOne(mainPO.getId());
-		assertThat(delayJob.getRetriedTimesOnNoQualified()).isEqualTo(2);//还是2
+		assertThat(delayJob.getRetriedTimesOnNoQualified()).isEqualTo(2);// 还是2
 	}
 
 	@Test
@@ -149,29 +147,27 @@ class DelayJobStorageTests {
 		Result1<RuntimeException> result1 = delayJobStorage.updateOnExecuteSuccess(update);
 		assertThat(result1.isSuccess()).isEqualTo(true);
 
-		JobDO find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		JobMainPO main = find.getJobMain();
-		
+		JobMainVO main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
+
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
-		assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:10001");// 
+		assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:10001");//
 		assertThat(main.getLastExecuteReturns()).isEqualTo("[{}]");//
 		assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
-		
+
 		// ------------------------------------后续触发返回true，但数据不变
 		update = UpdateOnExecuteSuccess.builder().jobId(mainPO.getId()).lastTrigAt(LocalDateTime.now().minusHours(1))
 				.executorIp("1.1.1.2").executorPort(10002).lastExecuteReturns("[{...}]").build();
 		result1 = delayJobStorage.updateOnExecuteSuccess(update);
 		assertThat(result1.isSuccess()).isEqualTo(true);
 
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);
 		assertThat(main.getLastTrigResult()).isEqualTo("Success");
 		assertThat(main.getEnd()).isEqualTo(true);
-		assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:10001");// 
+		assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:10001");//
 		assertThat(main.getLastExecuteReturns()).isEqualTo("[{}]");//
 		assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 	}
@@ -187,10 +183,10 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(false);// 没到失败阈值
 
-		JobDO find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		JobMainPO main = find.getJobMain();
+		JobMainVO main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All Instance Failed
+		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 
 		DelayJobPO delayJob = delayJobMapper.findOne(mainPO.getId());
@@ -203,10 +199,10 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(false);// 没到失败阈值
 
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All Instance Failed
+		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 
 		delayJob = delayJobMapper.findOne(mainPO.getId());
@@ -219,10 +215,10 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(true);// 到失败阈值
 
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All Instance Failed
+		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
 
@@ -235,17 +231,17 @@ class DelayJobStorageTests {
 		result2 = delayJobStorage.updateOnExecuteFailed(update);
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(true);// 到失败阈值
-		
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All Instance Failed
+		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 
 		delayJob = delayJobMapper.findOne(mainPO.getId());
-		assertThat(delayJob.getRetriedTimesOnExecuteFailed()).isEqualTo(2);//还是2
+		assertThat(delayJob.getRetriedTimesOnExecuteFailed()).isEqualTo(2);// 还是2
 	}
-	
+
 	@Test
 	void updateOnExecuteFailed_Exception() {
 		// ------------------------------------第1次触发
@@ -257,8 +253,7 @@ class DelayJobStorageTests {
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(true);// 直接到阈值
 
-		JobDO find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		JobMainPO main = find.getJobMain();
+		JobMainVO main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).isEqualTo("ex");// 最近触发的结果描述是对应的异常
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
@@ -273,14 +268,13 @@ class DelayJobStorageTests {
 		result2 = delayJobStorage.updateOnExecuteFailed(update);
 		assertThat(result2.isSuccess()).isEqualTo(true);
 		assertThat(result2.getT1()).isEqualTo(true);// 到失败阈值
-		
-		find = jobMainMapper.findOne(mainPO.getId(),JobQuery.With.WITH_MOST);
-		main = find.getJobMain();
+
+		main = jobMainManager.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 		assertThat(main.getLastTrigResult()).isEqualTo("ex");// 最近触发的结果描述是对应的异常
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 
 		delayJob = delayJobMapper.findOne(mainPO.getId());
-		assertThat(delayJob.getRetriedTimesOnExecuteFailed()).isEqualTo(2);//还是2
+		assertThat(delayJob.getRetriedTimesOnExecuteFailed()).isEqualTo(2);// 还是2
 	}
 }

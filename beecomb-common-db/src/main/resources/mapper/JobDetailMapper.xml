@@ -7,6 +7,9 @@
 		<result property="params" column="params" />
 		<result property="desc" column="desc" />
 	</resultMap>
+	
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.JobDetailDO" extends="baseMap">
+	</resultMap>
 
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO">
 		insert into `job_detail` (
@@ -21,7 +24,7 @@
 		)
 	</insert>
 	
-	<select id="findOne" resultMap="baseMap">
+	<select id="findOne" resultMap="DOMap">
 		select a.* from `job_detail` a where a.job_id = #{jobId}
 	</select>
 	

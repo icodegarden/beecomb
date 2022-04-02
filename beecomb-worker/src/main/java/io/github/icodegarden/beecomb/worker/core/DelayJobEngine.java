@@ -19,10 +19,10 @@ import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBalance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
-import io.github.icodegarden.beecomb.worker.service.DelayJobStorage;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobStorage.UpdateOnNoQualifiedExecutor;
+import io.github.icodegarden.beecomb.worker.service.DelayJobService;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
+import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
@@ -49,12 +49,12 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 	private ExecutorInstanceDiscovery executorInstanceDiscovery;
 	private InstanceMetrics instanceMetrics;
-	private DelayJobStorage delayJobStorage;
+	private DelayJobService delayJobStorage;
 
 	private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
 	public DelayJobEngine(ExecutorInstanceDiscovery<? extends ExecutorRegisteredInstance> executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobStorage delayJobStorage,
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage,
 			InstanceProperties instanceProperties) {
 		super(jobOverload, instanceProperties);
 		

@@ -5,9 +5,7 @@ import java.time.LocalDateTime;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -15,11 +13,10 @@ import lombok.ToString;
  * @author Fangfang.Xu
  *
  */
-
+@Builder
 @Getter
-@Setter
 @ToString
-public class JobQuery extends BaseQuery {
+public class JobMainQuery extends BaseQuery {
 
 	private String uuid;
 	private Boolean queued;
@@ -42,7 +39,7 @@ public class JobQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public JobQuery(int page, int size, String sort, String limit, String uuid, Boolean queued, Boolean end,
+	public JobMainQuery(int page, int size, String sort, String limit, String uuid, Boolean queued, Boolean end,
 			String createdBy, String nameLike, JobType type, Boolean parallel, Boolean lastExecuteSuccess,
 			LocalDateTime createdAtGte, LocalDateTime createdAtLte, LocalDateTime lastTrigAtGte,
 			LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, With with) {
@@ -64,54 +61,34 @@ public class JobQuery extends BaseQuery {
 	}
 
 	@Builder
-	@Data
+	@Getter
+	@ToString
 	public static class With {
-
 		public static final With WITH_LEAST = With.builder().build();
-		public static final With WITH_MOST = With.builder()
-				.jobMain(JobMain.builder().queuedAt(true).queuedAtInstance(true).lastTrigResult(true)
-						.lastExecuteExecutor(true).lastExecuteReturns(true).createdBy(true).createdAt(true).build())
-				.jobDetail(JobDetail.builder().params(true).desc(true).build()).delayJob(DelayJob.builder().build())
-				.scheduleJob(ScheduleJob.builder().build()).build();
-		public static final With WITH_EXECUTABLE = With.builder()
-				.jobMain(JobMain.builder().createdAt(true).lastExecuteExecutor(true).lastExecuteReturns(true)
-						.lastTrigResult(true).build())
-				.jobDetail(JobDetail.builder().params(true).build()).delayJob(DelayJob.builder().build())
-				.scheduleJob(ScheduleJob.builder().build()).build();
 
-		private JobMain jobMain;
-		private JobDetail jobDetail;
-		private DelayJob delayJob;
-		private ScheduleJob scheduleJob;
+		public static final With WITH_MOST = With.builder().queuedAt(true).queuedAtInstance(true).lastTrigResult(true)
+				.lastExecuteExecutor(true).lastExecuteReturns(true).createdBy(true).createdAt(true)
+				.jobDetail(JobDetailQuery.With.builder().params(true).desc(true).build())
+				.delayJob(DelayJobQuery.With.builder().build()).scheduleJob(ScheduleJobQuery.With.builder().build())
+				.build();
 
-		@Builder
-		@Data
-		public static class JobMain {
-			private boolean queuedAt;
-			private boolean queuedAtInstance;
-			private boolean lastTrigResult;
-			private boolean lastExecuteExecutor;
-			private boolean lastExecuteReturns;
-			private boolean createdBy;
-			private boolean createdAt;
-		}
+		public static final With WITH_EXECUTABLE = With.builder().createdAt(true).lastExecuteExecutor(true)
+				.lastExecuteReturns(true).lastTrigResult(true)
+				.jobDetail(JobDetailQuery.With.builder().params(true).build())
+				.delayJob(DelayJobQuery.With.builder().build()).scheduleJob(ScheduleJobQuery.With.builder().build())
+				.build();
 
-		@Builder
-		@Data
-		public static class JobDetail {
-			private boolean params;
-			private boolean desc;
-		}
+		private boolean queuedAt;
+		private boolean queuedAtInstance;
+		private boolean lastTrigResult;
+		private boolean lastExecuteExecutor;
+		private boolean lastExecuteReturns;
+		private boolean createdBy;
+		private boolean createdAt;
 
-		@Builder
-		@Data
-		public static class DelayJob {
-		}
-
-		@Builder
-		@Data
-		public static class ScheduleJob {
-		}
+		private JobDetailQuery.With jobDetail;
+		private DelayJobQuery.With delayJob;
+		private ScheduleJobQuery.With scheduleJob;
 
 	}
 

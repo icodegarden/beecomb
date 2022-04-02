@@ -31,7 +31,7 @@ import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
-import io.github.icodegarden.beecomb.worker.service.DelayJobStorage;
+import io.github.icodegarden.beecomb.worker.service.DelayJobService;
 import io.github.icodegarden.commons.exchange.nio.NioProtocol;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
@@ -55,7 +55,7 @@ class DelayJobEngineTests extends Properties4Test {
 	ExecutorInstanceDiscovery<ExecutorRegisteredInstance> executorInstanceDiscovery;
 	InstanceMetrics<Metrics> instanceMetrics;
 	MetricsOverload jobOverload;
-	DelayJobStorage delayJobStorage;
+	DelayJobService delayJobStorage;
 	DelayJobEngine delayJobEngine;
 
 	@BeforeEach
@@ -63,7 +63,7 @@ class DelayJobEngineTests extends Properties4Test {
 		executorInstanceDiscovery = mock(ExecutorInstanceDiscovery.class);
 		instanceMetrics = mock(InstanceMetrics.class);
 		jobOverload = mock(MetricsOverload.class);
-		delayJobStorage = mock(DelayJobStorage.class);
+		delayJobStorage = mock(DelayJobService.class);
 
 		delayJobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
 				instanceProperties);

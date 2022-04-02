@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
@@ -28,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service("storage-delay")
-public class DelayJobStorage extends BaseJobStorage {
+public class DelayJobService extends BaseJobService {
 
 	@Autowired
 	private DelayJobMapper delayJobMapper;
@@ -41,15 +40,14 @@ public class DelayJobStorage extends BaseJobStorage {
 		try {
 			DelayJobPO delayJobPO = delayJobMapper.findOne(update.getJobId());
 			if (delayJobPO != null) {
-				JobDO job = jobMainMapper.findOne(update.getJobId(), null);
-				JobMainPO jobMainPO = job.getJobMain();
-				if (jobMainPO.getEnd()) {
+				JobMainVO jobMain = jobMainManager.findOne(update.getJobId(), null);
+				if (jobMain.getEnd()) {
 					return Results.of(true, true/* 到失败阈值 */, null);
 				}
 
 				int retriedTimesOnNoQualified = delayJobPO.getRetriedTimesOnNoQualified();
 				DelayJobPO.Update delayUpdate = null;
-				if (jobMainPO.getLastTrigAt() != null) {
+				if (jobMain.getLastTrigAt() != null) {
 					/**
 					 * retriedTimesOnNoQualified次数只在非第一次触发时才递增，首次触发不计retry
 					 */
@@ -64,15 +62,20 @@ public class DelayJobStorage extends BaseJobStorage {
 				DelayBO delay = delayJobPO.toDelayBO();
 				LocalDateTime nextTrigAt = delay.calcNextTrigAtOnNoQualified();
 
-				Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-						.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
-						.nextTrigAt(nextTrigAt).lastExecuteSuccess(false).build();
 				boolean thresholdReached = false;
+				Boolean end = null;
 				if (retriedTimesOnNoQualified >= delayJobPO.getRetryOnNoQualified()) {
-					// 达到阈值
-					mainUpdate.setEnd(true);
+					/**
+					 * 达到阈值则结束
+					 */
+					end = true;
 					thresholdReached = true;
 				}
+
+				UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+						.lastTrigAt(update.getLastTrigAt())
+						.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
+						.nextTrigAt(nextTrigAt).lastExecuteSuccess(false).end(end).build();
 
 				if (update.getCallback() != null) {
 					JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
@@ -81,8 +84,9 @@ public class DelayJobStorage extends BaseJobStorage {
 				}
 
 				RETRY_TEMPLATE.execute(ctx -> {
-					jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-					return jobMainMapper.update(mainUpdate);
+					jobExecuteRecordService.createOnExecuted(mainUpdate);
+					jobMainManager.updateOnExecuted(mainUpdate);
+					return null;
 				});
 
 				return Results.of(true, thresholdReached, null);
@@ -97,10 +101,11 @@ public class DelayJobStorage extends BaseJobStorage {
 	@Override
 	public Result1<RuntimeException> updateOnExecuteSuccess(UpdateOnExecuteSuccess update) {
 		try {
-			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-					.lastTrigResult("Success").end(true)
+			UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+					.lastTrigAt(update.getLastTrigAt()).lastTrigResult("Success").end(true)
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
-					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true).queued(false).build();
+					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
+					/* 不需要指定该参数.queued(false) */.build();
 
 			if (update.getCallback() != null) {
 				JobFreshParams params = new JobFreshParams(mainUpdate.getLastExecuteExecutor(),
@@ -110,11 +115,12 @@ public class DelayJobStorage extends BaseJobStorage {
 			}
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-				return jobMainMapper.update(mainUpdate);
+				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				jobMainManager.updateOnExecuted(mainUpdate);
+				return null;
 			});
 
-			jobExecuteRecordService.createOnJobUpdate(mainUpdate);
+			jobExecuteRecordService.createOnExecuted(mainUpdate);
 
 			return Results.of(true, null);
 		} catch (RuntimeException e) {
@@ -129,16 +135,15 @@ public class DelayJobStorage extends BaseJobStorage {
 		try {
 			DelayJobPO delayJobPO = delayJobMapper.findOne(update.getJobId());
 			if (delayJobPO != null) {
-				JobDO job = jobMainMapper.findOne(update.getJobId(), null);
-				JobMainPO jobMainPO = job.getJobMain();
-				if (jobMainPO.getEnd()) {
+				JobMainVO jobMain = jobMainManager.findOne(update.getJobId(), null);
+				if (jobMain.getEnd()) {
 					return Results.of(true, true/* 到失败阈值 */, null);
 				}
 
 				if (update.getException() instanceof ExchangeException) {
 					int retriedTimesOnExecuteFailed = delayJobPO.getRetriedTimesOnExecuteFailed();
 					DelayJobPO.Update delayUpdate = null;
-					if (jobMainPO.getLastTrigAt() != null) {
+					if (jobMain.getLastTrigAt() != null) {
 						/**
 						 * retriedTimesOnExecuteFailed次数只在非第一次触发时才递增，首次触发不计retry
 						 */
@@ -153,15 +158,18 @@ public class DelayJobStorage extends BaseJobStorage {
 					DelayBO delay = delayJobPO.toDelayBO();
 					LocalDateTime nextTrigAt = delay.calcNextTrigAtOnExecuteFailed();
 
-					Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-							.lastExecuteSuccess(false).lastTrigResult(buildLastTrigResult(update.getException()))
-							.nextTrigAt(nextTrigAt).build();
 					boolean thresholdReached = false;
+					Boolean end = null;
 					if (retriedTimesOnExecuteFailed >= delayJobPO.getRetryOnExecuteFailed()) {
-						// 达到阈值
-						mainUpdate.setEnd(true);
+						// 达到阈值则结束
+						end = true;
 						thresholdReached = true;
 					}
+
+					UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
+							.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(nextTrigAt).end(end)
+							.build();
 
 					if (update.getCallback() != null) {
 						JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
@@ -170,8 +178,9 @@ public class DelayJobStorage extends BaseJobStorage {
 					}
 
 					RETRY_TEMPLATE.execute(ctx -> {
-						jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-						return jobMainMapper.update(mainUpdate);
+						jobExecuteRecordService.createOnExecuted(mainUpdate);
+						jobMainManager.updateOnExecuted(mainUpdate);
+						return null;
 					});
 
 					return Results.of(true, thresholdReached, null);
@@ -183,9 +192,10 @@ public class DelayJobStorage extends BaseJobStorage {
 							.retriedTimesOnExecuteFailed(delayJobPO.getRetryOnExecuteFailed()).build();
 					RETRY_TEMPLATE.execute(ctx -> delayJobMapper.update(delayUpdate));
 
-					Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-							.lastExecuteSuccess(false).lastTrigResult(buildLastTrigResult(update.getException()))
-							.end(true).queued(false).build();
+					UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
+							.lastTrigResult(buildLastTrigResult(update.getException())).end(true)
+							/* .queued(false) */.build();
 
 					if (update.getCallback() != null) {
 						JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
@@ -194,8 +204,9 @@ public class DelayJobStorage extends BaseJobStorage {
 					}
 
 					RETRY_TEMPLATE.execute(ctx -> {
-						jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-						return jobMainMapper.update(mainUpdate);
+						jobExecuteRecordService.createOnExecuted(mainUpdate);
+						jobMainManager.updateOnExecuted(mainUpdate);
+						return null;
 					});
 
 					return Results.of(true, true, null);

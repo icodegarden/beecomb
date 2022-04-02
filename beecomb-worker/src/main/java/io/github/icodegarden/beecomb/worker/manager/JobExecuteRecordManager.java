@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import io.github.icodegarden.beecomb.common.db.mapper.JobExecuteRecordMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobExecuteRecordPO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainOnExecutedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.CreateJobExecuteRecordDTO;
 
 /**
@@ -27,7 +27,7 @@ public class JobExecuteRecordManager {
 		jobExecuteRecordMapper.add(po);
 	}
 
-	public void createOnJobUpdate(JobMainPO.Update update) {
+	public void createOnExecuted(UpdateJobMainOnExecutedDTO update) {
 		CreateJobExecuteRecordDTO createJobExecuteRecordDTO = new CreateJobExecuteRecordDTO();
 		createJobExecuteRecordDTO.setExecuteExecutor(update.getLastExecuteExecutor());
 		createJobExecuteRecordDTO.setExecuteReturns(update.getLastExecuteReturns());

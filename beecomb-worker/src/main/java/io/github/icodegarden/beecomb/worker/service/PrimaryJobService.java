@@ -13,7 +13,7 @@ import io.github.icodegarden.commons.lang.result.Result2;
  */
 @Primary
 @Service
-public class PrimaryJobStorage extends BaseJobStorage {
+public class PrimaryJobService extends BaseJobService {
 
 	@Override
 	public Result2<Boolean, RuntimeException> updateOnNoQualifiedExecutor(UpdateOnNoQualifiedExecutor update) {

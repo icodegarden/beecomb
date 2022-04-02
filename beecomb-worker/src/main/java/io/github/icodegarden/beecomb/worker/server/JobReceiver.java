@@ -9,7 +9,7 @@ import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
-import io.github.icodegarden.beecomb.worker.service.JobStorage;
+import io.github.icodegarden.beecomb.worker.service.JobService;
 import io.github.icodegarden.commons.lang.result.Result3;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,10 +24,10 @@ public class JobReceiver {
 	private volatile boolean closed;
 	private AtomicLong processingCount = new AtomicLong(0);
 	
-	private JobStorage jobStorage;
+	private JobService jobStorage;
 	private JobEngine jobEngine;
 
-	public JobReceiver(JobStorage jobStorage, JobEngine jobEngine) {
+	public JobReceiver(JobService jobStorage, JobEngine jobEngine) {
 		this.jobStorage = jobStorage;
 		this.jobEngine = jobEngine;
 	}

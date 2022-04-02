@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainOnExecutedDTO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.commons.lang.result.Result1;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service("storage-schedule")
-public class ScheduleJobStorage extends BaseJobStorage {
+public class ScheduleJobService extends BaseJobService {
 
 	@Autowired
 	private ScheduleJobMapper scheduleJobMapper;
@@ -36,14 +36,14 @@ public class ScheduleJobStorage extends BaseJobStorage {
 			if (update.getNextTrigAt() == null) {
 				return Results.of(false, false, new IllegalArgumentException("nextTrigAt must not null"));
 			}
-			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-					.lastExecuteSuccess(false)
+			UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+					.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
 					.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
 					.nextTrigAt(update.getNextTrigAt()).build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-				boolean b = jobMainMapper.update(mainUpdate) == 1;
+				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				boolean b = jobMainManager.updateOnExecuted(mainUpdate);
 				if (b) {
 					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
 							.build();
@@ -73,15 +73,15 @@ public class ScheduleJobStorage extends BaseJobStorage {
 			if (update.getNextTrigAt() == null) {
 				return Results.of(false, new IllegalArgumentException("nextTrigAt must not null"));
 			}
-			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-					.lastTrigResult("Success").end(update.getEnd())
+			UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+					.lastTrigAt(update.getLastTrigAt()).lastTrigResult("Success").end(update.getEnd())
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
 					.nextTrigAt(update.getNextTrigAt()).build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-				boolean b = jobMainMapper.update(mainUpdate) == 1;
+				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				boolean b = jobMainManager.updateOnExecuted(mainUpdate);
 				if (b) {
 					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
 							.build();
@@ -112,13 +112,14 @@ public class ScheduleJobStorage extends BaseJobStorage {
 			if (update.getNextTrigAt() == null) {
 				return Results.of(false, false, new IllegalArgumentException("nextTrigAt must not null"));
 			}
-			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-					.lastExecuteSuccess(false).lastTrigResult(buildLastTrigResult(update.getException()))
-					.nextTrigAt(update.getNextTrigAt()).build();
+			UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+					.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
+					.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(update.getNextTrigAt())
+					.build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnJobUpdate(mainUpdate);
-				boolean b = jobMainMapper.update(mainUpdate) == 1;
+				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				boolean b = jobMainManager.updateOnExecuted(mainUpdate);
 				if (b) {
 					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
 							.build();

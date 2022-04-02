@@ -7,6 +7,8 @@ package io.github.icodegarden.beecomb.common.pojo.query;
  */
 public abstract class BaseQuery {
 
+	public static int MAX_LIMIT_SIZE = 1000;
+
 	public static final int DEFAULT_SIZE = 10;
 
 	private int page = 1;
@@ -23,10 +25,10 @@ public abstract class BaseQuery {
 	private String limit;
 
 	public BaseQuery(int page, int size, String sort, String limit) {
-		if(page <= 0) {
+		if (page <= 0) {
 			page = 1;
 		}
-		if(size <= 0) {
+		if (size <= 0) {
 			size = 1;
 		}
 		this.page = page;
@@ -63,8 +65,34 @@ public abstract class BaseQuery {
 		return limit;
 	}
 
+	/**
+	 * 
+	 * @param limit
+	 */
 	public void setLimit(String limit) {
+		if (limit.contains("limit")) {
+			String limitSize;
+			if (!limit.contains(",")) {
+				limitSize = limit.replace("limit", "").trim();
+			} else {
+				limitSize = limit.split(",")[1];
+			}
+			try {
+				int parseInt = Integer.parseInt(limitSize);
+				if (parseInt > MAX_LIMIT_SIZE) {
+					throw new IllegalArgumentException("limit size must lte:" + MAX_LIMIT_SIZE + ", giving:" + limit);
+				}
+			} catch (Exception e) {
+				throw new IllegalArgumentException("invalid limit:" + limit);
+			}
+		}
 		this.limit = limit;
+	}
+
+	public void setLimitIfNotPresent(String limit) {
+		if (this.limit == null) {
+			setLimit(limit);
+		}
 	}
 
 	@Override

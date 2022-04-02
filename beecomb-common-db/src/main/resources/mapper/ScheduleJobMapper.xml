@@ -9,6 +9,9 @@
 		<result property="sheduleCron" column="shedule_cron" />
 		<result property="scheduledTimes" column="scheduled_times" />
 	</resultMap>
+	
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.ScheduleJobDO" extends="baseMap">
+	</resultMap>
 
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO">
 		insert into `schedule_job` (
@@ -31,7 +34,7 @@
 		)
 	</insert>
 	
-	<select id="findOne" resultMap="baseMap">
+	<select id="findOne" resultMap="DOMap">
 		select a.* from `schedule_job` a where a.job_id = #{jobId}
 	</select>
 	

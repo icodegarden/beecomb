@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.Page;
 
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.DelayJobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobDetailQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.ScheduleJobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobManager;
@@ -104,16 +107,14 @@ public class JobOpenapiController {
 		/**
 		 * 只查询对应用户的
 		 */
-		JobQuery.With with = JobQuery.With.builder()
-				.jobMain(JobQuery.With.JobMain.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
-						.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
-						.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt)
-						.queuedAtInstance(withQueuedAtInstance).build())
-				.jobDetail(JobQuery.With.JobDetail.builder().desc(withDesc).params(withParams).build())
-				.delayJob(withDelay ? JobQuery.With.DelayJob.builder().build() : null)
-				.scheduleJob(withSchedule ? JobQuery.With.ScheduleJob.builder().build() : null).build();
+		JobMainQuery.With with = JobMainQuery.With.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
+				.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
+				.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt).queuedAtInstance(withQueuedAtInstance)
+				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams).build())
+				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
+				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 
-		JobQuery query = JobQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
+		JobMainQuery query = JobMainQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
 				.page(page).size(size).sort("order by a.id desc").with(with).build();
@@ -129,7 +130,7 @@ public class JobOpenapiController {
 
 	@GetMapping(value = { "openapi/v1/jobs/{id}" })
 	public ResponseEntity<GetJobOpenapiVO> getJob(@PathVariable Long id) {
-		JobVO one = jobService.findOne(id, JobQuery.With.WITH_MOST);
+		JobVO one = jobService.findOne(id, JobMainQuery.With.WITH_MOST);
 
 		/**
 		 * 校验归属权
@@ -145,7 +146,7 @@ public class JobOpenapiController {
 
 	@GetMapping(value = { "openapi/v1/jobs/uuid/{uuid}" })
 	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(@PathVariable String uuid) {
-		JobVO one = jobService.findByUUID(uuid, JobQuery.With.WITH_MOST);
+		JobVO one = jobService.findByUUID(uuid, JobMainQuery.With.WITH_MOST);
 
 		/**
 		 * 校验归属权

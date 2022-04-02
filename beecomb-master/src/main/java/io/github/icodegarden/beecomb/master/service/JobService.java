@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 
 /**
@@ -25,8 +25,8 @@ public class JobService {
 	private JobMainMapper jobMainMapper;
 
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
-		JobQuery query = JobQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();
-		List<JobDO> dos = jobMainMapper.findAll(query);
+		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();
+		List<JobMainDO> dos = jobMainMapper.findAll(query);
 		return dos.size() >= 1;
 	}
 
@@ -49,14 +49,14 @@ public class JobService {
 	 * @return
 	 */
 	public List<ExecutableJobBO> listJobsShouldRecovery(int skip, int size) {
-		JobQuery query = JobQuery.builder().end(false).queued(false).with(JobQuery.With.WITH_EXECUTABLE)
+		JobMainQuery query = JobMainQuery.builder().end(false).queued(false).with(JobMainQuery.With.WITH_EXECUTABLE)
 				.sort("order by a.priority desc").limit("limit " + skip + "," + size).build();
 
-		List<JobDO> dos = jobMainMapper.findAll(query);
+		List<JobMainDO> dos = jobMainMapper.findAll(query);
 		if (dos.isEmpty()) {
 			return Collections.emptyList();
 		}
-		return dos.stream().map(JobDO::toExecutableJobBO).collect(Collectors.toList());
+		return dos.stream().map(JobMainDO::toExecutableJobBO).collect(Collectors.toList());
 	}
 
 }

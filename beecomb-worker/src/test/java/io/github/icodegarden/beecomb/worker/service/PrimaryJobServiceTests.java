@@ -7,15 +7,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.DelayJobDO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 
@@ -26,10 +27,10 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
  */
 @Transactional
 @SpringBootTest
-class PrimaryJobStorageTests {
+class PrimaryJobServiceTests {
 
 	@Autowired
-	PrimaryJobStorage primaryJobStorage;
+	PrimaryJobService primaryJobStorage;
 	@Autowired
 	JobMainMapper jobMainMapper;
 
@@ -67,16 +68,16 @@ class PrimaryJobStorageTests {
 		assertThat(mainPO.getQueuedAt()).isNull();
 		assertThat(mainPO.getQueuedAtInstance()).isNull();
 
-		JobDO jobDO = new JobDO();
-		jobDO.setJobMain(mainPO);
-		DelayJobPO delayJobPO = new DelayJobPO();
+		JobMainDO jobDO = new JobMainDO();
+		BeanUtils.copyProperties(mainPO, jobDO);
+		DelayJobDO delayJobPO = new DelayJobDO();
 		delayJobPO.setDelay(3000);
 		jobDO.setDelayJob(delayJobPO);
 		ExecutableJobBO job = jobDO.toExecutableJobBO();
 
 		primaryJobStorage.updateEnQueue(job);
-		JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
-		JobMainPO findOne = find.getJobMain();
+		
+		JobMainDO findOne = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(findOne.getQueued()).isTrue();
 		assertThat(findOne.getQueuedAt()).isNotNull();
 		assertThat(findOne.getQueuedAtInstance()).isNotNull();

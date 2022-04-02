@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.pagehelper.Page;
 
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.DelayJobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobDetailQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.query.ScheduleJobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.manager.JobManager;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
@@ -71,16 +74,14 @@ public class JobControllerRy extends BaseControllerRy {
 		/**
 		 * 只查询对应用户的
 		 */
-		JobQuery.With with = JobQuery.With.builder()
-				.jobMain(JobQuery.With.JobMain.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
-						.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
-						.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt)
-						.queuedAtInstance(withQueuedAtInstance).build())
-				.jobDetail(JobQuery.With.JobDetail.builder().desc(withDesc).params(withParams).build())
-				.delayJob(withDelay ? JobQuery.With.DelayJob.builder().build() : null)
-				.scheduleJob(withSchedule ? JobQuery.With.ScheduleJob.builder().build() : null).build();
+		JobMainQuery.With with = JobMainQuery.With.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
+				.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
+				.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt).queuedAtInstance(withQueuedAtInstance)
+				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams).build())
+				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
+				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 
-		JobQuery query = JobQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
+		JobMainQuery query = JobMainQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
 				.page(pageNum).size(pageSize).sort("order by a.id desc").with(with).build();
@@ -92,7 +93,7 @@ public class JobControllerRy extends BaseControllerRy {
 
 	@GetMapping("view/job/{id}/detail")
 	public String jobDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
-		JobVO vo = jobService.findOne(id, JobQuery.With.WITH_MOST);
+		JobVO vo = jobService.findOne(id, JobMainQuery.With.WITH_MOST);
 		mmap.addAttribute("job", vo);
 		return "/job/all/detail";
 	}
