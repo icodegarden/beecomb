@@ -27,9 +27,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
+import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.service.UserService;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
@@ -43,7 +43,7 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 
 	private final Map<String, Tuple2<UserPO, LocalDateTime>> cachedUsers = new HashMap<String, Tuple2<UserPO, LocalDateTime>>();
 
-	private final UserService userService;
+	private final UserManager userService;
 	private final Config config;
 	private RequestMatcher pathMatcher;
 
@@ -66,7 +66,7 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 		}
 	}
 
-	public BasicAuthenticationFilter(UserService userService, Config config) {
+	public BasicAuthenticationFilter(UserManager userService, Config config) {
 		this.userService = userService;
 		this.config = config;
 

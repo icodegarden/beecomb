@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,7 +25,7 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
  * @author Fangfang.Xu
  *
  */
-public abstract class AbstractJobService implements JobService {
+public abstract class AbstractJobManager implements JobManager {
 
 	@Autowired
 	protected JobMainMapper jobMainMapper;

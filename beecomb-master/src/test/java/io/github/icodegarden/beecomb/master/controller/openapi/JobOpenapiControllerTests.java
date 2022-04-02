@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
+import io.github.icodegarden.beecomb.master.manager.JobManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Delay;
-import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import lombok.Data;
 
@@ -48,7 +48,7 @@ public class JobOpenapiControllerTests {
 	@Autowired
 	private MockMvc mvc;
 	@Autowired
-	private JobService jobService;
+	private JobManager jobService;
 
 	String token;
 

@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Delay;
  *
  */
 @Service("delayJobService")
-public class DelayJobService extends AbstractJobService {
+public class DelayJobManager extends AbstractJobManager {
 
 	@Autowired
 	private DelayJobMapper delayJobMapper;

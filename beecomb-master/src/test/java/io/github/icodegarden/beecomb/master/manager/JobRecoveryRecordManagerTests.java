@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,12 +27,12 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
  */
 @Transactional
 @SpringBootTest
-class JobRecoveryRecordServiceTests {
+class JobRecoveryRecordManagerTests {
 
 	@Autowired
-	JobRecoveryRecordService jobRecoveryRecordService;
+	JobRecoveryRecordManager jobRecoveryRecordService;
 	@Autowired
-	JobService jobService;
+	DelayJobManager delayJobManager;
 
 	void create(Long jobId) {
 		CreateOrUpdateJobRecoveryRecordDTO dto = new CreateOrUpdateJobRecoveryRecordDTO();
@@ -59,7 +59,7 @@ class JobRecoveryRecordServiceTests {
 		delay.setRetryBackoffOnNoQualified(5000);
 		dto.setDelay(delay);
 
-		ExecutableJobBO job = jobService.create(dto);
+		ExecutableJobBO job = delayJobManager.create(dto);
 		return job;
 	}
 

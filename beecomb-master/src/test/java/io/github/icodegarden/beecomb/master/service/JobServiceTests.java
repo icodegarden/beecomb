@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.manager;
+package io.github.icodegarden.beecomb.master.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,6 +13,7 @@ import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.service.JobService;
 
 /**
  * 
@@ -21,10 +22,10 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
  */
 @Transactional
 @SpringBootTest
-class JobStorageImplTests {
+class JobServiceTests {
 
 	@Autowired
-	private JobStorage jobStorage;
+	private JobService jobStorage;
 	@Autowired
 	private JobMainMapper jobMainMapper;
 

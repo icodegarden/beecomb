@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.manager.ScheduleJobManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
 
@@ -19,10 +20,10 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
  */
 @Transactional
 @SpringBootTest
-class ScheduleJobServiceTests {
+class ScheduleJobManagerTests {
 
 	@Autowired
-	ScheduleJobService scheduleJobService;
+	ScheduleJobManager scheduleJobService;
 
 	@Test
 	void create() {

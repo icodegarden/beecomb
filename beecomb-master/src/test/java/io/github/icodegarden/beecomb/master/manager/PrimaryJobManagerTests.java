@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -10,6 +10,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
+import io.github.icodegarden.beecomb.master.manager.DelayJobManager;
+import io.github.icodegarden.beecomb.master.manager.PrimaryJobManager;
+import io.github.icodegarden.beecomb.master.manager.ScheduleJobManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 
 /**
@@ -19,14 +22,14 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
  */
 @Transactional
 @SpringBootTest
-class PrimaryJobServiceTests {
+class PrimaryJobManagerTests {
 
 	@Autowired
-	private PrimaryJobService primaryJobService;
+	private PrimaryJobManager primaryJobService;
 	@MockBean
-	private DelayJobService delayJobService;
+	private DelayJobManager delayJobService;
 	@MockBean
-	private ScheduleJobService scheduleJobService;
+	private ScheduleJobManager scheduleJobService;
 
 	@Test
 	void create() {

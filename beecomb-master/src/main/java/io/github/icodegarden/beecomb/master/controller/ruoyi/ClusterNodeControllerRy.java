@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.pagehelper.Page;
 
+import io.github.icodegarden.beecomb.master.manager.ClusterNodeManager;
 import io.github.icodegarden.beecomb.master.pojo.query.ClusterNodeQuery;
 import io.github.icodegarden.beecomb.master.pojo.view.ClusterNodeVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.beecomb.master.service.ClusterNodeService;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
@@ -28,7 +28,7 @@ import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 public class ClusterNodeControllerRy extends BaseControllerRy {
 
 	@Autowired
-	private ClusterNodeService clusterNodeService;
+	private ClusterNodeManager clusterNodeService;
 
 	@GetMapping("view/node/list")
 	public String nodeList(HttpServletRequest request, ModelMap mmap) {

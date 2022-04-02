@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
  *
  */
 @Service
-public class UserService {
+public class UserManager {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;

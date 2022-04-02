@@ -15,9 +15,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.manager.JobDispatcher;
-import io.github.icodegarden.beecomb.master.manager.JobStorage;
-import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
+import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
+import io.github.icodegarden.beecomb.master.service.JobDispatcher;
+import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
 
 /**
@@ -30,9 +30,9 @@ public class JobRecoveryScheduleTests {
 	@Test
 	void start() throws Exception {
 		DistributedLock lock = mock(DistributedLock.class);
-		JobStorage jobStorage = mock(JobStorage.class);
+		JobService jobStorage = mock(JobService.class);
 		JobDispatcher jobDispatcher = mock(JobDispatcher.class);
-		JobRecoveryRecordService jobRecoveryRecordService = mock(JobRecoveryRecordService.class);
+		JobRecoveryRecordManager jobRecoveryRecordService = mock(JobRecoveryRecordManager.class);
 
 		// recoveryThatNoQueuedActually部分------------------------------------------
 		doReturn(true).when(lock).acquire(anyLong());// 获取锁成功

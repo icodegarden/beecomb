@@ -10,9 +10,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.service.UserService;
 
 /**
  * 
@@ -23,7 +23,7 @@ import io.github.icodegarden.beecomb.master.service.UserService;
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
 	@Autowired
-	private UserService userService;
+	private UserManager userService;
 
 	@Override
 	public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) {

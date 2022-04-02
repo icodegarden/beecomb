@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.pagehelper.Page;
 
+import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
@@ -25,7 +26,6 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateUserDTO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
-import io.github.icodegarden.beecomb.master.service.UserService;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
@@ -39,7 +39,7 @@ import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 public class SysUserControllerRy extends BaseControllerRy {
 
 	@Autowired
-	private UserService userService;
+	private UserManager userService;
 	
 	@GetMapping("view/user/list")
 	public String userList(HttpServletRequest request, ModelMap mmap) {

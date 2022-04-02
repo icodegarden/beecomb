@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import io.github.icodegarden.beecomb.master.util.PageHelperUtils;
  *
  */
 @Service
-public class JobRecoveryRecordService {
+public class JobRecoveryRecordManager {
 
 	@Autowired
 	private JobRecoveryRecordMapper jobRecoveryRecordMapper;

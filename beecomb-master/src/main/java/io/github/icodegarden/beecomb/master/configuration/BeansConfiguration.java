@@ -19,11 +19,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
-import io.github.icodegarden.beecomb.master.manager.JobDispatcher;
-import io.github.icodegarden.beecomb.master.manager.JobReceiver;
-import io.github.icodegarden.beecomb.master.manager.JobStorage;
+import io.github.icodegarden.beecomb.master.manager.JobManager;
+import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
-import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
+import io.github.icodegarden.beecomb.master.service.JobDispatcher;
+import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
  * <br>
  * 定时获取worker的度量缓存数据{@link BeansConfiguration#zooKeeperInstanceMetrics(ZooKeeperHolder)}<br>
  * <br>
- * 开启任务恢复{@link BeansConfiguration#jobRecovery(DistributedLock, JobStorage)},{@link io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule}<br>
+ * 开启任务恢复{@link BeansConfiguration#jobRecovery(DistributedLock, JobService)},{@link io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule}<br>
  * 
  * <br>
  * 
@@ -195,13 +195,13 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
+	public JobReceiver jobReceiver(JobManager jobService, JobDispatcher jobDispatcher) {
 		return new JobReceiver(jobService, jobDispatcher);
 	}
 
 	@Bean
-	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobStorage jobStorage, JobDispatcher jobDispatcher,
-			JobRecoveryRecordService jobRecoveryRecordService) {
+	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobService jobStorage, JobDispatcher jobDispatcher,
+			JobRecoveryRecordManager jobRecoveryRecordService) {
 		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
 
 		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher,

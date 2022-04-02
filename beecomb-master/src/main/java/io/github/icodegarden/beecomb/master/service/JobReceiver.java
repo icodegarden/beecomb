@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.manager;
+package io.github.icodegarden.beecomb.master.service;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.manager.JobManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
@@ -35,10 +35,10 @@ public class JobReceiver {
 	private static final ThreadPoolExecutor FIXED_THREADPOOL = new ThreadPoolExecutor(200, 200, 0,
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1000), new NamedThreadFactory("dispatch-job"));
 
-	private JobService jobService;
+	private JobManager jobService;
 	private JobDispatcher jobDispatcher;
 
-	public JobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
+	public JobReceiver(JobManager jobService, JobDispatcher jobDispatcher) {
 		this.jobService = jobService;
 		this.jobDispatcher = jobDispatcher;
 	}

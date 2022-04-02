@@ -22,13 +22,13 @@ import com.github.pagehelper.Page;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.manager.JobReceiver;
+import io.github.icodegarden.beecomb.master.manager.JobManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.GetJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.PageJobsOpenapiVO;
-import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
@@ -46,7 +46,7 @@ public class JobOpenapiController {
 	@Autowired
 	private JobReceiver jobReceiver;
 	@Autowired
-	private JobService jobService;
+	private JobManager jobService;
 
 	@PostMapping(value = { "openapi/v1/jobs" })
 	public ResponseEntity<CreateJobOpenapiVO> createJob(@RequestParam(defaultValue = "true") boolean async,

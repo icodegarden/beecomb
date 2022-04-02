@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import io.github.icodegarden.commons.lang.util.CronUtils;
  *
  */
 @Service("scheduleJobService")
-public class ScheduleJobService extends AbstractJobService {
+public class ScheduleJobManager extends AbstractJobManager {
 
 	@Autowired
 	private ScheduleJobMapper scheduleJobMapper;

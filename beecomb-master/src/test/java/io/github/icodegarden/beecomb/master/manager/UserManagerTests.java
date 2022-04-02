@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.Page;
 
+import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
@@ -22,10 +23,10 @@ import io.github.icodegarden.beecomb.master.security.AuthenticationBasedTests;
  */
 @Transactional
 @SpringBootTest
-class UserServiceTests extends AuthenticationBasedTests {
+class UserManagerTests extends AuthenticationBasedTests {
 
 	@Autowired
-	UserService userService;
+	UserManager userService;
 
 	UserPO create(String username) {
 		CreateUserDTO dto = new CreateUserDTO();

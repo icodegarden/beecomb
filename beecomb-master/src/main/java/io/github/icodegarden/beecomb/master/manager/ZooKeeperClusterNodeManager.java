@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.service;
+package io.github.icodegarden.beecomb.master.manager;
 
 import java.util.List;
 import java.util.Map;
@@ -28,12 +28,12 @@ import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscove
  *
  */
 @Service
-public class ZooKeeperClusterNodeService implements ClusterNodeService {
+public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 
 	private InstanceDiscovery<? extends RegisteredInstance> instanceDiscovery;
 	private InstanceMetrics<? extends Metrics> instanceMetrics;
 
-	public ZooKeeperClusterNodeService(ZooKeeperHolder zooKeeperHolder, InstanceProperties instanceProperties) {
+	public ZooKeeperClusterNodeManager(ZooKeeperHolder zooKeeperHolder, InstanceProperties instanceProperties) {
 		/**
 		 * 实例需要构造而不是注入的原因是：可注入的实例是缓存式的，不用于Master、Executor
 		 */
