@@ -8,6 +8,7 @@ import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
+import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.commons.lang.result.Result1;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
@@ -26,7 +27,7 @@ public class ScheduleJobStorage extends BaseJobStorage {
 	@Autowired
 	private ScheduleJobMapper scheduleJobMapper;
 	@Autowired
-	private JobExecuteRecordService jobExecuteRecordService;
+	private JobExecuteRecordManager jobExecuteRecordService;
 
 	@Transactional
 	@Override
@@ -36,6 +37,7 @@ public class ScheduleJobStorage extends BaseJobStorage {
 				return Results.of(false, false, new IllegalArgumentException("nextTrigAt must not null"));
 			}
 			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
+					.lastExecuteSuccess(false)
 					.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
 					.nextTrigAt(update.getNextTrigAt()).build();
 
@@ -111,8 +113,8 @@ public class ScheduleJobStorage extends BaseJobStorage {
 				return Results.of(false, false, new IllegalArgumentException("nextTrigAt must not null"));
 			}
 			Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-					.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(update.getNextTrigAt())
-					.build();
+					.lastExecuteSuccess(false).lastTrigResult(buildLastTrigResult(update.getException()))
+					.nextTrigAt(update.getNextTrigAt()).build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
 				jobExecuteRecordService.createOnJobUpdate(mainUpdate);

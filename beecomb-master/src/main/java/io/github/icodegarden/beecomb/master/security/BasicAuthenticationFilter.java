@@ -28,7 +28,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.beecomb.master.pojo.query.UserWith;
+import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
 import io.github.icodegarden.beecomb.master.service.UserService;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
@@ -118,7 +118,7 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 				Tuple2<UserPO, LocalDateTime> tuple = cachedUsers.compute(username, (k, v) -> {
 					if (v == null
 							|| v.getT2().isBefore(SystemUtils.now().minusSeconds(config.getMaxUserCacheSeconds()))) {
-						UserPO user = userService.findByUsername(k, UserWith.WITH_LEAST);
+						UserPO user = userService.findByUsername(k, UserQuery.With.WITH_LEAST);
 						if (user == null) {
 							/**
 							 * 返回null时map会自动清空该kv

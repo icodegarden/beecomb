@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.beecomb.master.pojo.query.UserWith;
+import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
 
 /**
  * 
@@ -53,7 +53,7 @@ class UserMapperTests {
 	void findByUsername() {
 		UserPO po = create();
 		
-		UserPO user = userMapper.findByUsername(po.getUsername(), UserWith.WITH_MOST);
+		UserPO user = userMapper.findByUsername(po.getUsername(), UserQuery.With.WITH_MOST);
 		
 		assertThat(user).isNotNull();
 		assertThat(user.getId()).isEqualTo(po.getId());

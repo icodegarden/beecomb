@@ -15,14 +15,14 @@ import io.github.icodegarden.beecomb.client.pojo.response.PageResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.test.PropertiesConfig;
+import io.github.icodegarden.beecomb.test.Properties4Test;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
-abstract class AbstractBeeCombClientTests extends PropertiesConfig {
+abstract class AbstractBeeCombClientTests extends Properties4Test {
 
 	BasicAuthentication authentication = new BasicAuthentication("beecomb", "beecomb");
 	BeeCombClient beeCombClient;

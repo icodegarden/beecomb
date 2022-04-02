@@ -1,12 +1,10 @@
-package io.github.icodegarden.beecomb.master.manager;
-
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+package io.github.icodegarden.beecomb.master.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 
 import io.github.icodegarden.beecomb.common.db.exception.SQLIntegrityConstraintException;
 import io.github.icodegarden.beecomb.common.db.mapper.JobDetailMapper;
@@ -15,13 +13,10 @@ import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobDetailPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith.DelayJob;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith.JobDetail;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith.JobMain;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith.ScheduleJob;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
+import io.github.icodegarden.beecomb.master.util.PageHelperUtils;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
@@ -30,7 +25,7 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
  * @author Fangfang.Xu
  *
  */
-public abstract class BaseJobStorage implements JobStorage {
+public abstract class AbstractJobService implements JobService {
 
 	@Autowired
 	protected JobMainMapper jobMainMapper;
@@ -76,43 +71,26 @@ public abstract class BaseJobStorage implements JobStorage {
 
 	@Override
 	public ExecutableJobBO findOneExecutableJob(Long id) {
-		JobDO jobDO = jobMainMapper.findOne(id, executableJobWith());
+		JobDO jobDO = jobMainMapper.findOne(id, JobQuery.With.WITH_EXECUTABLE);
 		return jobDO.toExecutableJobBO();
 	}
 
-	@Override
-	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
-		JobQuery query = JobQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();
-		List<JobDO> dos = jobMainMapper.findAll(query);
-		return dos.size() >= 1;
+	public Page<JobVO> page(JobQuery query) {
+		PageHelper.startPage(query.getPage(), query.getSize());
+
+		Page<JobDO> page = (Page<JobDO>) jobMainMapper.findAll(query);
+
+		Page<JobVO> p = PageHelperUtils.ofPage(page, jobDO -> JobVO.of(jobDO));
+		return p;
 	}
 
-	@Override
-	public int recoveryThatNoQueuedActually(LocalDateTime nextTrigAtLt) {
-		return jobMainMapper.updateToNoQueued(nextTrigAtLt);
+	public JobVO findOne(Long id, JobQuery.With with) {
+		JobDO jobDO = jobMainMapper.findOne(id, with);
+		return JobVO.of(jobDO);
 	}
 
-	/**
-	 * 未end、未queued、按priority优先级
-	 */
-	@Override
-	public List<ExecutableJobBO> listJobsShouldRecovery(int skip, int size) {
-		JobQuery query = JobQuery.builder().end(false).queued(false).with(executableJobWith())
-				.sort("order by a.priority desc").limit("limit " + skip + "," + size).build();
-
-		List<JobDO> dos = jobMainMapper.findAll(query);
-		if (dos.isEmpty()) {
-			return Collections.emptyList();
-		}
-		return dos.stream().map(JobDO::toExecutableJobBO).collect(Collectors.toList());
-	}
-
-	protected JobWith executableJobWith() {
-		return JobWith.builder()
-				.jobMain(JobMain.builder().createdAt(true).lastExecuteExecutor(true).lastExecuteReturns(true)
-						.lastTrigResult(true).build())
-				.jobDetail(JobDetail.builder().params(true).build()).delayJob(DelayJob.builder().build())
-				.scheduleJob(ScheduleJob.builder().build()).build();
-
+	public JobVO findByUUID(String uuid, JobQuery.With with) {
+		JobDO jobDO = jobMainMapper.findByUUID(uuid, with);
+		return JobVO.of(jobDO);
 	}
 }

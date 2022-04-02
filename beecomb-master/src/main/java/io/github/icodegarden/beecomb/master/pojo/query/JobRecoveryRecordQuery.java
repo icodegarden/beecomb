@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.master.pojo.query;
 
 import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,11 +20,12 @@ public class JobRecoveryRecordQuery extends BaseQuery {
 	private Long jobId;
 	private Boolean success;// bit(1) NOT NULL,
 	private String jobCreatedBy;
-	private JobRecoveryRecordWith with;
+
+	private With with;
 
 	@Builder
 	public JobRecoveryRecordQuery(int page, int size, String sort, String limit, Long jobId, Boolean success,
-			String jobCreatedBy, JobRecoveryRecordWith with) {
+			String jobCreatedBy, With with) {
 		super(page, size, sort, limit);
 		this.jobId = jobId;
 		this.success = success;
@@ -31,4 +33,19 @@ public class JobRecoveryRecordQuery extends BaseQuery {
 		this.with = with;
 	}
 
+	@Builder
+	@Data
+	public static class With {
+
+		public static final With WITH_LEAST = With.builder().build();
+		public static final With WITH_MOST = With.builder().desc(true).jobMain(JobMain.builder().build()).build();
+
+		private boolean desc;
+		private JobMain jobMain;
+
+		@Builder
+		@Data
+		public static class JobMain {
+		}
+	}
 }

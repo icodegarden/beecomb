@@ -12,7 +12,6 @@ import com.github.pagehelper.Page;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.pojo.query.UserWith;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
 import io.github.icodegarden.beecomb.master.security.AuthenticationBasedTests;
 
@@ -70,12 +69,12 @@ class UserServiceTests extends AuthenticationBasedTests {
 
 		userService.disable(po.getId());
 
-		UserPO find = userService.findByUsername("xff", UserWith.WITH_MOST);
+		UserPO find = userService.findByUsername("xff", UserQuery.With.WITH_MOST);
 		assertThat(find.getActived()).isFalse();
 
 		userService.enable(po.getId());
 
-		find = userService.findByUsername("xff", UserWith.WITH_MOST);
+		find = userService.findByUsername("xff", UserQuery.With.WITH_MOST);
 		assertThat(find.getActived()).isTrue();
 	}
 }

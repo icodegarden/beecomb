@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.beecomb.master.pojo.query.UserWith;
+import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
 import io.github.icodegarden.beecomb.master.service.UserService;
 
 /**
@@ -27,7 +27,7 @@ public class UserDetailsService implements org.springframework.security.core.use
 
 	@Override
 	public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username) {
-		UserPO user = userService.findByUsername(username, UserWith.WITH_LEAST);
+		UserPO user = userService.findByUsername(username, UserQuery.With.WITH_LEAST);
 		if (user == null) {
 			throw new UsernameNotFoundException("User:" + username + " not found");
 		}

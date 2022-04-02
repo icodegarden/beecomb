@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.test.PropertiesConfig;
+import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
@@ -27,7 +27,7 @@ import io.github.icodegarden.commons.lang.result.Results;
  * @author Fangfang.Xu
  *
  */
-class AbstractJobEngineTests extends PropertiesConfig {
+class AbstractJobEngineTests extends Properties4Test {
 
 	MetricsOverload metricsOverload = mock(MetricsOverload.class);
 	

@@ -10,10 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.master.manager.JobDispatcher;
-import io.github.icodegarden.beecomb.master.manager.JobReceiver;
-import io.github.icodegarden.beecomb.master.manager.JobStorage;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 
 /**
@@ -24,14 +22,14 @@ import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 class JobReceiverTests {
 
 	JobReceiver jobReceiver;
-	JobStorage JobStorage;
+	JobService jobService;
 	JobDispatcher jobDispatcher;
 
 	@BeforeEach
 	void init() {
-		JobStorage = mock(JobStorage.class);
+		jobService = mock(JobService.class);
 		jobDispatcher = mock(JobDispatcher.class);
-		jobReceiver = new JobReceiver(JobStorage, jobDispatcher);
+		jobReceiver = new JobReceiver(jobService, jobDispatcher);
 	}
 
 	@Test
@@ -44,7 +42,7 @@ class JobReceiverTests {
 		doReturn(new MetricsInstance.Default(null, null)).when(jobDispatcher).dispatch(any());
 
 		jobReceiver.receive(delayJobDTO);
-		verify(JobStorage, times(1)).create(delayJobDTO);
+		verify(jobService, times(1)).create(delayJobDTO);
 		verify(jobDispatcher, times(1)).dispatch(any());
 	}
 
@@ -56,7 +54,7 @@ class JobReceiverTests {
 
 		jobReceiver.receiveAsync(delayJobDTO);
 		Thread.sleep(100);
-		verify(JobStorage, times(1)).create(delayJobDTO);
+		verify(jobService, times(1)).create(delayJobDTO);
 		verify(jobDispatcher, times(1)).dispatch(any());
 	}
 }

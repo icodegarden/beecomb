@@ -13,8 +13,8 @@ import io.github.icodegarden.beecomb.common.executor.Job;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.server.JobReceiver;
-import io.github.icodegarden.beecomb.test.PropertiesConfig;
-import io.github.icodegarden.beecomb.test.ZookeeperBuilder;
+import io.github.icodegarden.beecomb.test.Properties4Test;
+import io.github.icodegarden.beecomb.test.ZookeeperBuilder4Test;
 import io.github.icodegarden.commons.exchange.exception.ExchangeFailedReason;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
 import io.github.icodegarden.commons.lang.result.Result2;
@@ -24,7 +24,7 @@ import io.github.icodegarden.commons.lang.result.Result2;
  * @author Fangfang.Xu
  *
  */
-class BeeCombExecutorTests extends PropertiesConfig {
+class BeeCombExecutorTests extends Properties4Test {
 
 	@Test
 	void close() throws Exception {

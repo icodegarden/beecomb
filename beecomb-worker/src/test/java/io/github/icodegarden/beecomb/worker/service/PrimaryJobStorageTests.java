@@ -15,10 +15,9 @@ import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.worker.service.PrimaryJobStorage;
 
 /**
  * 
@@ -74,9 +73,9 @@ class PrimaryJobStorageTests {
 		delayJobPO.setDelay(3000);
 		jobDO.setDelayJob(delayJobPO);
 		ExecutableJobBO job = jobDO.toExecutableJobBO();
-		
+
 		primaryJobStorage.updateEnQueue(job);
-		JobDO find = jobMainMapper.findOne(mainPO.getId(),JobWith.WITH_MOST);
+		JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
 		JobMainPO findOne = find.getJobMain();
 		assertThat(findOne.getQueued()).isTrue();
 		assertThat(findOne.getQueuedAt()).isNotNull();

@@ -51,7 +51,7 @@
 			a.id,
 			a.username,
 			a.password,
-			a.name,
+			a.`name`,
 			a.email,
 			a.phone,
 			a.is_actived,

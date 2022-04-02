@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.service;
+package io.github.icodegarden.beecomb.worker.manager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.icodegarden.beecomb.common.db.mapper.JobExecuteRecordMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.data.JobExecuteRecordDO;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobExecuteRecordQuery;
+import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.CreateJobExecuteRecordDTO;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 
@@ -21,10 +22,10 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
  */
 @Transactional
 @SpringBootTest
-class JobExecuteRecordServiceTests {
+class JobExecuteRecordManagerTests {
 
 	@Autowired
-	private JobExecuteRecordService jobExecuteRecordService;
+	private JobExecuteRecordManager jobExecuteRecordManager;
 	@Autowired
 	private JobExecuteRecordMapper jobExecuteRecordMapper;
 
@@ -58,7 +59,7 @@ class JobExecuteRecordServiceTests {
 		dto.setTrigAt(SystemUtils.now());
 		dto.setTrigResult("rrr");
 
-		jobExecuteRecordService.create(dto);
+		jobExecuteRecordManager.create(dto);
 
 		JobExecuteRecordDO record = jobExecuteRecordMapper.findAll(JobExecuteRecordQuery.builder().build()).get(0);
 

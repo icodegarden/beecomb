@@ -1,7 +1,6 @@
-package io.github.icodegarden.beecomb.master.manager;
+package io.github.icodegarden.beecomb.master.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.UUID;
 
@@ -10,11 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.exception.SQLIntegrityConstraintException;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.manager.DelayJobStorage;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 /**
  * 
@@ -23,10 +20,10 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
  */
 @Transactional
 @SpringBootTest
-class DelayJobStorageTests {
+class DelayJobServiceTests {
 
 	@Autowired
-	DelayJobStorage delayJobStorage;
+	DelayJobService delayJobService;
 
 	@Test
 	void create() throws InterruptedException {
@@ -46,7 +43,7 @@ class DelayJobStorageTests {
 		
 		dto.setDelay(delay);
 
-		ExecutableJobBO job = delayJobStorage.create(dto);
+		ExecutableJobBO job = delayJobService.create(dto);
 
 		assertThat(job).isNotNull();
 		
@@ -61,6 +58,6 @@ class DelayJobStorageTests {
 		assertThat(d.getRetriedTimesOnNoQualified()).isEqualTo(0);
 		
 		// uuid重复-----------------------------------------
-//		assertThatExceptionOfType(SQLIntegrityConstraintException.class).isThrownBy(() -> delayJobStorage.create(dto));
+//		assertThatExceptionOfType(SQLIntegrityConstraintException.class).isThrownBy(() -> delayJobService.create(dto));
 	}
 }

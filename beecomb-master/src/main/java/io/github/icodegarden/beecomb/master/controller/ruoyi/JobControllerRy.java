@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.github.pagehelper.Page;
 
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
@@ -72,14 +71,14 @@ public class JobControllerRy extends BaseControllerRy {
 		/**
 		 * 只查询对应用户的
 		 */
-		JobWith with = JobWith.builder()
-				.jobMain(JobWith.JobMain.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
+		JobQuery.With with = JobQuery.With.builder()
+				.jobMain(JobQuery.With.JobMain.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
 						.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
 						.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt)
 						.queuedAtInstance(withQueuedAtInstance).build())
-				.jobDetail(JobWith.JobDetail.builder().desc(withDesc).params(withParams).build())
-				.delayJob(withDelay ? JobWith.DelayJob.builder().build() : null)
-				.scheduleJob(withSchedule ? JobWith.ScheduleJob.builder().build() : null).build();
+				.jobDetail(JobQuery.With.JobDetail.builder().desc(withDesc).params(withParams).build())
+				.delayJob(withDelay ? JobQuery.With.DelayJob.builder().build() : null)
+				.scheduleJob(withSchedule ? JobQuery.With.ScheduleJob.builder().build() : null).build();
 
 		JobQuery query = JobQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
@@ -93,7 +92,7 @@ public class JobControllerRy extends BaseControllerRy {
 
 	@GetMapping("view/job/{id}/detail")
 	public String jobDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
-		JobVO vo = jobService.findOne(id, JobWith.WITH_MOST);
+		JobVO vo = jobService.findOne(id, JobQuery.With.WITH_MOST);
 		mmap.addAttribute("job", vo);
 		return "/job/all/detail";
 	}

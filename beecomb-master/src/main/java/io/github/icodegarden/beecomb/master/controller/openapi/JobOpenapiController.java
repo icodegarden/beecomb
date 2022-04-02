@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.github.pagehelper.Page;
 
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobReceiver;
@@ -105,14 +104,14 @@ public class JobOpenapiController {
 		/**
 		 * 只查询对应用户的
 		 */
-		JobWith with = JobWith.builder()
-				.jobMain(JobWith.JobMain.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
+		JobQuery.With with = JobQuery.With.builder()
+				.jobMain(JobQuery.With.JobMain.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
 						.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
 						.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt)
 						.queuedAtInstance(withQueuedAtInstance).build())
-				.jobDetail(JobWith.JobDetail.builder().desc(withDesc).params(withParams).build())
-				.delayJob(withDelay ? JobWith.DelayJob.builder().build() : null)
-				.scheduleJob(withSchedule ? JobWith.ScheduleJob.builder().build() : null).build();
+				.jobDetail(JobQuery.With.JobDetail.builder().desc(withDesc).params(withParams).build())
+				.delayJob(withDelay ? JobQuery.With.DelayJob.builder().build() : null)
+				.scheduleJob(withSchedule ? JobQuery.With.ScheduleJob.builder().build() : null).build();
 
 		JobQuery query = JobQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
@@ -130,7 +129,7 @@ public class JobOpenapiController {
 
 	@GetMapping(value = { "openapi/v1/jobs/{id}" })
 	public ResponseEntity<GetJobOpenapiVO> getJob(@PathVariable Long id) {
-		JobVO one = jobService.findOne(id, JobWith.WITH_MOST);
+		JobVO one = jobService.findOne(id, JobQuery.With.WITH_MOST);
 
 		/**
 		 * 校验归属权
@@ -146,7 +145,7 @@ public class JobOpenapiController {
 
 	@GetMapping(value = { "openapi/v1/jobs/uuid/{uuid}" })
 	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(@PathVariable String uuid) {
-		JobVO one = jobService.findByUUID(uuid, JobWith.WITH_MOST);
+		JobVO one = jobService.findByUUID(uuid, JobQuery.With.WITH_MOST);
 
 		/**
 		 * 校验归属权

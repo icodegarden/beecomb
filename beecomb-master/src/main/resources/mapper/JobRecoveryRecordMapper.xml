@@ -46,15 +46,15 @@
 			
 			<if test="with != null">
 				<trim prefix="," suffixOverrides=",">
-					<if test="with.desc == true">a.desc as jrr_desc,</if>
+					<if test="with.desc == true">a.`desc` as jrr_desc,</if>
 				</trim>
 			</if>
 			<if test="with != null and with.jobMain != null">
 				<trim prefix="," suffixOverrides=",">
 					b.id as jm_id,
-					b.uuid as jm_uuid,
-					b.name as jm_name,
-					b.type as jm_type,
+					b.`uuid` as jm_uuid,
+					b.`name` as jm_name,
+					b.`type` as jm_type,
 					b.executor_name as jm_executor_name,
 					b.job_handler_name as jm_job_handler_name,
 					b.priority as jm_priority,

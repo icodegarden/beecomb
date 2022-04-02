@@ -13,6 +13,7 @@ import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO.Update;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
+import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.lang.result.Result1;
 import io.github.icodegarden.commons.lang.result.Result2;
@@ -32,7 +33,7 @@ public class DelayJobStorage extends BaseJobStorage {
 	@Autowired
 	private DelayJobMapper delayJobMapper;
 	@Autowired
-	private JobExecuteRecordService jobExecuteRecordService;
+	private JobExecuteRecordManager jobExecuteRecordService;
 
 	@Transactional
 	@Override
@@ -183,7 +184,8 @@ public class DelayJobStorage extends BaseJobStorage {
 					RETRY_TEMPLATE.execute(ctx -> delayJobMapper.update(delayUpdate));
 
 					Update mainUpdate = Update.builder().id(update.getJobId()).lastTrigAt(update.getLastTrigAt())
-							.lastTrigResult(buildLastTrigResult(update.getException())).end(true).queued(false).build();
+							.lastExecuteSuccess(false).lastTrigResult(buildLastTrigResult(update.getException()))
+							.end(true).queued(false).build();
 
 					if (update.getCallback() != null) {
 						JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),

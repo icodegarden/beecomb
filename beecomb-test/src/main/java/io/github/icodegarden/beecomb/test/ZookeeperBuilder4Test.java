@@ -11,14 +11,14 @@ import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
  * @author Fangfang.Xu
  *
  */
-public abstract class ZookeeperBuilder extends PropertiesConfig {
+public abstract class ZookeeperBuilder4Test extends Properties4Test {
 
 	protected ZooKeeperHolder zkh;
 
 	@BeforeEach
 	void initZK() throws Exception {
 		Config config = new ZooKeeperHolder.Config(zkConnectString, 30000, 10000);
-		config.setAclAuth("xff:xff");
+		config.setAclAuth("beecomb:beecomb");
 		zkh = new ZooKeeperHolder(config);
 	}
 

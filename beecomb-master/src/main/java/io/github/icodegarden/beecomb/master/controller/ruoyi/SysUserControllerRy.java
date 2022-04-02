@@ -18,7 +18,6 @@ import com.github.pagehelper.Page;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.pojo.query.UserWith;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordNonOldDTO;
@@ -56,7 +55,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize) {
 		UserQuery query = UserQuery.builder().usernameLike(usernameLike).actived(actived).nameLike(nameLike).phone(phone)
 				.platformRole(platformRole).page(pageNum).size(pageSize).sort("order by a.id desc").build();
-		query.setWith(UserWith.builder().createdAt(true).createdBy(true).updatedAt(true).updatedBy(true).build());
+		query.setWith(UserQuery.With.builder().createdAt(true).createdBy(true).updatedAt(true).updatedBy(true).build());
 
 		Page<UserPO> p = userService.page(query);
 		return ResponseEntity.ok(getDataTable(p));
@@ -86,7 +85,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	
 	@GetMapping("view/user/{id}/update")
 	public String userUpdate(HttpServletRequest request, ModelMap mmap,@PathVariable Long id) {
-		UserPO user = userService.findOne(id, UserWith.WITH_LEAST);
+		UserPO user = userService.findOne(id, UserQuery.With.WITH_LEAST);
 		mmap.addAttribute("user", user);
 		return "/system/user/update";
 	}
@@ -106,7 +105,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	
 	@GetMapping("view/user/{id}/resetPwd")
 	public String resetPwd(HttpServletRequest request, ModelMap mmap,@PathVariable Long id) {
-		UserPO user = userService.findOne(id, UserWith.WITH_LEAST);
+		UserPO user = userService.findOne(id, UserQuery.With.WITH_LEAST);
 		mmap.addAttribute("user", user);
 		return "/system/user/resetPwd";
 	}

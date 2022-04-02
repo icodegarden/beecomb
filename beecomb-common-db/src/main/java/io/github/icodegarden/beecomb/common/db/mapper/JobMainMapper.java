@@ -8,7 +8,6 @@ import org.apache.ibatis.annotations.Param;
 import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
 
 /**
  * 
@@ -27,7 +26,7 @@ public interface JobMainMapper {
 	 * @param with Nullable
 	 * @return
 	 */
-	JobDO findOne(@Param("id") Long id, @Param("with") JobWith with);
+	JobDO findOne(@Param("id") Long id, @Param("with") JobQuery.With with);
 
 	/**
 	 * 
@@ -35,7 +34,7 @@ public interface JobMainMapper {
 	 * @param with Nullable
 	 * @return
 	 */
-	JobDO findByUUID(@Param("uuid") String uuid, @Param("with") JobWith with);
+	JobDO findByUUID(@Param("uuid") String uuid, @Param("with") JobQuery.With with);
 
 	int update(JobMainPO.Update update);
 

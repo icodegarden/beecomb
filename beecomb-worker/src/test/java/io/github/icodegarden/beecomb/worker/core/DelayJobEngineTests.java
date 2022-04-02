@@ -25,7 +25,7 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.test.NioClientSuppliers4Test;
-import io.github.icodegarden.beecomb.test.PropertiesConfig;
+import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
@@ -36,7 +36,6 @@ import io.github.icodegarden.commons.exchange.nio.NioProtocol;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
-import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
 import io.github.icodegarden.commons.lang.result.Result3;
 import io.github.icodegarden.commons.lang.result.Results;
 import io.github.icodegarden.commons.nio.pool.NioClientPool;
@@ -46,7 +45,7 @@ import io.github.icodegarden.commons.nio.pool.NioClientPool;
  * @author Fangfang.Xu
  *
  */
-class DelayJobEngineTests extends PropertiesConfig {
+class DelayJobEngineTests extends Properties4Test {
 
 	InstanceProperties instanceProperties = new InstanceProperties();
 
@@ -54,7 +53,7 @@ class DelayJobEngineTests extends PropertiesConfig {
 	final static String JOB_HANDLER_NAME = "myHandler";
 
 	ExecutorInstanceDiscovery<ExecutorRegisteredInstance> executorInstanceDiscovery;
-	InstanceMetrics instanceMetrics;
+	InstanceMetrics<Metrics> instanceMetrics;
 	MetricsOverload jobOverload;
 	DelayJobStorage delayJobStorage;
 	DelayJobEngine delayJobEngine;
@@ -145,13 +144,6 @@ class DelayJobEngineTests extends PropertiesConfig {
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
 		
-		/**
-		 * lb需要
-		 */
-		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
-		metrics.setServiceName(NodeRole.Executor.getRoleName());
-		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
-		
 		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
@@ -187,12 +179,6 @@ class DelayJobEngineTests extends PropertiesConfig {
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
 		
-		/**
-		 * lb需要
-		 */
-		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
-		metrics.setServiceName(NodeRole.Executor.getRoleName());
-		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
 		/**
 		 * lb需要
 		 */
@@ -235,12 +221,6 @@ class DelayJobEngineTests extends PropertiesConfig {
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
 		
-		/**
-		 * lb需要
-		 */
-		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
-		metrics.setServiceName(NodeRole.Executor.getRoleName());
-		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
 		
 		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);

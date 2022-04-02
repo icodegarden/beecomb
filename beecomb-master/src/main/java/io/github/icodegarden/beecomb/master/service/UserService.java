@@ -14,7 +14,6 @@ import io.github.icodegarden.beecomb.master.mapper.UserMapper;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.Update;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.pojo.query.UserWith;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordNonOldDTO;
@@ -72,12 +71,12 @@ public class UserService {
 		Page<UserPO> page = (Page<UserPO>) userMapper.findAll(query);
 		return page;
 	}
-	
-	public UserPO findOne(Long id, UserWith with) {
+
+	public UserPO findOne(Long id, UserQuery.With with) {
 		return userMapper.findOne(id, with);
 	}
 
-	public UserPO findByUsername(String username, UserWith with) {
+	public UserPO findByUsername(String username, UserQuery.With with) {
 		return userMapper.findByUsername(username, with);
 	}
 
@@ -95,7 +94,7 @@ public class UserService {
 	}
 
 	public void updatePassword(UpdatePasswordNonOldDTO dto) throws ErrorCodeException {
-		UserPO user = findOne(dto.getId(), UserWith.WITH_LEAST);
+		UserPO user = findOne(dto.getId(), UserQuery.With.WITH_LEAST);
 		if (user == null) {
 			throw new ClientParameterInvalidErrorCodeException(
 					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(), "user not found");
@@ -106,15 +105,15 @@ public class UserService {
 
 		doUpdate(update);
 	}
-	
+
 	public void updatePassword(UpdatePasswordDTO dto) throws ErrorCodeException {
-		UserPO user = findOne(dto.getId(), UserWith.WITH_LEAST);
+		UserPO user = findOne(dto.getId(), UserQuery.With.WITH_LEAST);
 		if (user == null) {
 			throw new ClientParameterInvalidErrorCodeException(
 					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(), "user not found");
 		}
 		Long cUserId = UserUtils.getUserId();
-		if(!user.getId().equals(cUserId)) {
+		if (!user.getId().equals(cUserId)) {
 			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND,
 					"Not Found, Ownership");
 		}

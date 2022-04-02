@@ -23,6 +23,7 @@ import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
+import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
 
 /**
  * 
@@ -116,15 +117,21 @@ class ExecutorInstanceLoadBalanceTests {
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1, jobHandlerRegistration2)));
 
+		/**
+		 * lb需要
+		 */
+		Metrics metrics = new Metrics(new Metrics.Dimension(new DimensionName("ignore"), 1, 0));
+		metrics.setServiceName(NodeRole.Executor.getRoleName());
+		doReturn(Arrays.asList(metrics)).when(instanceMetrics).listMetrics(any());
+		/**
+		 * lb需要
+		 */
 		ExecutorRegisteredInstance executorRegisteredInstance1 = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "executor1", "1.1.1.1", 10000, jobHandlerRegistrationBean);
-
 		ExecutorRegisteredInstance executorRegisteredInstance2 = new ExecutorRegisteredInstance.Default(
 				NodeRole.Executor.getRoleName(), "executor2", "1.1.1.2", 10000, jobHandlerRegistrationBean);
-
 		List<ExecutorRegisteredInstance> instances = Arrays.asList(executorRegisteredInstance1,
 				executorRegisteredInstance2);
-
 		doReturn(instances).when(executorInstanceDiscovery).listInstances(any());
 
 		Queue<MetricsInstance> candidates = executorLoadBalance.selectCandidates(null, 3);

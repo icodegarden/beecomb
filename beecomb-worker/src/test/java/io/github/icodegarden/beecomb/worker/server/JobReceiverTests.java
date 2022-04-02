@@ -13,11 +13,11 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.data.JobDO;
 import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobWith;
+import io.github.icodegarden.beecomb.common.db.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
-import io.github.icodegarden.beecomb.test.PropertiesConfig;
+import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 
@@ -28,7 +28,7 @@ import io.github.icodegarden.beecomb.worker.exception.WorkerException;
  */
 //@Transactional 由于要验证事务的回滚，因此事务不能在这里开启
 @SpringBootTest
-class JobReceiverTests extends PropertiesConfig {
+class JobReceiverTests extends Properties4Test {
 
 	@Autowired
 	JobReceiver jobReceiver;
@@ -68,7 +68,7 @@ class JobReceiverTests extends PropertiesConfig {
 	void receiveFailOn_Overload() {
 		// 容量不足-----------------------------------
 		assertThatExceptionOfType(WorkerException.class).isThrownBy(() -> jobReceiver.receive(job))
-		.withMessage("Exceed Overload");
+				.withMessage("Exceed Overload");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class JobReceiverTests extends PropertiesConfig {
 	@Test
 	void receive_success() {
 		JobMainPO mainPO = create();
-		JobDO find = jobMainMapper.findOne(mainPO.getId(), JobWith.WITH_MOST);
+		JobDO find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
 		JobMainPO findOne = find.getJobMain();
 		assertThat(findOne.getQueued()).isFalse();
 		assertThat(findOne.getQueuedAt()).isNull();
@@ -110,7 +110,7 @@ class JobReceiverTests extends PropertiesConfig {
 		jobReceiver.receive(job);
 
 		// 验证事务的提交
-		find = jobMainMapper.findOne(mainPO.getId(), JobWith.WITH_MOST);
+		find = jobMainMapper.findOne(mainPO.getId(), JobQuery.With.WITH_MOST);
 		findOne = find.getJobMain();
 		assertThat(findOne.getQueued()).isTrue();
 		assertThat(findOne.getQueuedAt()).isNotNull();

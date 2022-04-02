@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.manager;
+package io.github.icodegarden.beecomb.master.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.manager.ScheduleJobStorage;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
+
 /**
  * 
  * @author Fangfang.Xu
@@ -19,10 +19,10 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
  */
 @Transactional
 @SpringBootTest
-class ScheduleJobStorageTests {
+class ScheduleJobServiceTests {
 
 	@Autowired
-	ScheduleJobStorage scheduleJobStorage;
+	ScheduleJobService scheduleJobService;
 
 	@Test
 	void create() {
@@ -31,13 +31,13 @@ class ScheduleJobStorageTests {
 		dto.setType(JobType.Schedule);
 		dto.setExecutorName("n1");
 		dto.setJobHandlerName("j1");
-		
+
 		Schedule schedule = new CreateJobDTO.Schedule();
 		schedule.setSheduleCron("0 * * * * *");
 		dto.setSchedule(schedule);
-		
-		ExecutableJobBO jobVO = scheduleJobStorage.create(dto);
-		
+
+		ExecutableJobBO jobVO = scheduleJobService.create(dto);
+
 		assertThat(jobVO).isNotNull();
 	}
 }

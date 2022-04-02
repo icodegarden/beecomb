@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.manager;
+package io.github.icodegarden.beecomb.master.service;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -14,14 +14,15 @@ import io.github.icodegarden.commons.springboot.SpringContext;
  */
 @Primary
 @Service
-public class PrimaryJobStorage extends BaseJobStorage implements JobStorage {
+public class PrimaryJobService extends AbstractJobService {
 
 	@Override
 	public ExecutableJobBO create(CreateJobDTO dto) throws IllegalArgumentException {
 		String typeName = dto.getType().name().toLowerCase();
-		JobStorage jobStorage = SpringContext.getApplicationContext().getBean(typeName, JobStorage.class);
+		JobService jobService = SpringContext.getApplicationContext().getBean(typeName + "JobService",
+				JobService.class);
 
-		return jobStorage.create(dto);
+		return jobService.create(dto);
 	}
 
 }

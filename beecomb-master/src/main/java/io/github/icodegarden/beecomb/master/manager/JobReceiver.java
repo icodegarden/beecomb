@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
@@ -34,18 +35,18 @@ public class JobReceiver {
 	private static final ThreadPoolExecutor FIXED_THREADPOOL = new ThreadPoolExecutor(200, 200, 0,
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1000), new NamedThreadFactory("dispatch-job"));
 
-	private JobStorage jobStorage;
+	private JobService jobService;
 	private JobDispatcher jobDispatcher;
 
-	public JobReceiver(JobStorage jobStorage, JobDispatcher jobDispatcher) {
-		this.jobStorage = jobStorage;
+	public JobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
+		this.jobService = jobService;
 		this.jobDispatcher = jobDispatcher;
 	}
 
 	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobDTO dto) {
 		ExecutableJobBO job;
 		try {
-			job = jobStorage.create(dto);
+			job = jobService.create(dto);
 		} catch (IllegalArgumentException e) {
 			return Results.of(false, null,
 					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
@@ -59,7 +60,8 @@ public class JobReceiver {
 				 * 设置字段给controller使用;不需要更新queuedAtInstance到数据库，该字段是在worker enQueue成功后更新的
 				 */
 				job.setQueuedAt(SystemUtils.now());
-				job.setQueuedAtInstance(SystemUtils.formatIpPort(registeredInstance.getIp(), registeredInstance.getPort()));
+				job.setQueuedAtInstance(
+						SystemUtils.formatIpPort(registeredInstance.getIp(), registeredInstance.getPort()));
 			}
 			return Results.of(true, job, null);
 		} catch (ExchangeException e) {
@@ -71,7 +73,7 @@ public class JobReceiver {
 	public Result2<ExecutableJobBO, ErrorCodeException> receiveAsync(CreateJobDTO dto) {
 		ExecutableJobBO job;
 		try {
-			job = jobStorage.create(dto);
+			job = jobService.create(dto);
 		} catch (IllegalArgumentException e) {
 			return Results.of(false, null,
 					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));

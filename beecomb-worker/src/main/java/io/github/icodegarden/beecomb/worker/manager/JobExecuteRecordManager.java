@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.service;
+package io.github.icodegarden.beecomb.worker.manager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import io.github.icodegarden.beecomb.worker.pojo.transfer.CreateJobExecuteRecord
  *
  */
 @Service
-public class JobExecuteRecordService {
+public class JobExecuteRecordManager {
 
 	@Autowired
 	private JobExecuteRecordMapper jobExecuteRecordMapper;

@@ -24,6 +24,7 @@ import io.github.icodegarden.beecomb.master.manager.JobReceiver;
 import io.github.icodegarden.beecomb.master.manager.JobStorage;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
 import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
+import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
@@ -34,7 +35,6 @@ import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.NamesCachedInstanceMetrics;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
-import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
@@ -80,7 +80,7 @@ public class BeansConfiguration {
 	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
 		return MappingJackson2HttpMessageConverters.simple();
 	}
-	
+
 	@Bean
 	public SmartLifecycle gracefullyShutdownLifecycle() {
 		return new GracefullyShutdownLifecycle();
@@ -195,8 +195,8 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobStorage jobStorage, JobDispatcher jobDispatcher) {
-		return new JobReceiver(jobStorage, jobDispatcher);
+	public JobReceiver jobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
+		return new JobReceiver(jobService, jobDispatcher);
 	}
 
 	@Bean
@@ -204,7 +204,8 @@ public class BeansConfiguration {
 			JobRecoveryRecordService jobRecoveryRecordService) {
 		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
 
-		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher, jobRecoveryRecordService);
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher,
+				jobRecoveryRecordService);
 		jobRecovery.start(instanceProperties.getJob().getRecoveryScheduleMillis());
 
 		/**

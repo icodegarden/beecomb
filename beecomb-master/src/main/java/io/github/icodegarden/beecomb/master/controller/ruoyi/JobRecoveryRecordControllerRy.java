@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.github.pagehelper.Page;
 
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
-import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordWith;
-import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordWith.JobMain;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.service.JobRecoveryRecordService;
@@ -47,9 +45,11 @@ public class JobRecoveryRecordControllerRy extends BaseControllerRy {
 			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize) {
 		String username = SecurityUtils.getUsername();
 
-		JobRecoveryRecordQuery query = JobRecoveryRecordQuery.builder().jobId(jobId).success(success).jobCreatedBy(username)
-				.with(JobRecoveryRecordWith.builder().jobMain(JobMain.builder().build()).build()).page(pageNum).size(pageSize)
-				.sort("order by a.recovery_at desc").build();
+		JobRecoveryRecordQuery query = JobRecoveryRecordQuery.builder().jobId(jobId).success(success)
+				.jobCreatedBy(username)
+				.with(JobRecoveryRecordQuery.With.builder()
+						.jobMain(JobRecoveryRecordQuery.With.JobMain.builder().build()).build())
+				.page(pageNum).size(pageSize).sort("order by a.recovery_at desc").build();
 
 		Page<JobRecoveryRecordVO> p = jobRecoveryRecordService.page(query);
 		return ResponseEntity.ok(getDataTable(p));
@@ -57,7 +57,7 @@ public class JobRecoveryRecordControllerRy extends BaseControllerRy {
 
 	@GetMapping("view/jobRecoveryRecord/jobs/{jobId}/detail")
 	public String jobDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long jobId) {
-		JobRecoveryRecordVO vo = jobRecoveryRecordService.findOne(jobId, JobRecoveryRecordWith.WITH_MOST);
+		JobRecoveryRecordVO vo = jobRecoveryRecordService.findOne(jobId, JobRecoveryRecordQuery.With.WITH_MOST);
 		mmap.addAttribute("record", vo);
 		return "/job/jobRecoveryRecord/detail";
 	}

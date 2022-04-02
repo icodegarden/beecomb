@@ -11,7 +11,7 @@ server:
   port: 9898
   sqlUnhealthMillis: -1
 zookeeper:
-  connectString: 192.168.80.128:2181
+  connectString: 127.0.0.1:2181
   
 spring:
   application:

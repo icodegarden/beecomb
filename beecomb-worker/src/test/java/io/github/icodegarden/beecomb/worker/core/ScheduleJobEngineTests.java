@@ -25,7 +25,7 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
 import io.github.icodegarden.beecomb.test.NioClientSuppliers4Test;
-import io.github.icodegarden.beecomb.test.PropertiesConfig;
+import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
@@ -44,7 +44,7 @@ import io.github.icodegarden.commons.nio.pool.NioClientPool;
  * @author Fangfang.Xu
  *
  */
-class ScheduleJobEngineTests extends PropertiesConfig {
+class ScheduleJobEngineTests extends Properties4Test {
 	
 	InstanceProperties instanceProperties = new InstanceProperties();
 	

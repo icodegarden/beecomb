@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.manager;
+package io.github.icodegarden.beecomb.master.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,12 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Delay;
  * @author Fangfang.Xu
  *
  */
-@Service("delay")
-public class DelayJobStorage extends BaseJobStorage implements JobStorage {
+@Service("delayJobService")
+public class DelayJobService extends AbstractJobService {
 
 	@Autowired
 	private DelayJobMapper delayJobMapper;
-
+	
 	@Transactional
 	@Override
 	public ExecutableJobBO create(CreateJobDTO dto) throws IllegalArgumentException {

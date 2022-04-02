@@ -2,6 +2,9 @@ package io.github.icodegarden.beecomb.master.pojo.view;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.BeanUtils;
+
+import io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO;
 import lombok.Data;
 
 /**
@@ -18,4 +21,21 @@ public class JobRecoveryRecordVO {
 	private LocalDateTime recoveryAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 	private JobVO job;
+
+	public static JobRecoveryRecordVO of(JobRecoveryRecordDO one) {
+		if(one == null) {
+			return null;
+		}
+		JobRecoveryRecordVO vo = new JobRecoveryRecordVO();
+
+		BeanUtils.copyProperties(one, vo);
+
+		if (one.getJobMain() != null) {
+			JobVO jobVO = new JobVO();
+			BeanUtils.copyProperties(one.getJobMain(), jobVO);
+
+			vo.setJob(jobVO);
+		}
+		return vo;
+	}
 }
