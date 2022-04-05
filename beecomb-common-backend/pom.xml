@@ -9,7 +9,7 @@
 		<version>0.0.1</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
-	<artifactId>beecomb-common-db</artifactId>
+	<artifactId>beecomb-common-backend</artifactId>
 	<packaging>jar</packaging>
 
 	<name>${project.artifactId}</name>
