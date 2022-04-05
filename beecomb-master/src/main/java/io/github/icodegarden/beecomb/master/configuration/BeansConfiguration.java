@@ -19,7 +19,6 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
-import io.github.icodegarden.beecomb.master.manager.JobManager;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
 import io.github.icodegarden.beecomb.master.service.JobDispatcher;
@@ -195,7 +194,7 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobManager jobService, JobDispatcher jobDispatcher) {
+	public JobReceiver jobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
 		return new JobReceiver(jobService, jobDispatcher);
 	}
 

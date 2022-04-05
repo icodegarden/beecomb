@@ -12,6 +12,7 @@ import org.springframework.dao.DataIntegrityViolationException;
  * @author Fangfang.Xu
  *
  */
+@Deprecated
 public class SQLIntegrityConstraintException extends IllegalArgumentException {
 	private static final long serialVersionUID = -5685277510936987458L;
 

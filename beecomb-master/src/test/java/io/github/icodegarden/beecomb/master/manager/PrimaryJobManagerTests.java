@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.manager.DelayJobManager;
 import io.github.icodegarden.beecomb.master.manager.PrimaryJobManager;
 import io.github.icodegarden.beecomb.master.manager.ScheduleJobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 
 /**
  * 
@@ -33,7 +33,7 @@ class PrimaryJobManagerTests {
 
 	@Test
 	void create() {
-		CreateJobDTO delayJobDTO = new CreateJobDTO();
+		CreateJobOpenapiDTO delayJobDTO = new CreateJobOpenapiDTO();
 		delayJobDTO.setName("myjob1");
 		delayJobDTO.setType(JobType.Delay);
 		primaryJobService.create(delayJobDTO);
@@ -41,7 +41,7 @@ class PrimaryJobManagerTests {
 		verify(delayJobService, times(1)).create(delayJobDTO);
 		verify(scheduleJobService, times(0)).create(delayJobDTO);
 
-		CreateJobDTO scheduleJobDTO = new CreateJobDTO();
+		CreateJobOpenapiDTO scheduleJobDTO = new CreateJobOpenapiDTO();
 		scheduleJobDTO.setName("myjob2");
 		scheduleJobDTO.setType(JobType.Schedule);
 		primaryJobService.create(scheduleJobDTO);

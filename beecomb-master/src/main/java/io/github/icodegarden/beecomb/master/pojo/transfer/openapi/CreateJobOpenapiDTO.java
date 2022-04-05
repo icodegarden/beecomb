@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.pojo.transfer;
+package io.github.icodegarden.beecomb.master.pojo.transfer.openapi;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -6,8 +6,12 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.springframework.util.Assert;
+
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.MasterConstants;
+import io.github.icodegarden.commons.lang.spec.response.ClientParameterMissingErrorCodeException;
+import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import lombok.Data;
 
 /**
@@ -16,7 +20,7 @@ import lombok.Data;
  *
  */
 @Data
-public class CreateJobDTO {
+public class CreateJobOpenapiDTO {
 
 	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
 	@NotEmpty
@@ -66,6 +70,22 @@ public class CreateJobDTO {
 		private Integer scheduleFixRate;// int comment 'ms',
 		private Integer scheduleFixDelay;// int comment 'ms',
 		private String sheduleCron;// varchar(20),
+	}
+	
+	public void validate() throws ErrorCodeException {
+		try {
+			Assert.notNull(type, "type");
+			if(type == JobType.Delay) {
+				Assert.notNull(delay, "delay");	
+				Assert.notNull(delay.getDelay(), "delay.delay");	
+			}
+			if(type == JobType.Schedule) {
+				Assert.notNull(schedule, "schedule");
+			}
+		} catch (IllegalArgumentException e) {
+			throw new ClientParameterMissingErrorCodeException(
+					ClientParameterMissingErrorCodeException.SubPair.MISSING_PARAMETER.getSub_code(), e.getMessage());
+		}
 	}
 
 }

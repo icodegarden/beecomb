@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.pagehelper.Page;
 
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.db.pojo.query.DelayJobQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobDetailQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.ScheduleJobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.master.manager.JobManager;
-import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
@@ -37,7 +37,7 @@ import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 public class JobControllerRy extends BaseControllerRy {
 
 	@Autowired
-	private JobManager jobService;
+	private JobMainManager jobMainManager;
 
 	@GetMapping("view/job/list")
 	public String jobList() {
@@ -86,14 +86,14 @@ public class JobControllerRy extends BaseControllerRy {
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
 				.page(pageNum).size(pageSize).sort("order by a.id desc").with(with).build();
 
-		Page<JobVO> p = jobService.page(query);
+		Page<JobMainVO> p = jobMainManager.page(query);
 
 		return ResponseEntity.ok(getDataTable(p));
 	}
 
 	@GetMapping("view/job/{id}/detail")
 	public String jobDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
-		JobVO vo = jobService.findOne(id, JobMainQuery.With.WITH_MOST);
+		JobMainVO vo = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 		mmap.addAttribute("job", vo);
 		return "/job/all/detail";
 	}

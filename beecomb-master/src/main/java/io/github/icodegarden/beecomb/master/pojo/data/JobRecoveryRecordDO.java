@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.pojo.data;
 
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
+import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.JobRecoveryRecordPO;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,9 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class JobRecoveryRecordDO {
+public class JobRecoveryRecordDO extends JobRecoveryRecordPO {
 
-	private JobRecoveryRecordPO jobRecoveryRecord;
-	private JobMainPO jobMain;
-
+	private JobMainDO jobMain;
 }

@@ -5,13 +5,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import io.github.icodegarden.beecomb.common.db.manager.DelayJobManager;
+import io.github.icodegarden.beecomb.common.db.manager.JobDetailManager;
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.db.manager.ScheduleJobManager;
 import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateDelayJobDTO;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateJobDetailDTO;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateJobMainDTO;
+import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 
 /**
  * 
@@ -22,7 +34,49 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 public class JobService {
 
 	@Autowired
-	private JobMainMapper jobMainMapper;
+	private JobMainMapper jobMainMapper;// FIXME 不应该直接出现
+	@Autowired
+	private JobMainManager jobMainManager;
+	@Autowired
+	private JobDetailManager jobDetailManager;
+	@Autowired
+	private DelayJobManager delayJbManager;
+	@Autowired
+	private ScheduleJobManager scheduleJobManager;
+
+	@Transactional
+	public ExecutableJobBO create(CreateJobOpenapiDTO dto) throws IllegalArgumentException {
+		CreateJobMainDTO createJobMainDTO = new CreateJobMainDTO();
+		BeanUtils.copyProperties(dto, createJobMainDTO);
+		jobMainManager.create(createJobMainDTO);
+
+		CreateJobDetailDTO createJobDetailDTO = new CreateJobDetailDTO();
+		BeanUtils.copyProperties(dto, createJobDetailDTO);
+		jobDetailManager.create(createJobDetailDTO);
+
+		if (dto.getType() == JobType.Delay) {
+			CreateDelayJobDTO createDelayJobDTO = new CreateDelayJobDTO();
+			BeanUtils.copyProperties(dto.getDelay(), createDelayJobDTO);
+			createDelayJobDTO.setJobId(createJobMainDTO.getId());
+			delayJbManager.create(createDelayJobDTO);
+		}
+		if (dto.getType() == JobType.Schedule) {
+			CreateScheduleJobDTO createScheduleJobDTO = new CreateScheduleJobDTO();
+			BeanUtils.copyProperties(dto.getSchedule(), createScheduleJobDTO);
+			createScheduleJobDTO.setJobId(createJobMainDTO.getId());
+			scheduleJobManager.create(createScheduleJobDTO);
+		}
+
+		return findOneExecutableJob(createJobMainDTO.getId());
+	}
+
+	/**
+	 * FIXME 返回体确定要这样吗
+	 */
+	public ExecutableJobBO findOneExecutableJob(Long id) {
+		JobMainDO jobDO = jobMainMapper.findOne(id, JobMainQuery.With.WITH_EXECUTABLE);
+		return jobDO.toExecutableJobBO();
+	}
 
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
 		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();

@@ -9,10 +9,8 @@
 		<result property="recoveryAt" column="recovery_at" />
 	</resultMap>
 	
-	<resultMap id="JobRecoveryRecordDOMap" type="io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO">
-		<association property="jobRecoveryRecord" columnPrefix="jrr_" resultMap="baseMap">
-        </association>
-        <association property="jobMain" columnPrefix="jm_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper.baseMap">
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO" extends="baseMap">
+        <association property="jobMain" columnPrefix="jm_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper.DOMap">
         </association>
 	</resultMap>
 	
@@ -40,13 +38,13 @@
 	
 	<sql id="findPrefix">
 		select 
-			a.job_id as jrr_job_id,
-			a.is_success as jrr_is_success,
-			a.recovery_at as jrr_recovery_at
+			a.job_id as job_id,
+			a.is_success as is_success,
+			a.recovery_at as recovery_at
 			
 			<if test="with != null">
 				<trim prefix="," suffixOverrides=",">
-					<if test="with.desc == true">a.`desc` as jrr_desc,</if>
+					<if test="with.desc == true">a.`desc` as desc,</if>
 				</trim>
 			</if>
 			<if test="with != null and with.jobMain != null">
@@ -75,12 +73,12 @@
 		</if>
 	</sql>
 	
-	<select id="findOne" resultMap="JobRecoveryRecordDOMap">
+	<select id="findOne" resultMap="DOMap">
 		<include refid="findPrefix"/>
 		where a.job_id = #{jobId}
 	</select>
 	
-	<select id="findAll" parameterType="io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery" resultMap="JobRecoveryRecordDOMap">
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery" resultMap="DOMap">
 		<include refid="findPrefix"/>
 		
 		<trim prefix="WHERE" prefixOverrides="AND">

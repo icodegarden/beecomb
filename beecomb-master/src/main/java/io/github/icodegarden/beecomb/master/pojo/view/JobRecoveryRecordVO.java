@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.beans.BeanUtils;
 
+import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO;
 import lombok.Data;
 
@@ -20,10 +21,10 @@ public class JobRecoveryRecordVO {
 	private String desc;// text comment '恢复结果描述65535',
 	private LocalDateTime recoveryAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-	private JobVO job;
+	private JobMainVO jobMain;
 
 	public static JobRecoveryRecordVO of(JobRecoveryRecordDO one) {
-		if(one == null) {
+		if (one == null) {
 			return null;
 		}
 		JobRecoveryRecordVO vo = new JobRecoveryRecordVO();
@@ -31,10 +32,9 @@ public class JobRecoveryRecordVO {
 		BeanUtils.copyProperties(one, vo);
 
 		if (one.getJobMain() != null) {
-			JobVO jobVO = new JobVO();
-			BeanUtils.copyProperties(one.getJobMain(), jobVO);
+			JobMainVO jobMain = JobMainVO.of(one.getJobMain());
 
-			vo.setJob(jobVO);
+			vo.setJobMain(jobMain);
 		}
 		return vo;
 	}

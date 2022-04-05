@@ -36,6 +36,15 @@
 			<scope>provided</scope><!-- <version>2.5.5</version>重写mybatis-spring-boot-starter依赖的spring-boot-starter2.5.0，因为需要更新的内部方法 -->
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.github.pagehelper</groupId>
+			<artifactId>pagehelper-spring-boot-starter</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>

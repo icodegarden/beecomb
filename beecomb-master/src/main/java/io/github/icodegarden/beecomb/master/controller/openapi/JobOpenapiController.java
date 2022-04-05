@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.Page;
 
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.db.pojo.query.DelayJobQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobDetailQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.db.pojo.query.ScheduleJobQuery;
+import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.manager.JobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.pojo.view.JobVO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.GetJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.PageJobsOpenapiVO;
@@ -49,11 +49,13 @@ public class JobOpenapiController {
 	@Autowired
 	private JobReceiver jobReceiver;
 	@Autowired
-	private JobManager jobService;
+	private JobMainManager jobMainManager;
 
 	@PostMapping(value = { "openapi/v1/jobs" })
 	public ResponseEntity<CreateJobOpenapiVO> createJob(@RequestParam(defaultValue = "true") boolean async,
-			@RequestBody @Validated CreateJobDTO dto) {
+			@RequestBody @Validated CreateJobOpenapiDTO dto) {
+		dto.validate();
+
 		Result2<ExecutableJobBO, ErrorCodeException> result2;
 		if (async) {
 			result2 = jobReceiver.receiveAsync(dto);
@@ -119,7 +121,7 @@ public class JobOpenapiController {
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
 				.page(page).size(size).sort("order by a.id desc").with(with).build();
 
-		Page<JobVO> p = jobService.page(query);
+		Page<JobMainVO> p = jobMainManager.page(query);
 
 		List<PageJobsOpenapiVO> list = p.getResult().stream().map(one -> PageJobsOpenapiVO.of(one))
 				.collect(Collectors.toList());
@@ -130,7 +132,7 @@ public class JobOpenapiController {
 
 	@GetMapping(value = { "openapi/v1/jobs/{id}" })
 	public ResponseEntity<GetJobOpenapiVO> getJob(@PathVariable Long id) {
-		JobVO one = jobService.findOne(id, JobMainQuery.With.WITH_MOST);
+		JobMainVO one = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 
 		/**
 		 * 校验归属权
@@ -146,7 +148,7 @@ public class JobOpenapiController {
 
 	@GetMapping(value = { "openapi/v1/jobs/uuid/{uuid}" })
 	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(@PathVariable String uuid) {
-		JobVO one = jobService.findByUUID(uuid, JobMainQuery.With.WITH_MOST);
+		JobMainVO one = jobMainManager.findByUUID(uuid, JobMainQuery.With.WITH_MOST);
 
 		/**
 		 * 校验归属权

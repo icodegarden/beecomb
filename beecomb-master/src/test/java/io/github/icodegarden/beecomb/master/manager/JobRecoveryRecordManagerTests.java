@@ -15,8 +15,8 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery.With;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 
@@ -44,14 +44,14 @@ class JobRecoveryRecordManagerTests {
 	}
 
 	private ExecutableJobBO createJob() {
-		CreateJobDTO dto = new CreateJobDTO();
+		CreateJobOpenapiDTO dto = new CreateJobOpenapiDTO();
 		dto.setName("myjob");
 		dto.setUuid(UUID.randomUUID().toString());
 		dto.setType(JobType.Delay);
 		dto.setExecutorName("n1");
 		dto.setJobHandlerName("j1");
 
-		CreateJobDTO.Delay delay = new CreateJobDTO.Delay();
+		CreateJobOpenapiDTO.Delay delay = new CreateJobOpenapiDTO.Delay();
 		delay.setDelay(5000);
 		delay.setRetryOnExecuteFailed(3);
 		delay.setRetryBackoffOnExecuteFailed(3000);

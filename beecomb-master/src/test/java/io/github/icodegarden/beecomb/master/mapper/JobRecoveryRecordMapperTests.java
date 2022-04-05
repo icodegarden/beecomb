@@ -57,7 +57,7 @@ class JobRecoveryRecordMapperTests {
 		
 		JobRecoveryRecordDO findOne = jobRecoveryRecordMapper.findOne(po.getJobId(), null);
 		
-		assertThat(findOne.getJobRecoveryRecord().getJobId()).isEqualTo(po.getJobId());
+		assertThat(findOne.getJobId()).isEqualTo(po.getJobId());
 	}
 }
 

@@ -3,15 +3,20 @@ package io.github.icodegarden.beecomb.common.db.pojo.view;
 import org.springframework.beans.BeanUtils;
 
 import io.github.icodegarden.beecomb.common.db.pojo.data.DelayJobDO;
-import lombok.Data;
+import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
-@Data
-public class DelayJobVO {
+@Setter
+@Getter
+@ToString
+public class DelayJobVO extends DelayJobPO {
 
 	public static DelayJobVO of(DelayJobDO one) {
 		if (one == null) {

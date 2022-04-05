@@ -24,11 +24,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.master.manager.JobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Delay;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO.Delay;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import lombok.Data;
 
@@ -48,7 +48,7 @@ public class JobOpenapiControllerTests {
 	@Autowired
 	private MockMvc mvc;
 	@Autowired
-	private JobManager jobService;
+	private JobMainManager jobMainManager;
 
 	String token;
 
@@ -61,13 +61,13 @@ public class JobOpenapiControllerTests {
 
 	@Test
 	public void createJob() throws Exception {
-		CreateJobDTO body = new CreateJobDTO();
+		CreateJobOpenapiDTO body = new CreateJobOpenapiDTO();
 		body.setUuid(UUID.randomUUID().toString());
 		body.setName("myjob1");
 		body.setType(JobType.Delay);
 		body.setExecutorName("e1");
 		body.setJobHandlerName("h1");
-		Delay delay = new CreateJobDTO.Delay();
+		Delay delay = new CreateJobOpenapiDTO.Delay();
 		delay.setDelay(3000);
 		body.setDelay(delay);
 
@@ -115,7 +115,7 @@ public class JobOpenapiControllerTests {
 	@Test
 	public void getJob() throws Exception {
 		createJob();
-		Long id = jobService.page(JobMainQuery.builder().build()).get(0).getId();
+		Long id = jobMainManager.page(JobMainQuery.builder().build()).get(0).getId();
 
 		mvc.perform(get("/openapi/v1/jobs/" + id)
 //               .with(user("blaze").password("Q1w2e3r4"))
@@ -137,7 +137,7 @@ public class JobOpenapiControllerTests {
 	@Test
 	public void getJobByUUID() throws Exception {
 		createJob();
-		String uuid = jobService.page(JobMainQuery.builder().build()).get(0).getUuid();
+		String uuid = jobMainManager.page(JobMainQuery.builder().build()).get(0).getUuid();
 
 		mvc.perform(get("/openapi/v1/jobs/uuid/" + uuid)
 //               .with(user("blaze").password("Q1w2e3r4"))

@@ -6,8 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.manager.JobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
@@ -35,15 +34,15 @@ public class JobReceiver {
 	private static final ThreadPoolExecutor FIXED_THREADPOOL = new ThreadPoolExecutor(200, 200, 0,
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1000), new NamedThreadFactory("dispatch-job"));
 
-	private JobManager jobService;
+	private JobService jobService;
 	private JobDispatcher jobDispatcher;
 
-	public JobReceiver(JobManager jobService, JobDispatcher jobDispatcher) {
+	public JobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
 		this.jobService = jobService;
 		this.jobDispatcher = jobDispatcher;
 	}
 
-	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobDTO dto) {
+	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobOpenapiDTO dto) {
 		ExecutableJobBO job;
 		try {
 			job = jobService.create(dto);
@@ -70,7 +69,7 @@ public class JobReceiver {
 		}
 	}
 
-	public Result2<ExecutableJobBO, ErrorCodeException> receiveAsync(CreateJobDTO dto) {
+	public Result2<ExecutableJobBO, ErrorCodeException> receiveAsync(CreateJobOpenapiDTO dto) {
 		ExecutableJobBO job;
 		try {
 			job = jobService.create(dto);

@@ -10,10 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.master.manager.JobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.service.JobDispatcher;
-import io.github.icodegarden.beecomb.master.service.JobReceiver;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 
 /**
@@ -24,19 +21,19 @@ import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 class JobReceiverTests {
 
 	JobReceiver jobReceiver;
-	JobManager jobService;
+	JobService jobService;
 	JobDispatcher jobDispatcher;
 
 	@BeforeEach
 	void init() {
-		jobService = mock(JobManager.class);
+		jobService = mock(JobService.class);
 		jobDispatcher = mock(JobDispatcher.class);
 		jobReceiver = new JobReceiver(jobService, jobDispatcher);
 	}
 
 	@Test
 	void receive() {
-		CreateJobDTO delayJobDTO = new CreateJobDTO();
+		CreateJobOpenapiDTO delayJobDTO = new CreateJobOpenapiDTO();
 		delayJobDTO.setName("myjob1");
 		delayJobDTO.setType(JobType.Delay);
 
@@ -50,7 +47,7 @@ class JobReceiverTests {
 
 	@Test
 	void receiveAsync() throws InterruptedException {
-		CreateJobDTO delayJobDTO = new CreateJobDTO();
+		CreateJobOpenapiDTO delayJobDTO = new CreateJobOpenapiDTO();
 		delayJobDTO.setName("myjob1");
 		delayJobDTO.setType(JobType.Delay);
 

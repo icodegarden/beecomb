@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.ScheduleJobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO.Schedule;
 
 /**
  * 
@@ -27,13 +27,13 @@ class ScheduleJobManagerTests {
 
 	@Test
 	void create() {
-		CreateJobDTO dto = new CreateJobDTO();
+		CreateJobOpenapiDTO dto = new CreateJobOpenapiDTO();
 		dto.setName("myjob");
 		dto.setType(JobType.Schedule);
 		dto.setExecutorName("n1");
 		dto.setJobHandlerName("j1");
 
-		Schedule schedule = new CreateJobDTO.Schedule();
+		Schedule schedule = new CreateJobOpenapiDTO.Schedule();
 		schedule.setSheduleCron("0 * * * * *");
 		dto.setSchedule(schedule);
 

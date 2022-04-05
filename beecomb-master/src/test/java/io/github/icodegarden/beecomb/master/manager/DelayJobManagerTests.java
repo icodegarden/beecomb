@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.DelayJobManager;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 /**
  * 
  * @author Fangfang.Xu
@@ -28,14 +28,14 @@ class DelayJobManagerTests {
 
 	@Test
 	void create() throws InterruptedException {
-		CreateJobDTO dto = new CreateJobDTO();
+		CreateJobOpenapiDTO dto = new CreateJobOpenapiDTO();
 		dto.setName("myjob");
 		dto.setUuid(UUID.randomUUID().toString());
 		dto.setType(JobType.Delay);
 		dto.setExecutorName("n1");
 		dto.setJobHandlerName("j1");
 
-		CreateJobDTO.Delay delay = new CreateJobDTO.Delay();
+		CreateJobOpenapiDTO.Delay delay = new CreateJobOpenapiDTO.Delay();
 		delay.setDelay(5000);
 		delay.setRetryOnExecuteFailed(3);
 		delay.setRetryBackoffOnExecuteFailed(3000);
