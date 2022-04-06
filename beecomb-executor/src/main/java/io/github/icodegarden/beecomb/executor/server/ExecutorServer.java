@@ -5,12 +5,12 @@ import java.net.InetSocketAddress;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
+import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.beecomb.executor.ExecutorException;
 import io.github.icodegarden.beecomb.executor.InstanceProperties;
 import io.github.icodegarden.beecomb.executor.InstanceProperties.Overload;
 import io.github.icodegarden.beecomb.executor.InstanceProperties.Server;
 import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties;
-import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties.ZooKeeper;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.registry.zookeeper.ZooKeeperJobHandlerRegistry;
 import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
@@ -149,7 +149,7 @@ public class ExecutorServer implements GracefullyShutdown {
 
 		nioServer = new JavaNioServer("Executor-NioServer",
 				new InetSocketAddress(server.getExecutorIp(), server.getExecutorPort()),
-				new ExecuteMessageHandler(jobReceiver));
+				new EntryMessageHandler(jobReceiver));
 
 		nioServer.start();
 	}

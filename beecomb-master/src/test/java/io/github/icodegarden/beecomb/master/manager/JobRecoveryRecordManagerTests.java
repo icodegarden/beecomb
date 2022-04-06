@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.Page;
 
+import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery.With;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 
@@ -32,7 +32,7 @@ class JobRecoveryRecordManagerTests {
 	@Autowired
 	JobRecoveryRecordManager jobRecoveryRecordService;
 	@Autowired
-	DelayJobManager delayJobManager;
+	JobMainManager jobMainManager;
 
 	void create(Long jobId) {
 		CreateOrUpdateJobRecoveryRecordDTO dto = new CreateOrUpdateJobRecoveryRecordDTO();
@@ -43,24 +43,16 @@ class JobRecoveryRecordManagerTests {
 		jobRecoveryRecordService.createOrUpdate(dto);
 	}
 
-	private ExecutableJobBO createJob() {
-		CreateJobOpenapiDTO dto = new CreateJobOpenapiDTO();
+	private CreateJobMainDTO createJobMain() {
+		CreateJobMainDTO dto = new CreateJobMainDTO();
 		dto.setName("myjob");
 		dto.setUuid(UUID.randomUUID().toString());
 		dto.setType(JobType.Delay);
 		dto.setExecutorName("n1");
 		dto.setJobHandlerName("j1");
 
-		CreateJobOpenapiDTO.Delay delay = new CreateJobOpenapiDTO.Delay();
-		delay.setDelay(5000);
-		delay.setRetryOnExecuteFailed(3);
-		delay.setRetryBackoffOnExecuteFailed(3000);
-		delay.setRetryOnNoQualified(5);
-		delay.setRetryBackoffOnNoQualified(5000);
-		dto.setDelay(delay);
-
-		ExecutableJobBO job = delayJobManager.create(dto);
-		return job;
+		jobMainManager.create(dto);
+		return dto;
 	}
 
 	@Test
@@ -78,12 +70,12 @@ class JobRecoveryRecordManagerTests {
 		/**
 		 * 由于这里WITH_MOST会使用join，所以需要job数据
 		 */
-		ExecutableJobBO job = createJob();
+		CreateJobMainDTO createJobMainDTO = createJobMain();
 
-		create(job.getId());
+		create(createJobMainDTO.getId());
 
 		With with = JobRecoveryRecordQuery.With.WITH_MOST;
-		JobRecoveryRecordVO findOne = jobRecoveryRecordService.findOne(job.getId(), with);
+		JobRecoveryRecordVO findOne = jobRecoveryRecordService.findOne(createJobMainDTO.getId(), with);
 		assertThat(findOne).isNotNull();
 	}
 

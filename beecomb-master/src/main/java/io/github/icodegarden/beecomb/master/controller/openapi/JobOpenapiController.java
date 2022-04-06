@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.esotericsoftware.minlog.Log;
 import com.github.pagehelper.Page;
 
-import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
-import io.github.icodegarden.beecomb.common.db.pojo.query.DelayJobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobDetailQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.query.ScheduleJobQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.DelayJobQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobDetailQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.ScheduleJobQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
@@ -73,6 +74,7 @@ public class JobOpenapiController {
 			return ResponseEntity.ok(vo);
 		} else {
 			ErrorCodeException errorCodeException = result2.getT2();
+			Log.error("ex on createjob", errorCodeException);
 			return (ResponseEntity) ResponseEntity.status(errorCodeException.httpStatus())
 					.body(errorCodeException.getMessage());
 		}

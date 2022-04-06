@@ -11,10 +11,8 @@ import static org.mockito.Mockito.verify;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import io.github.icodegarden.beecomb.common.PropertiesConfig;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
-import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload.Config;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
@@ -32,8 +30,13 @@ import io.github.icodegarden.commons.lang.tuple.Tuples;
  * @author Fangfang.Xu
  *
  */
-class JobsMetricsOverloadTests extends PropertiesConfig {
+class JobsMetricsOverloadTests {
 
+	static final int MAX_JOBS_OVERLOAD = 2;
+	static {
+		System.setProperty("overload.jobs.max", MAX_JOBS_OVERLOAD + "");// 关系到测试
+	}
+	
 	JobsMetricsOverload allJobOverload;
 	InstanceMetrics instanceMetrics;
 	ExecutableJobBO job;

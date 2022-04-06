@@ -5,6 +5,9 @@ import org.springframework.context.annotation.Configuration;
 
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -43,13 +46,10 @@ public class InstanceProperties {
 		private int recoveryScheduleMillis = 60000;
 	}
 
-	@Data
-	public static class ZooKeeper {
-		private String root = "/beecomb";
-		private String connectString;
-		private int sessionTimeout = 3000;
-		private int connectTimeout = 3000;
-		private String aclAuth = "beecomb:beecomb";
+	@Setter
+	@Getter
+	@ToString
+	public static class ZooKeeper extends io.github.icodegarden.beecomb.common.properties.ZooKeeper {
 		/**
 		 * 因为lock不需要参与acl，而root有acl，所以跟root区分开
 		 */
@@ -72,17 +72,19 @@ public class InstanceProperties {
 		 */
 		private int metricsCacheRefreshIntervalMillis = 1000;
 	}
-	
+
 	@Data
 	public static class Security {
 		private Jwt jwt = new Jwt();
 		private BasicAuth basicAuth = new BasicAuth();
+
 		@Data
 		public static class Jwt {
 			private String issuer = "beecomb";
 			private String secretKey = "beecomb_jwt@icodegarden";
 			private int tokenExpireSeconds = 3600;
 		}
+
 		@Data
 		public static class BasicAuth {
 			private int maxUserCacheSeconds = 1800;

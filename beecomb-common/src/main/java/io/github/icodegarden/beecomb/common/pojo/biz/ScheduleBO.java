@@ -13,6 +13,11 @@ import io.github.icodegarden.beecomb.common.executor.ScheduleJob;
 import io.github.icodegarden.commons.lang.util.CronUtils;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 
+/**
+ * 
+ * @author Fangfang.Xu
+ *
+ */
 public class ScheduleBO implements Serializable {
 	private static final long serialVersionUID = 110264587448091798L;
 	

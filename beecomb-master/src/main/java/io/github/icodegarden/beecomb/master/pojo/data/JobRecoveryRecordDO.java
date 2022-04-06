@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.pojo.data;
 
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
+import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.JobRecoveryRecordPO;
 import lombok.Getter;
 import lombok.Setter;

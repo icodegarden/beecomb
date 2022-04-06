@@ -17,7 +17,7 @@
 	
 	<modules>
         <module>beecomb-common</module>
-        <module>beecomb-common-db</module>
+        <module>beecomb-common-backend</module>
         <module>beecomb-master</module>
         <module>beecomb-worker</module>
 		<module>beecomb-executor</module>

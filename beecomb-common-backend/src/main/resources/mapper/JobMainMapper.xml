@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper">
+<mapper namespace="io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper">
 
-	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO">
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO">
 		<id property="id" column="id" />
 		<result property="uuid" column="uuid" />
 		<result property="name" column="name" />
@@ -28,16 +28,16 @@
 		<result property="createdAt" column="created_at" />
 	</resultMap>
 	
-	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO" extends="baseMap">
-        <association property="jobDetail" columnPrefix="jd_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.JobDetailMapper.DOMap">
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO" extends="baseMap">
+        <association property="jobDetail" columnPrefix="jd_" resultMap="io.github.icodegarden.beecomb.common.backend.mapper.JobDetailMapper.DOMap">
         </association>
-        <association property="delayJob" columnPrefix="dj_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper.DOMap">
+        <association property="delayJob" columnPrefix="dj_" resultMap="io.github.icodegarden.beecomb.common.backend.mapper.DelayJobMapper.DOMap">
         </association>
-        <association property="scheduleJob" columnPrefix="sj_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper.DOMap">
+        <association property="scheduleJob" columnPrefix="sj_" resultMap="io.github.icodegarden.beecomb.common.backend.mapper.ScheduleJobMapper.DOMap">
         </association>
 	</resultMap>
 
-	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO" useGeneratedKeys="true" keyProperty="id">
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO" useGeneratedKeys="true" keyProperty="id">
 		insert into `job_main` (
 		<if test="id != null">`id`,</if>
 		<if test="uuid != null">`uuid`,</if>
@@ -159,7 +159,7 @@
 		</if>
 	</sql>
 	
-	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery" resultMap="DOMap">
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery" resultMap="DOMap">
 		<include refid="findPrefix"/>
 		
 		<trim prefix="WHERE" prefixOverrides="AND">
@@ -224,7 +224,7 @@
 	</select>
 	
 	<!-- 只能更新非end的任务 -->
-	<update id="update" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO$Update">
+	<update id="update" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO$Update">
 		update job_main 
 		<trim prefix="set" suffixOverrides=",">
 			<if test="name != null">name = #{name},</if>

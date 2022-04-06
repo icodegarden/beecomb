@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.master.pojo.view.openapi;
 
 import org.springframework.beans.BeanUtils;
 
-import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

@@ -95,6 +95,12 @@ public abstract class BaseQuery {
 		}
 	}
 
+	public void setLimitDefaultValueIfNotPresent() {
+		if (this.limit == null) {
+			setLimit("limit " + MAX_LIMIT_SIZE);
+		}
+	}
+
 	@Override
 	public String toString() {
 		return "BaseQuery [page=" + page + ", size=" + size + ", sort=" + sort + ", limit=" + limit + "]";

@@ -23,12 +23,12 @@ public class JobReceiver {
 
 	private volatile boolean closed;
 	private AtomicLong processingCount = new AtomicLong(0);
-	
-	private JobService jobStorage;
+
+	private JobService jobService;
 	private JobEngine jobEngine;
 
-	public JobReceiver(JobService jobStorage, JobEngine jobEngine) {
-		this.jobStorage = jobStorage;
+	public JobReceiver(JobService jobService, JobEngine jobEngine) {
+		this.jobService = jobService;
 		this.jobEngine = jobEngine;
 	}
 
@@ -42,7 +42,7 @@ public class JobReceiver {
 		if (closed) {
 			throw WorkerException.workerClosed();
 		}
-		
+
 		boolean allowEnQueue = jobEngine.allowEnQueue(job);
 		if (!allowEnQueue) {
 			if (log.isWarnEnabled()) {
@@ -52,9 +52,9 @@ public class JobReceiver {
 		}
 
 		processingCount.incrementAndGet();
-		
+
 		try {
-			jobStorage.updateEnQueue(job);
+			jobService.updateEnQueue(job);
 
 			Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = jobEngine.enQueue(job);
 			if (!enQueueResult.isSuccess()) {
@@ -73,9 +73,10 @@ public class JobReceiver {
 			}
 		}
 	}
-	
+
 	/**
 	 * 阻塞直到任务处理完毕或超时
+	 * 
 	 * @param blockTimeoutMillis
 	 */
 	public void closeBlocking(long blockTimeoutMillis) {

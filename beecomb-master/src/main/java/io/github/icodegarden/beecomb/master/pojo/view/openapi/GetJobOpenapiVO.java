@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.beans.BeanUtils;
 
-import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import lombok.Getter;
 import lombok.Setter;

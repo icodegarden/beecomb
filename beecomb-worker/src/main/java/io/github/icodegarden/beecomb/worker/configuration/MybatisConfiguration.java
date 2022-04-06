@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  *
  */
 @Configuration
-@MapperScan(basePackages = "io.github.icodegarden.beecomb.common.db.mapper")
+@MapperScan(basePackages = "io.github.icodegarden.beecomb.common.backend.mapper")
 public class MybatisConfiguration {
 
 //	@Autowired

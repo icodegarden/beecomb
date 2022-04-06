@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.support.RetryTemplate;
 
-import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainEnQueueDTO;
+import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -18,6 +18,7 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
  *
  */
 public abstract class BaseJobService implements JobService {
+	
 	protected static final RetryTemplate RETRY_TEMPLATE = RetryTemplate.builder().fixedBackoff(1000).maxAttempts(3)
 			.retryOn(Exception.class).build();
 

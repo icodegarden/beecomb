@@ -5,6 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import lombok.Data;
 import lombok.Getter;
@@ -92,15 +93,6 @@ public class InstanceProperties {
 				this.max = max;
 			}
 		}
-	}
-
-	@Data
-	public static class ZooKeeper {
-		private String root = "/beecomb";
-		private String connectString;
-		private int sessionTimeout = 3000;
-		private int connectTimeout = 3000;
-		private String aclAuth = "beecomb:beecomb";
 	}
 
 	@Data

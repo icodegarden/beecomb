@@ -113,7 +113,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	 * @param job
 	 * @return
 	 */
-	protected Consumer<JobFreshParams> jobFreshParamsCallback(ExecutableJobBO job) {
+	protected Consumer<JobFreshParams> buildJobFreshParamsCallback(ExecutableJobBO job) {
 		return params -> {
 			job.setLastExecuteExecutor(params.getLastExecuteExecutor());// 只在成功时有参数
 			job.setLastExecuteReturns(params.getLastExecuteReturns());// 只在成功时有参数

@@ -3,6 +3,7 @@ package io.github.icodegarden.beecomb.worker.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,16 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobMainPO;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.manager.ScheduleJobManager;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.ScheduleJobVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
 import io.github.icodegarden.commons.exchange.exception.AllInstanceFailedExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoQualifiedInstanceExchangeException;
 import io.github.icodegarden.commons.lang.result.Result1;
@@ -35,37 +38,44 @@ import io.github.icodegarden.commons.lang.result.Result2;
 class ScheduleJobServiceTests {
 
 	@Autowired
-	ScheduleJobService scheduleJobStorage;
+	private JobMainManager jobMainManager;
 	@Autowired
-	JobMainMapper jobMainMapper;
+	private ScheduleJobManager scheduleJobManager;
 	@Autowired
-	ScheduleJobMapper scheduleJobMapper;
+	private ScheduleJobService scheduleJobService;
 
-	JobMainPO mainPO;
+	CreateJobMainDTO createJobMainDTO;
 
-	JobMainPO create() {
-		mainPO = new JobMainPO();
-		mainPO.setCreatedBy("FangfangXu");
-		mainPO.setName("myjob");
-		mainPO.setExecutorName("n");
-		mainPO.setJobHandlerName("j");
-		mainPO.setPriority(5);
-		mainPO.setType(JobType.Schedule);
-		mainPO.setWeight(1);
-		mainPO.setQueued(true);
-		jobMainMapper.add(mainPO);
-		return mainPO;
+	void createJobMain() {
+		CreateJobMainDTO dto = new CreateJobMainDTO();
+		dto.setName("myjob");
+		dto.setUuid(UUID.randomUUID().toString());
+		dto.setType(JobType.Schedule);
+		dto.setExecutorName("n1");
+		dto.setJobHandlerName("j1");
+		dto.setCreatedBy("beecomb");
+
+		jobMainManager.create(dto);
+
+		/**
+		 * 需要enqueue的状态
+		 */
+		UpdateJobMainEnQueueDTO updateJobMainEnQueueDTO = UpdateJobMainEnQueueDTO.builder().id(dto.getId())
+				.nextTrigAt(LocalDateTime.now()).queuedAtInstance("1.1.1.1").build();
+		jobMainManager.updateEnQueue(updateJobMainEnQueueDTO);
+
+		createJobMainDTO = dto;
 	}
 
 	@BeforeEach
 	void init() {
-		// 初始化数据
-		JobMainPO mainPO = create();
+		createJobMain();
 
-		ScheduleJobPO scheduleJobPO = new ScheduleJobPO();
-		scheduleJobPO.setJobId(mainPO.getId());
-		scheduleJobPO.setScheduleFixRate(3000);
-		scheduleJobMapper.add(scheduleJobPO);
+		CreateScheduleJobDTO dto = new CreateScheduleJobDTO();
+		dto.setScheduleFixRate(3000);
+		dto.setJobId(createJobMainDTO.getId());
+
+		scheduleJobManager.create(dto);
 	}
 
 	@Test
@@ -73,22 +83,22 @@ class ScheduleJobServiceTests {
 		for (int i = 1; i < 10; i++) {
 			LocalDateTime now = LocalDateTime.now().withNano(0);
 
-			UpdateOnNoQualifiedExecutor update = UpdateOnNoQualifiedExecutor.builder().jobId(mainPO.getId())
+			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder().jobId(createJobMainDTO.getId())
 					.lastTrigAt(now)
 					.noQualifiedInstanceExchangeException(new NoQualifiedInstanceExchangeException(null))
 					.nextTrigAt(LocalDateTime.now()).build();
-			Result2<Boolean, RuntimeException> result2 = scheduleJobStorage.updateOnNoQualifiedExecutor(update);
+			Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnNoQualifiedExecutor(update);
 
 			assertThat(result2.isSuccess()).isEqualTo(true);
 			assertThat(result2.getT1()).isEqualTo(false);// 始终是false
 
-			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
+			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 			assertThat(main.getEnd()).isEqualTo(false);// 始终不会结束
 			assertThat(main.getQueued()).isEqualTo(true);// 始终是queued状态
 
-			ScheduleJobPO scheduleJob = scheduleJobMapper.findOne(mainPO.getId());
+			ScheduleJobVO scheduleJob = scheduleJobManager.findOne(createJobMainDTO.getId(), null);
 			assertThat(scheduleJob.getScheduledTimes()).isEqualTo(i);// 递增
 		}
 	}
@@ -98,14 +108,14 @@ class ScheduleJobServiceTests {
 		for (int i = 1; i < 10; i++) {
 			LocalDateTime now = LocalDateTime.now().withNano(0);
 
-			UpdateOnExecuteSuccess update = UpdateOnExecuteSuccess.builder().jobId(mainPO.getId()).lastTrigAt(now)
-					.executorIp("1.1.1.1").executorPort(10000 + i).lastExecuteReturns(i + "")
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(createJobMainDTO.getId())
+					.lastTrigAt(now).executorIp("1.1.1.1").executorPort(10000 + i).lastExecuteReturns(i + "")
 					.nextTrigAt(LocalDateTime.now()).build();
 
-			Result1<RuntimeException> result1 = scheduleJobStorage.updateOnExecuteSuccess(update);
+			Result1<RuntimeException> result1 = scheduleJobService.updateOnExecuteSuccess(update);
 			assertThat(result1.isSuccess()).isEqualTo(true);
 
-			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
+			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(false);// 不会结束
@@ -114,7 +124,7 @@ class ScheduleJobServiceTests {
 			assertThat(main.getLastExecuteReturns()).isEqualTo(i + "");//
 			assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 
-			ScheduleJobPO scheduleJob = scheduleJobMapper.findOne(mainPO.getId());
+			ScheduleJobVO scheduleJob = scheduleJobManager.findOne(createJobMainDTO.getId(), null);
 			assertThat(scheduleJob.getScheduledTimes()).isEqualTo(i);// 递增
 		}
 	}
@@ -123,14 +133,14 @@ class ScheduleJobServiceTests {
 	void updateOnExecuteSuccess_end() {
 		LocalDateTime now = LocalDateTime.now().withNano(0);
 		for (int i = 1; i < 10; i++) {
-			UpdateOnExecuteSuccess update = UpdateOnExecuteSuccess.builder().jobId(mainPO.getId()).lastTrigAt(now)
-					.executorIp("1.1.1.1").executorPort(10000 + i).lastExecuteReturns(i + "").end(true)
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(createJobMainDTO.getId())
+					.lastTrigAt(now).executorIp("1.1.1.1").executorPort(10000 + i).lastExecuteReturns(i + "").end(true)
 					.nextTrigAt(LocalDateTime.now()).build();
 
-			Result1<RuntimeException> result1 = scheduleJobStorage.updateOnExecuteSuccess(update);
+			Result1<RuntimeException> result1 = scheduleJobService.updateOnExecuteSuccess(update);
 			assertThat(result1.isSuccess()).isEqualTo(true);
 
-			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
+			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(true);// 结束
@@ -139,7 +149,7 @@ class ScheduleJobServiceTests {
 			assertThat(main.getLastExecuteReturns()).isEqualTo(1 + "");// 不变
 			assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 
-			ScheduleJobPO scheduleJob = scheduleJobMapper.findOne(mainPO.getId());
+			ScheduleJobVO scheduleJob = scheduleJobManager.findOne(createJobMainDTO.getId(), null);
 			assertThat(scheduleJob.getScheduledTimes()).isEqualTo(1);// 不变
 		}
 	}
@@ -149,15 +159,15 @@ class ScheduleJobServiceTests {
 		for (int i = 1; i < 10; i++) {
 			LocalDateTime now = LocalDateTime.now().withNano(0);
 
-			UpdateOnExecuteFailed update = UpdateOnExecuteFailed.builder().jobId(mainPO.getId()).lastTrigAt(now)
-					.exception(new AllInstanceFailedExchangeException(null, null)).nextTrigAt(LocalDateTime.now())
-					.build();
-			Result2<Boolean, RuntimeException> result2 = scheduleJobStorage.updateOnExecuteFailed(update);
+			UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(createJobMainDTO.getId())
+					.lastTrigAt(now).exception(new AllInstanceFailedExchangeException(null, null))
+					.nextTrigAt(LocalDateTime.now()).build();
+			Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnExecuteFailed(update);
 
 			assertThat(result2.isSuccess()).isEqualTo(true);
 			assertThat(result2.getT1()).isEqualTo(false);// 始终不会到失败阈值
 
-			JobMainDO main = jobMainMapper.findOne(mainPO.getId(), JobMainQuery.With.WITH_MOST);
+			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
 			assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																										// Instance
@@ -165,7 +175,7 @@ class ScheduleJobServiceTests {
 			assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 			assertThat(main.getQueued()).isEqualTo(true);// 始终是queued状态
 
-			ScheduleJobPO scheduleJob = scheduleJobMapper.findOne(mainPO.getId());
+			ScheduleJobVO scheduleJob = scheduleJobManager.findOne(createJobMainDTO.getId(), null);
 			assertThat(scheduleJob.getScheduledTimes()).isEqualTo(i);// 递增
 		}
 	}

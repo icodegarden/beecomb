@@ -6,13 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainOnExecutedDTO;
-import io.github.icodegarden.beecomb.common.db.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.manager.DelayJobManager;
+import io.github.icodegarden.beecomb.common.backend.mapper.DelayJobMapper;
+import io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.lang.result.Result1;
 import io.github.icodegarden.commons.lang.result.Result2;
@@ -26,26 +31,28 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-@Service("storage-delay")
+@Service
 public class DelayJobService extends BaseJobService {
 
 	@Autowired
 	private DelayJobMapper delayJobMapper;
 	@Autowired
+	private DelayJobManager delayJobManager;
+	@Autowired
 	private JobExecuteRecordManager jobExecuteRecordService;
 
 	@Transactional
 	@Override
-	public Result2<Boolean, RuntimeException> updateOnNoQualifiedExecutor(UpdateOnNoQualifiedExecutor update) {
+	public Result2<Boolean, RuntimeException> updateOnNoQualifiedExecutor(UpdateOnNoQualifiedExecutorDTO update) {
 		try {
-			DelayJobPO delayJobPO = delayJobMapper.findOne(update.getJobId());
-			if (delayJobPO != null) {
+			DelayJobVO delayJob = delayJobManager.findOne(update.getJobId(), null);
+			if (delayJob != null) {
 				JobMainVO jobMain = jobMainManager.findOne(update.getJobId(), null);
 				if (jobMain.getEnd()) {
 					return Results.of(true, true/* 到失败阈值 */, null);
 				}
 
-				int retriedTimesOnNoQualified = delayJobPO.getRetriedTimesOnNoQualified();
+				int retriedTimesOnNoQualified = delayJob.getRetriedTimesOnNoQualified();
 				DelayJobPO.Update delayUpdate = null;
 				if (jobMain.getLastTrigAt() != null) {
 					/**
@@ -59,12 +66,12 @@ public class DelayJobService extends BaseJobService {
 					RETRY_TEMPLATE.execute(ctx -> delayJobMapper.update(f));
 				}
 
-				DelayBO delay = delayJobPO.toDelayBO();
+				DelayBO delay = delayJob.toDelayBO();
 				LocalDateTime nextTrigAt = delay.calcNextTrigAtOnNoQualified();
 
 				boolean thresholdReached = false;
 				Boolean end = null;
-				if (retriedTimesOnNoQualified >= delayJobPO.getRetryOnNoQualified()) {
+				if (retriedTimesOnNoQualified >= delayJob.getRetryOnNoQualified()) {
 					/**
 					 * 达到阈值则结束
 					 */
@@ -99,7 +106,7 @@ public class DelayJobService extends BaseJobService {
 	}
 
 	@Override
-	public Result1<RuntimeException> updateOnExecuteSuccess(UpdateOnExecuteSuccess update) {
+	public Result1<RuntimeException> updateOnExecuteSuccess(UpdateOnExecuteSuccessDTO update) {
 		try {
 			UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
 					.lastTrigAt(update.getLastTrigAt()).lastTrigResult("Success").end(true)
@@ -131,17 +138,17 @@ public class DelayJobService extends BaseJobService {
 
 	@Transactional
 	@Override
-	public Result2<Boolean, RuntimeException> updateOnExecuteFailed(UpdateOnExecuteFailed update) {
+	public Result2<Boolean, RuntimeException> updateOnExecuteFailed(UpdateOnExecuteFailedDTO update) {
 		try {
-			DelayJobPO delayJobPO = delayJobMapper.findOne(update.getJobId());
-			if (delayJobPO != null) {
+			DelayJobVO delayJob = delayJobManager.findOne(update.getJobId(), null);
+			if (delayJob != null) {
 				JobMainVO jobMain = jobMainManager.findOne(update.getJobId(), null);
 				if (jobMain.getEnd()) {
 					return Results.of(true, true/* 到失败阈值 */, null);
 				}
 
 				if (update.getException() instanceof ExchangeException) {
-					int retriedTimesOnExecuteFailed = delayJobPO.getRetriedTimesOnExecuteFailed();
+					int retriedTimesOnExecuteFailed = delayJob.getRetriedTimesOnExecuteFailed();
 					DelayJobPO.Update delayUpdate = null;
 					if (jobMain.getLastTrigAt() != null) {
 						/**
@@ -155,12 +162,12 @@ public class DelayJobService extends BaseJobService {
 						RETRY_TEMPLATE.execute(ctx -> delayJobMapper.update(f));
 					}
 
-					DelayBO delay = delayJobPO.toDelayBO();
+					DelayBO delay = delayJob.toDelayBO();
 					LocalDateTime nextTrigAt = delay.calcNextTrigAtOnExecuteFailed();
 
 					boolean thresholdReached = false;
 					Boolean end = null;
-					if (retriedTimesOnExecuteFailed >= delayJobPO.getRetryOnExecuteFailed()) {
+					if (retriedTimesOnExecuteFailed >= delayJob.getRetryOnExecuteFailed()) {
 						// 达到阈值则结束
 						end = true;
 						thresholdReached = true;
@@ -189,7 +196,7 @@ public class DelayJobService extends BaseJobService {
 					 * 非ExchangeException导致的失败，视为不可重试
 					 */
 					DelayJobPO.Update delayUpdate = DelayJobPO.Update.builder().jobId(update.getJobId())
-							.retriedTimesOnExecuteFailed(delayJobPO.getRetryOnExecuteFailed()).build();
+							.retriedTimesOnExecuteFailed(delayJob.getRetryOnExecuteFailed()).build();
 					RETRY_TEMPLATE.execute(ctx -> delayJobMapper.update(delayUpdate));
 
 					UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())

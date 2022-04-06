@@ -24,8 +24,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO.Delay;

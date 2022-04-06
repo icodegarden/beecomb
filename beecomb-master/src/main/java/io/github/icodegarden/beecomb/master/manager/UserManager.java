@@ -5,11 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
-import io.github.icodegarden.beecomb.common.db.exception.SQLIntegrityConstraintException;
 import io.github.icodegarden.beecomb.master.mapper.UserMapper;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.Update;
@@ -19,10 +19,8 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordNonOldDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateUserDTO;
 import io.github.icodegarden.beecomb.master.security.UserUtils;
-import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
-import io.github.icodegarden.commons.lang.spec.response.ClientParameterInvalidErrorCodeException;
-import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
@@ -44,7 +42,7 @@ public class UserManager {
 	 * @return
 	 * @throws 参数错误、唯一约束
 	 */
-	public UserPO create(CreateUserDTO dto) throws ErrorCodeException {
+	public UserPO create(CreateUserDTO dto) throws IllegalArgumentException {
 		UserPO po = new UserPO();
 		BeanUtils.copyProperties(dto, po);
 
@@ -59,9 +57,7 @@ public class UserManager {
 			userMapper.add(po);
 			return po;
 		} catch (DataIntegrityViolationException e) {
-			throw new ClientParameterInvalidErrorCodeException(
-					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(),
-					new SQLIntegrityConstraintException(e).getMessage());
+			throw new SQLConstraintException(e);
 		}
 	}
 
@@ -86,19 +82,16 @@ public class UserManager {
 	 * @return
 	 * @throws 参数错误、唯一约束
 	 */
-	public void update(UpdateUserDTO dto) throws ErrorCodeException {
+	public void update(UpdateUserDTO dto) throws IllegalArgumentException {
 		Update update = new UserPO.Update(dto.getId());
 		BeanUtils.copyProperties(dto, update);
 
 		doUpdate(update);
 	}
 
-	public void updatePassword(UpdatePasswordNonOldDTO dto) throws ErrorCodeException {
+	public void updatePassword(UpdatePasswordNonOldDTO dto) throws IllegalArgumentException {
 		UserPO user = findOne(dto.getId(), UserQuery.With.WITH_LEAST);
-		if (user == null) {
-			throw new ClientParameterInvalidErrorCodeException(
-					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(), "user not found");
-		}
+		Assert.notNull(user, "user not found");
 
 		Update update = new UserPO.Update(user.getId());
 		update.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -106,22 +99,13 @@ public class UserManager {
 		doUpdate(update);
 	}
 
-	public void updatePassword(UpdatePasswordDTO dto) throws ErrorCodeException {
+	public void updatePassword(UpdatePasswordDTO dto) throws IllegalArgumentException {
 		UserPO user = findOne(dto.getId(), UserQuery.With.WITH_LEAST);
-		if (user == null) {
-			throw new ClientParameterInvalidErrorCodeException(
-					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(), "user not found");
-		}
+		Assert.notNull(user, "user not found");
+
 		Long cUserId = UserUtils.getUserId();
-		if (!user.getId().equals(cUserId)) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND,
-					"Not Found, Ownership");
-		}
-		if (!matchesPassword(dto.getPasswordOld(), user.getPassword())) {
-			throw new ClientParameterInvalidErrorCodeException(
-					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(),
-					"Original password not match");
-		}
+		Assert.isTrue(user.getId().equals(cUserId), "Not Found, Ownership");
+		Assert.isTrue(matchesPassword(dto.getPasswordOld(), user.getPassword()), "Original password not match");
 
 		Update update = new UserPO.Update(user.getId());
 		update.setPassword(passwordEncoder.encode(dto.getPasswordNew()));
@@ -129,14 +113,14 @@ public class UserManager {
 		doUpdate(update);
 	}
 
-	public void enable(Long id) throws ErrorCodeException {
+	public void enable(Long id) throws IllegalArgumentException {
 		Update update = new UserPO.Update(id);
 		update.setActived(true);
 
 		doUpdate(update);
 	}
 
-	public void disable(Long id) throws ErrorCodeException {
+	public void disable(Long id) throws IllegalArgumentException {
 		Update update = new UserPO.Update(id);
 		update.setActived(false);
 
@@ -150,15 +134,10 @@ public class UserManager {
 			update.setUpdatedBy(SecurityUtils.getUsername());
 			i = userMapper.update(update);
 		} catch (DataIntegrityViolationException e) {
-			throw new ClientParameterInvalidErrorCodeException(
-					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(),
-					new SQLIntegrityConstraintException(e).getMessage());
+			throw new SQLConstraintException(e);
 		}
 
-		if (i == 0) {
-			throw new ClientParameterInvalidErrorCodeException(
-					ClientParameterInvalidErrorCodeException.SubPair.INVALID_PARAMETER.getSub_code(), "user not found");
-		}
+		Assert.isTrue(i != 0, "user not found");
 	}
 
 	public boolean matchesPassword(String rawPassword, String encodedPassword) {

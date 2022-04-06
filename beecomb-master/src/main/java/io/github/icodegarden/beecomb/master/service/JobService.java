@@ -10,20 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.manager.DelayJobManager;
-import io.github.icodegarden.beecomb.common.db.manager.JobDetailManager;
-import io.github.icodegarden.beecomb.common.db.manager.JobMainManager;
-import io.github.icodegarden.beecomb.common.db.manager.ScheduleJobManager;
-import io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobMainDO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobMainQuery;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateDelayJobDTO;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateJobDetailDTO;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateJobMainDTO;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.common.backend.manager.DelayJobManager;
+import io.github.icodegarden.beecomb.common.backend.manager.JobDetailManager;
+import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.manager.ScheduleJobManager;
+import io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
  * 
@@ -34,7 +35,7 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpena
 public class JobService {
 
 	@Autowired
-	private JobMainMapper jobMainMapper;// FIXME 不应该直接出现
+	private JobMainMapper jobMainMapper;
 	@Autowired
 	private JobMainManager jobMainManager;
 	@Autowired
@@ -48,10 +49,12 @@ public class JobService {
 	public ExecutableJobBO create(CreateJobOpenapiDTO dto) throws IllegalArgumentException {
 		CreateJobMainDTO createJobMainDTO = new CreateJobMainDTO();
 		BeanUtils.copyProperties(dto, createJobMainDTO);
+		createJobMainDTO.setCreatedBy(SecurityUtils.getUsername());// IMPT
 		jobMainManager.create(createJobMainDTO);
 
 		CreateJobDetailDTO createJobDetailDTO = new CreateJobDetailDTO();
 		BeanUtils.copyProperties(dto, createJobDetailDTO);
+		createJobDetailDTO.setJobId(createJobMainDTO.getId());
 		jobDetailManager.create(createJobDetailDTO);
 
 		if (dto.getType() == JobType.Delay) {
@@ -74,14 +77,17 @@ public class JobService {
 	 * FIXME 返回体确定要这样吗
 	 */
 	public ExecutableJobBO findOneExecutableJob(Long id) {
-		JobMainDO jobDO = jobMainMapper.findOne(id, JobMainQuery.With.WITH_EXECUTABLE);
-		return jobDO.toExecutableJobBO();
+		JobMainVO vo = jobMainManager.findOne(id, JobMainQuery.With.WITH_EXECUTABLE);
+		if (vo == null) {
+			return null;
+		}
+		return vo.toExecutableJob();
 	}
 
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
 		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();
-		List<JobMainDO> dos = jobMainMapper.findAll(query);
-		return dos.size() >= 1;
+		List<JobMainVO> vos = jobMainManager.list(query);
+		return vos.size() >= 1;
 	}
 
 	/**
@@ -106,11 +112,11 @@ public class JobService {
 		JobMainQuery query = JobMainQuery.builder().end(false).queued(false).with(JobMainQuery.With.WITH_EXECUTABLE)
 				.sort("order by a.priority desc").limit("limit " + skip + "," + size).build();
 
-		List<JobMainDO> dos = jobMainMapper.findAll(query);
-		if (dos.isEmpty()) {
+		List<JobMainVO> vos = jobMainManager.list(query);
+		if (vos.isEmpty()) {
 			return Collections.emptyList();
 		}
-		return dos.stream().map(JobMainDO::toExecutableJobBO).collect(Collectors.toList());
+		return vos.stream().map(JobMainVO::toExecutableJob).collect(Collectors.toList());
 	}
 
 }

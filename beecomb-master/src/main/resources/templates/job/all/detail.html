@@ -131,13 +131,13 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">任务参数：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.params}"></div>
+				    <div class="form-control-static" th:text="${job.jobDetail?.params}"></div>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">任务描述：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.desc}"></div>
+				    <div class="form-control-static" th:text="${job.jobDetail?.desc}"></div>
 				</div>
 			</div>
 			
@@ -145,49 +145,49 @@
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 				<label class="col-sm-3 control-label">任务延迟ms：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.delay}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.delay}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 <!-- 				<label class="col-sm-3 control-label">执行失败重试次数：</label> -->
 				<label class="col-sm-3 control-label">retryOnExecuteFailed：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.retryOnExecuteFailed}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.retryOnExecuteFailed}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 <!-- 				<label class="col-sm-3 control-label">执行失败重试回退ms：</label> -->
 				<label class="col-sm-3 control-label">retryBackoffOnExecuteFailed：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.retryBackoffOnExecuteFailed}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.retryBackoffOnExecuteFailed}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 <!-- 				<label class="col-sm-3 control-label">执行失败已重试次数：</label> -->
 				<label class="col-sm-3 control-label">retriedTimesOnExecuteFailed：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.retriedTimesOnExecuteFailed}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.retriedTimesOnExecuteFailed}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 <!-- 				<label class="col-sm-3 control-label">没有合格的Executor重试次数：</label> -->
 				<label class="col-sm-3 control-label">retryOnNoQualified：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.retryOnNoQualified}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.retryOnNoQualified}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 <!-- 				<label class="col-sm-3 control-label">没有合格的Executor重试回退ms：</label> -->
 				<label class="col-sm-3 control-label">retryBackoffOnNoQualified：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.retryBackoffOnNoQualified}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.retryBackoffOnNoQualified}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Delay'}">
 <!-- 				<label class="col-sm-3 control-label">没有合格的Executor已重试次数：</label> -->
 				<label class="col-sm-3 control-label">retriedTimesOnNoQualified：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.retriedTimesOnNoQualified}"></div>
+				    <div class="form-control-static" th:text="${job.delayJob?.retriedTimesOnNoQualified}"></div>
 				</div>
 			</div>
 			
@@ -195,25 +195,25 @@
 			<div class="form-group" th:if="${job.type.toString() == 'Schedule'}">
 				<label class="col-sm-3 control-label">scheduleFixRate：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.scheduleFixRate}"></div>
+				    <div class="form-control-static" th:text="${job.scheduleJob?.scheduleFixRate}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Schedule'}">
 				<label class="col-sm-3 control-label">scheduleFixDelay：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.scheduleFixDelay}"></div>
+				    <div class="form-control-static" th:text="${job.scheduleJob?.scheduleFixDelay}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Schedule'}">
 				<label class="col-sm-3 control-label">sheduleCron：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.sheduleCron}"></div>
+				    <div class="form-control-static" th:text="${job.scheduleJob?.sheduleCron}"></div>
 				</div>
 			</div>
 			<div class="form-group" th:if="${job.type.toString() == 'Schedule'}">
 				<label class="col-sm-3 control-label">已调度次数：</label>
 				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${job.scheduledTimes}"></div>
+				    <div class="form-control-static" th:text="${job.scheduleJob?.scheduledTimes}"></div>
 				</div>
 			</div>
 			

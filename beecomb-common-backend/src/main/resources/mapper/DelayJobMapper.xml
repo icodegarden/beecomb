@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.DelayJobMapper">
+<mapper namespace="io.github.icodegarden.beecomb.common.backend.mapper.DelayJobMapper">
 
-	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO">
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO">
 		<id property="jobId" column="job_id" />
 		<result property="delay" column="delay" />
 		<result property="retryOnExecuteFailed" column="retry_on_execute_failed" />
@@ -13,10 +13,10 @@
 		<result property="retriedTimesOnNoQualified" column="retried_times_on_no_qualified" />
 	</resultMap>
 	
-	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.DelayJobDO" extends="baseMap">
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.DelayJobDO" extends="baseMap">
 	</resultMap>
 
-	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO">
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO">
 		insert into `delay_job` (
 		<trim prefix="" suffixOverrides=",">
 		  <if test="jobId != null">`job_id`,</if>
@@ -47,7 +47,7 @@
 		select a.* from `delay_job` a where a.job_id = #{jobId}
 	</select>
 	
-	<update id="update" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.DelayJobPO$Update">
+	<update id="update" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO$Update">
 		update `delay_job`
 		<trim prefix="set" suffixOverrides=",">
 			<if test="retryOnExecuteFailed != null">`retry_on_execute_failed` = #{retryOnExecuteFailed},</if>

@@ -17,10 +17,10 @@ import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineExc
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBalance;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
 import io.github.icodegarden.beecomb.worker.service.ScheduleJobService;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.ParallelExchangeResult;
@@ -64,7 +64,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 				new ThreadPoolExecutor.AbortPolicy());
 		scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
 	}
-	
+
 	@Override
 	public String shutdownName() {
 		return "schedule";
@@ -163,7 +163,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		}
 
 		try {
-			UpdateOnExecuteSuccess update = exchange(executableJobBO, trigAt);
+			UpdateOnExecuteSuccessDTO update = exchange(executableJobBO, trigAt);
 			Result1<RuntimeException> result1 = scheduleJobStorage.updateOnExecuteSuccess(update);
 
 			if (!result1.isSuccess()) {
@@ -180,9 +180,9 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			}
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
 					SystemUtils.now());
-			UpdateOnNoQualifiedExecutor update = UpdateOnNoQualifiedExecutor.builder().jobId(executableJobBO.getId())
-					.lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e).nextTrigAt(nextTrigAt)
-					.callback(jobFreshParamsCallback(executableJobBO)).build();
+			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
+					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
+					.nextTrigAt(nextTrigAt).callback(buildJobFreshParamsCallback(executableJobBO)).build();
 			Result2<Boolean, RuntimeException> result2 = scheduleJobStorage.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
@@ -204,7 +204,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		return false;
 	}
 
-	private UpdateOnExecuteSuccess exchange(ExecutableJobBO executableJobBO, LocalDateTime trigAt) {
+	private UpdateOnExecuteSuccessDTO exchange(ExecutableJobBO executableJobBO, LocalDateTime trigAt) {
 		final String executorName = executableJobBO.getExecutorName();
 		final String jobHandlerName = executableJobBO.getJobHandlerName();
 
@@ -234,9 +234,9 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
 					SystemUtils.now());
-			UpdateOnExecuteSuccess update = UpdateOnExecuteSuccess.builder().jobId(executableJobBO.getId())
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */).lastTrigAt(trigAt)
-					.end(end).nextTrigAt(nextTrigAt).callback(jobFreshParamsCallback(executableJobBO)).build();
+					.end(end).nextTrigAt(nextTrigAt).callback(buildJobFreshParamsCallback(executableJobBO)).build();
 			return update;
 		} else {
 			CandidatesSwitchableLoadBalanceExchanger loadBalanceExchanger = new CandidatesSwitchableLoadBalanceExchanger(
@@ -250,19 +250,19 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
 					SystemUtils.now());
-			UpdateOnExecuteSuccess update = UpdateOnExecuteSuccess.builder().jobId(executableJobBO.getId())
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp(instance.getIp()).executorPort(instance.getPort())
 					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(trigAt)
 					.end(executeJobResult.isEnd()).nextTrigAt(nextTrigAt)
-					.callback(jobFreshParamsCallback(executableJobBO)).build();
+					.callback(buildJobFreshParamsCallback(executableJobBO)).build();
 			return update;
 		}
 	}
 
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
 		LocalDateTime nextTrigAt = job.getSchedule().calcNextTrigAtOnTriggered(trigAt, SystemUtils.now());
-		UpdateOnExecuteFailed update = UpdateOnExecuteFailed.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt).callback(jobFreshParamsCallback(job)).build();
+		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
+				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt).callback(buildJobFreshParamsCallback(job)).build();
 		Result2<Boolean, RuntimeException> result2 = scheduleJobStorage.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {
@@ -293,7 +293,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	public int queuedSize() {
 		return scheduledThreadPoolExecutor.getQueue().size();
 	}
-	
+
 	@Override
 	public void shutdownBlocking(long blockTimeoutMillis) {
 		scheduledThreadPoolExecutor.shutdown();

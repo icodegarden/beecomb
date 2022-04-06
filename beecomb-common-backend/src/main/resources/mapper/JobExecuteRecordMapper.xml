@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.github.icodegarden.beecomb.common.db.mapper.JobExecuteRecordMapper">
+<mapper namespace="io.github.icodegarden.beecomb.common.backend.mapper.JobExecuteRecordMapper">
 
-	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobExecuteRecordPO">
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO">
 		<id property="id" column="id" />
 		<result property="jobId" column="job_id" />
 		<result property="trigAt" column="trig_at" />
@@ -12,12 +12,12 @@
 		<result property="success" column="is_success" />
 	</resultMap>
 	
-	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.db.pojo.data.JobExecuteRecordDO">
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO">
 		<association property="jobExecuteRecord" columnPrefix="a_" resultMap="baseMap">
         </association>
 	</resultMap>
 	
-	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.db.pojo.persistence.JobExecuteRecordPO" useGeneratedKeys="true" keyProperty="id">
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO" useGeneratedKeys="true" keyProperty="id">
 		insert into `job_execute_record` (
 		<if test="id != null">`id`,</if>
 		<if test="jobId != null">`job_id`,</if>
@@ -60,7 +60,7 @@
 		where a.id = #{id}
 	</select>
 	
-	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.db.pojo.query.JobExecuteRecordQuery" resultMap="DOMap">
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery" resultMap="DOMap">
 		<include refid="findPrefix"/>
 		
 		<trim prefix="WHERE" prefixOverrides="AND">

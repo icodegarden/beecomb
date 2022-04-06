@@ -10,7 +10,7 @@
 	</resultMap>
 	
 	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO" extends="baseMap">
-        <association property="jobMain" columnPrefix="jm_" resultMap="io.github.icodegarden.beecomb.common.db.mapper.JobMainMapper.DOMap">
+        <association property="jobMain" columnPrefix="jm_" resultMap="io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper.DOMap">
         </association>
 	</resultMap>
 	
@@ -44,7 +44,7 @@
 			
 			<if test="with != null">
 				<trim prefix="," suffixOverrides=",">
-					<if test="with.desc == true">a.`desc` as desc,</if>
+					<if test="with.desc == true">a.`desc` as `desc`,</if>
 				</trim>
 			</if>
 			<if test="with != null and with.jobMain != null">

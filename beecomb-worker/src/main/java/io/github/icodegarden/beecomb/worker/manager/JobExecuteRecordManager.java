@@ -4,9 +4,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.github.icodegarden.beecomb.common.db.mapper.JobExecuteRecordMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.JobExecuteRecordPO;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.mapper.JobExecuteRecordMapper;
+import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.CreateJobExecuteRecordDTO;
 
 /**

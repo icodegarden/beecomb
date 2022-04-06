@@ -36,7 +36,10 @@ import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
+import io.github.icodegarden.commons.springboot.aop.AbstractTransferAspect;
+import io.github.icodegarden.commons.springboot.aop.NativeRestApiTransferAspect;
 import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
+import io.github.icodegarden.commons.springboot.web.handler.NativeRestApiParameterInvalidExceptionHandler;
 import io.github.icodegarden.commons.springboot.web.util.MappingJackson2HttpMessageConverters;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
@@ -78,6 +81,16 @@ public class BeansConfiguration {
 	@Bean
 	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
 		return MappingJackson2HttpMessageConverters.simple();
+	}
+
+	@Bean
+	public NativeRestApiParameterInvalidExceptionHandler nativeRestApiParameterInvalidExceptionHandler() {
+		return new NativeRestApiParameterInvalidExceptionHandler();
+	}
+
+	@Bean
+	public NativeRestApiTransferAspect nativeRestApiTransferAspect() {
+		return new NativeRestApiTransferAspect().setPrintErrorStackOnWarn(true);
 	}
 
 	@Bean

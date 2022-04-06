@@ -17,12 +17,12 @@ import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineExc
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBalance;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteFailed;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnExecuteSuccess;
-import io.github.icodegarden.beecomb.worker.service.JobService.UpdateOnNoQualifiedExecutor;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
@@ -130,7 +130,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 		}
 
 		try {
-			UpdateOnExecuteSuccess update = exchange(executableJobBO);
+			UpdateOnExecuteSuccessDTO update = exchange(executableJobBO);
 			Result1<RuntimeException> result1 = delayJobStorage.updateOnExecuteSuccess(update);
 			if (!result1.isSuccess()) {
 				/**
@@ -149,9 +149,9 @@ public class DelayJobEngine extends AbstractJobEngine {
 						e.getCandidates());
 			}
 
-			UpdateOnNoQualifiedExecutor update = UpdateOnNoQualifiedExecutor.builder().jobId(executableJobBO.getId())
+			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder().jobId(executableJobBO.getId())
 					.lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
-					.callback(jobFreshParamsCallback(executableJobBO)).build();
+					.callback(buildJobFreshParamsCallback(executableJobBO)).build();
 			Result2<Boolean, RuntimeException> result2 = delayJobStorage.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
@@ -173,7 +173,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 		}
 	}
 
-	private UpdateOnExecuteSuccess exchange(ExecutableJobBO executableJobBO) {
+	private UpdateOnExecuteSuccessDTO exchange(ExecutableJobBO executableJobBO) {
 		final String executorName = executableJobBO.getExecutorName();
 		final String jobHandlerName = executableJobBO.getJobHandlerName();
 
@@ -192,9 +192,9 @@ public class DelayJobEngine extends AbstractJobEngine {
 			parallelLoadBalanceExchanger.exchange(job, executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance,
 					config);
 
-			UpdateOnExecuteSuccess update = UpdateOnExecuteSuccess.builder().jobId(executableJobBO.getId())
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */)
-					.lastTrigAt(SystemUtils.now()).callback(jobFreshParamsCallback(executableJobBO)).build();
+					.lastTrigAt(SystemUtils.now()).callback(buildJobFreshParamsCallback(executableJobBO)).build();
 			
 			return update;
 		} else {
@@ -207,18 +207,18 @@ public class DelayJobEngine extends AbstractJobEngine {
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
-			UpdateOnExecuteSuccess update = UpdateOnExecuteSuccess.builder().jobId(executableJobBO.getId())
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp(instance.getIp()).executorPort(instance.getPort())
 					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(SystemUtils.now())
-					.callback(jobFreshParamsCallback(executableJobBO)).build();
+					.callback(buildJobFreshParamsCallback(executableJobBO)).build();
 			
 			return update;
 		}
 	}
 
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
-		UpdateOnExecuteFailed update = UpdateOnExecuteFailed.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).callback(jobFreshParamsCallback(job)).build();
+		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
+				.lastTrigAt(trigAt).callback(buildJobFreshParamsCallback(job)).build();
 		Result2<Boolean, RuntimeException> result2 = delayJobStorage.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {

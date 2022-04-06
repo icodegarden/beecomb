@@ -10,7 +10,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.icodegarden.beecomb.common.executor.DelayJob;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
-
+/**
+ * 
+ * @author Fangfang.Xu
+ *
+ */
 public class DelayBO implements Serializable {
 	private static final long serialVersionUID = -7494615898068876183L;
 
@@ -76,7 +80,7 @@ public class DelayBO implements Serializable {
 	public long calcNextTrigDelayMillisOnExecuteFailed() {
 		return getRetryBackoffOnExecuteFailed();
 	}
-
+	
 	public static DelayBO of(DelayJob delayJob) {
 		DelayBO delay = new DelayBO();
 		BeanUtils.copyProperties(delayJob, delay);

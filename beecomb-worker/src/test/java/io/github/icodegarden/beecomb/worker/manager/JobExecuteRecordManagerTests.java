@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.mapper.JobExecuteRecordMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.data.JobExecuteRecordDO;
-import io.github.icodegarden.beecomb.common.db.pojo.query.JobExecuteRecordQuery;
+import io.github.icodegarden.beecomb.common.backend.mapper.JobExecuteRecordMapper;
+import io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
 import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.CreateJobExecuteRecordDTO;
 import io.github.icodegarden.commons.lang.util.SystemUtils;

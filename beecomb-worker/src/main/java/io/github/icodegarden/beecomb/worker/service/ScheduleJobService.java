@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.icodegarden.beecomb.common.db.mapper.ScheduleJobMapper;
-import io.github.icodegarden.beecomb.common.db.pojo.persistence.ScheduleJobPO;
-import io.github.icodegarden.beecomb.common.db.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.mapper.ScheduleJobMapper;
+import io.github.icodegarden.beecomb.common.backend.pojo.persistence.ScheduleJobPO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
+import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
 import io.github.icodegarden.commons.lang.result.Result1;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
@@ -21,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-@Service("storage-schedule")
+@Service
 public class ScheduleJobService extends BaseJobService {
 
 	@Autowired
@@ -31,7 +34,7 @@ public class ScheduleJobService extends BaseJobService {
 
 	@Transactional
 	@Override
-	public Result2<Boolean, RuntimeException> updateOnNoQualifiedExecutor(UpdateOnNoQualifiedExecutor update) {
+	public Result2<Boolean, RuntimeException> updateOnNoQualifiedExecutor(UpdateOnNoQualifiedExecutorDTO update) {
 		try {
 			if (update.getNextTrigAt() == null) {
 				return Results.of(false, false, new IllegalArgumentException("nextTrigAt must not null"));
@@ -68,7 +71,7 @@ public class ScheduleJobService extends BaseJobService {
 
 	@Transactional
 	@Override
-	public Result1<RuntimeException> updateOnExecuteSuccess(UpdateOnExecuteSuccess update) {
+	public Result1<RuntimeException> updateOnExecuteSuccess(UpdateOnExecuteSuccessDTO update) {
 		try {
 			if (update.getNextTrigAt() == null) {
 				return Results.of(false, new IllegalArgumentException("nextTrigAt must not null"));
@@ -107,7 +110,7 @@ public class ScheduleJobService extends BaseJobService {
 
 	@Transactional
 	@Override
-	public Result2<Boolean, RuntimeException> updateOnExecuteFailed(UpdateOnExecuteFailed update) {
+	public Result2<Boolean, RuntimeException> updateOnExecuteFailed(UpdateOnExecuteFailedDTO update) {
 		try {
 			if (update.getNextTrigAt() == null) {
 				return Results.of(false, false, new IllegalArgumentException("nextTrigAt must not null"));

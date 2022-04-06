@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
-			<artifactId>beecomb-common-db</artifactId>
+			<artifactId>beecomb-common-backend</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>

@@ -1,14 +1,11 @@
 package io.github.icodegarden.beecomb.executor.sample;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import io.github.icodegarden.beecomb.client.BeeCombClient;
-import io.github.icodegarden.beecomb.client.UrlsBeeCombClient;
-import io.github.icodegarden.beecomb.client.UrlsClientProperties;
 import io.github.icodegarden.beecomb.client.ZooKeeperBeeCombClient;
 import io.github.icodegarden.beecomb.client.ZooKeeperClientProperties;
 import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
@@ -16,9 +13,9 @@ import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO.Delay;
 import io.github.icodegarden.beecomb.client.security.Authentication;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
+import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.beecomb.executor.BeeCombExecutor;
 import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties;
-import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties.ZooKeeper;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.sample.handler.BizOnExpiredDelayJobHandler;
 import io.github.icodegarden.beecomb.executor.sample.handler.ParallelJobHandler;
@@ -51,9 +48,11 @@ public class SampleApp {
 		/**
 		 * 连接zookeeper的方式
 		 */
-		ZooKeeperClientProperties clientProperties = new ZooKeeperClientProperties(authentication,
-				new ZooKeeperClientProperties.ZooKeeper("/beecomb"/* /beecomb是默认值，如果修改过则按实际 */,
-						"192.168.80.128:2181"/* 多个以,号分割 */, 3000, 3000));
+		ZooKeeper zooKeeper = new ZooKeeper("192.168.80.128:2181"/* 多个以,号分割 */);
+		zooKeeper.setRoot("/beecomb"/* /beecomb是默认值，如果修改过则按实际 */);
+		zooKeeper.setAclAuth("beecomb:beecomb");// 默认beecomb:beecomb
+
+		ZooKeeperClientProperties clientProperties = new ZooKeeperClientProperties(authentication, zooKeeper);
 		BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
 
 		/**
@@ -68,20 +67,20 @@ public class SampleApp {
 				int read = System.in.read();
 				if (read == '1') {
 					int packetId = new Random().nextInt(100000);
-					
+
 					Delay delay = new CreateDelayJobDTO.Delay(3000);
-					delay.setRetryOnExecuteFailed(3);//任务执行失败时重试次数
+					delay.setRetryOnExecuteFailed(3);// 任务执行失败时重试次数
 					delay.setRetryBackoffOnExecuteFailed(3000);
-					delay.setRetryOnNoQualified(3);//没有合格的Executor时重试次数
+					delay.setRetryOnNoQualified(3);// 没有合格的Executor时重试次数
 					delay.setRetryBackoffOnNoQualified(10000);
-					CreateDelayJobDTO job = new CreateDelayJobDTO("testBizOnExpired"+packetId, EXECUTOR_NAME,
+					CreateDelayJobDTO job = new CreateDelayJobDTO("testBizOnExpired" + packetId, EXECUTOR_NAME,
 							BizOnExpiredDelayJobHandler.NAME, delay);
 					job.setUuid("biz_packct_" + packetId);
 
 					CreateJobResponse response = beeCombClient.createJob(job);
 					if (response.getDispatchException() == null) {
-						System.out.println(
-								"创建 BizOnExpiredDelayJobHandler 示例任务成功，队列所在实例：" + response.getJob().getQueuedAtInstance());
+						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功，队列所在实例："
+								+ response.getJob().getQueuedAtInstance());
 					} else {
 						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功：" + response + ", 但分配队列失败："
 								+ response.getDispatchException());
@@ -99,7 +98,7 @@ public class SampleApp {
 				if (read == 'e') {
 					break;
 				}
-			}catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -112,7 +111,7 @@ public class SampleApp {
 	}
 
 	private static BeeCombExecutor startExecutor() {
-		ZooKeeper zookeeper = new ZooKeeperSupportInstanceProperties.ZooKeeper("192.168.80.128:2181");
+		ZooKeeper zookeeper = new ZooKeeper("192.168.80.128:2181");
 		ZooKeeperSupportInstanceProperties properties = new ZooKeeperSupportInstanceProperties(zookeeper);
 		BeeCombExecutor beeCombExecutor = BeeCombExecutor.start(EXECUTOR_NAME, properties);
 

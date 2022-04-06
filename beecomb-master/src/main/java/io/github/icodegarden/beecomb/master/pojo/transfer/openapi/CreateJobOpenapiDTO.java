@@ -8,10 +8,9 @@ import javax.validation.constraints.Size;
 
 import org.springframework.util.Assert;
 
+import io.github.icodegarden.beecomb.common.Validateable;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.MasterConstants;
-import io.github.icodegarden.commons.lang.spec.response.ClientParameterMissingErrorCodeException;
-import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import lombok.Data;
 
 /**
@@ -20,7 +19,7 @@ import lombok.Data;
  *
  */
 @Data
-public class CreateJobOpenapiDTO {
+public class CreateJobOpenapiDTO implements Validateable {
 
 	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
 	@NotEmpty
@@ -47,9 +46,9 @@ public class CreateJobOpenapiDTO {
 	@Min(MasterConstants.MIN_EXECUTE_TIMEOUT)
 	@Max(MasterConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
-	@Max(65535) 
+	@Max(65535)
 	private String params;// TEXT comment '任务参数',
-	@Max(200) 
+	@Max(200)
 	private String desc;// varchar(200) comment '任务描述',
 
 	private Delay delay;
@@ -71,20 +70,16 @@ public class CreateJobOpenapiDTO {
 		private Integer scheduleFixDelay;// int comment 'ms',
 		private String sheduleCron;// varchar(20),
 	}
-	
-	public void validate() throws ErrorCodeException {
-		try {
-			Assert.notNull(type, "type");
-			if(type == JobType.Delay) {
-				Assert.notNull(delay, "delay");	
-				Assert.notNull(delay.getDelay(), "delay.delay");	
-			}
-			if(type == JobType.Schedule) {
-				Assert.notNull(schedule, "schedule");
-			}
-		} catch (IllegalArgumentException e) {
-			throw new ClientParameterMissingErrorCodeException(
-					ClientParameterMissingErrorCodeException.SubPair.MISSING_PARAMETER.getSub_code(), e.getMessage());
+
+	@Override
+	public void validate() throws IllegalArgumentException {
+		Assert.notNull(type, "Missing:type");
+		if (type == JobType.Delay) {
+			Assert.notNull(delay, "Missing:delay");
+			Assert.notNull(delay.getDelay(), "Missing:delay.delay");
+		}
+		if (type == JobType.Schedule) {
+			Assert.notNull(schedule, "Missing:schedule");
 		}
 	}
 
