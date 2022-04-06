@@ -12,7 +12,6 @@
 	</logger>
 	<logger name="org.apache.kafka" level="WARN"/>
 	<logger name="org.springframework.data.redis" level="WARN"/>
-	<logger name="io.github.icodegarden.beecomb" level="DEBUG"/>
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
