@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.pojo.transfer;
+package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
 import java.time.LocalDateTime;
 

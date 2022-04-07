@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.manager;
+package io.github.icodegarden.beecomb.master.manager.backend;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.common.backend.mapper.JobExecuteRecordMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
-import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
-import io.github.icodegarden.beecomb.worker.pojo.transfer.CreateJobExecuteRecordDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobExecuteRecordDTO;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 
 /**

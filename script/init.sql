@@ -84,7 +84,7 @@ CREATE TABLE `job_execute_record` (
   `execute_returns` varchar(200),
   `is_success` bit(1) NOT NULL,
   PRIMARY KEY (`id`),
-  INDEX `idx_job_id`(`job_id`)
+  INDEX `idxs`(`job_id`,`is_success`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `job_recovery_record`;

@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.common.backend.mapper.ScheduleJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
-import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
@@ -30,7 +30,7 @@ public class ScheduleJobService extends BaseJobService {
 	@Autowired
 	private ScheduleJobMapper scheduleJobMapper;
 	@Autowired
-	private JobExecuteRecordManager jobExecuteRecordService;
+	private JobExecuteRecordManager jobExecuteRecordManager;
 
 	@Transactional
 	@Override
@@ -45,7 +45,7 @@ public class ScheduleJobService extends BaseJobService {
 					.nextTrigAt(update.getNextTrigAt()).build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				jobExecuteRecordManager.createOnExecuted(mainUpdate);
 				boolean b = jobMainManager.updateOnExecuted(mainUpdate);
 				if (b) {
 					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
@@ -83,7 +83,7 @@ public class ScheduleJobService extends BaseJobService {
 					.nextTrigAt(update.getNextTrigAt()).build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				jobExecuteRecordManager.createOnExecuted(mainUpdate);
 				boolean b = jobMainManager.updateOnExecuted(mainUpdate);
 				if (b) {
 					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())
@@ -121,7 +121,7 @@ public class ScheduleJobService extends BaseJobService {
 					.build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				jobExecuteRecordManager.createOnExecuted(mainUpdate);
 				boolean b = jobMainManager.updateOnExecuted(mainUpdate);
 				if (b) {
 					ScheduleJobPO.Update scheduleUpdate = ScheduleJobPO.Update.builder().jobId(update.getJobId())

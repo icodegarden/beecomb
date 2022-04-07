@@ -12,9 +12,7 @@
 		<result property="success" column="is_success" />
 	</resultMap>
 	
-	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO">
-		<association property="jobExecuteRecord" columnPrefix="a_" resultMap="baseMap">
-        </association>
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO" extends="baseMap">
 	</resultMap>
 	
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO" useGeneratedKeys="true" keyProperty="id">
@@ -40,15 +38,15 @@
 	
 	<sql id="findPrefix">
 		select 
-			a.id as a_id,
-			a.job_id as a_job_id,
-			a.trig_at as a_trig_at,
-			a.execute_executor as a_execute_executor,
-			a.is_success as a_is_success
+			a.id as id,
+			a.job_id as job_id,
+			a.trig_at as trig_at,
+			a.execute_executor as execute_executor,
+			a.is_success as is_success
 			<if test="with != null">
 				<trim prefix="," suffixOverrides=",">
-					<if test="with.trigResult == true">a.trig_result as a_trig_result,</if>
-					<if test="with.executeReturns == true">a.execute_returns as a_execute_returns,</if>
+					<if test="with.trigResult == true">a.trig_result as trig_result,</if>
+					<if test="with.executeReturns == true">a.execute_returns as execute_returns,</if>
 				</trim>
 			</if>
 			

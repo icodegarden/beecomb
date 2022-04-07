@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.backend.manager.DelayJobManager;
+import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.common.backend.mapper.DelayJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
@@ -14,7 +15,6 @@ import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
-import io.github.icodegarden.beecomb.worker.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
@@ -39,7 +39,7 @@ public class DelayJobService extends BaseJobService {
 	@Autowired
 	private DelayJobManager delayJobManager;
 	@Autowired
-	private JobExecuteRecordManager jobExecuteRecordService;
+	private JobExecuteRecordManager jobExecuteRecordManager;
 
 	@Transactional
 	@Override
@@ -91,7 +91,7 @@ public class DelayJobService extends BaseJobService {
 				}
 
 				RETRY_TEMPLATE.execute(ctx -> {
-					jobExecuteRecordService.createOnExecuted(mainUpdate);
+					jobExecuteRecordManager.createOnExecuted(mainUpdate);
 					jobMainManager.updateOnExecuted(mainUpdate);
 					return null;
 				});
@@ -122,12 +122,12 @@ public class DelayJobService extends BaseJobService {
 			}
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordService.createOnExecuted(mainUpdate);
+				jobExecuteRecordManager.createOnExecuted(mainUpdate);
 				jobMainManager.updateOnExecuted(mainUpdate);
 				return null;
 			});
 
-			jobExecuteRecordService.createOnExecuted(mainUpdate);
+			jobExecuteRecordManager.createOnExecuted(mainUpdate);
 
 			return Results.of(true, null);
 		} catch (RuntimeException e) {
@@ -185,7 +185,7 @@ public class DelayJobService extends BaseJobService {
 					}
 
 					RETRY_TEMPLATE.execute(ctx -> {
-						jobExecuteRecordService.createOnExecuted(mainUpdate);
+						jobExecuteRecordManager.createOnExecuted(mainUpdate);
 						jobMainManager.updateOnExecuted(mainUpdate);
 						return null;
 					});
@@ -211,7 +211,7 @@ public class DelayJobService extends BaseJobService {
 					}
 
 					RETRY_TEMPLATE.execute(ctx -> {
-						jobExecuteRecordService.createOnExecuted(mainUpdate);
+						jobExecuteRecordManager.createOnExecuted(mainUpdate);
 						jobMainManager.updateOnExecuted(mainUpdate);
 						return null;
 					});

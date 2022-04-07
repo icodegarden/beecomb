@@ -13,8 +13,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class JobExecuteRecordDO {
-
-	private JobExecuteRecordPO jobExecuteRecord;
+public class JobExecuteRecordDO extends JobExecuteRecordPO {
 
 }

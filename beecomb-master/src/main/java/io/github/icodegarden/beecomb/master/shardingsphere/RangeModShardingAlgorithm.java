@@ -19,6 +19,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * TODO master worker整个包移到backend
  * 
  * @author Fangfang.Xu
  *
