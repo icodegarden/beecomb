@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
-	<th:block th:include="include :: header('任务恢复详细')" />
+	<th:block th:include="include :: header('任务执行详细')" />
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -13,27 +13,33 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">任务名：</label>
+				<label class="col-sm-3 control-label">触发时间：</label>
 				<div class="col-sm-8">
-					<div class="form-control-static" th:text="${record.jobMain.name}"></div>
+				    <div class="form-control-static" th:text="${record.trigAt}"></div>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">恢复是否成功：</label>
+				<label class="col-sm-3 control-label">触发结果：</label>
+				<div class="col-sm-8">
+				    <div class="form-control-static" th:text="${record.trigResult}"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">执行器地址：</label>
+				<div class="col-sm-8">
+				    <div class="form-control-static" th:text="${record.executeExecutor}"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">执行返回结果：</label>
+				<div class="col-sm-8">
+				    <div class="form-control-static" th:text="${record.executeReturns}"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">执行是否成功：</label>
 				<div class="col-sm-8">
 				    <div class="form-control-static" th:text="${record.success}"></div>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">描述：</label>
-                <div class="col-sm-8">
-                    <div class="form-control-static" th:text="${record.desc}"></div>
-                </div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">恢复时间：</label>
-				<div class="col-sm-8">
-				    <div class="form-control-static" th:text="${record.recoveryAt}"></div>
 				</div>
 			</div>
 		</form>

@@ -34,7 +34,8 @@ public class SampleApp {
 		/**
 		 * 如果是spring/springboot项目，可以在bean初始化阶段启动，具体取决于用户自己的项目情况
 		 */
-		BeeCombExecutor startExecutor = startExecutor();
+		String zkConnectString = "127.0.0.1:2181";/* 多个以,号分割 */
+		BeeCombExecutor startExecutor = startExecutor(zkConnectString);
 
 		/**
 		 * 使用sdk 调用openapi接口
@@ -46,9 +47,9 @@ public class SampleApp {
 		Authentication authentication = new BasicAuthentication("beecomb", "beecomb");
 
 		/**
-		 * 连接zookeeper的方式
+		 * 这里client选择使用连接zookeeper的方式
 		 */
-		ZooKeeper zooKeeper = new ZooKeeper("192.168.80.128:2181"/* 多个以,号分割 */);
+		ZooKeeper zooKeeper = new ZooKeeper(zkConnectString);
 		zooKeeper.setRoot("/beecomb"/* /beecomb是默认值，如果修改过则按实际 */);
 		zooKeeper.setAclAuth("beecomb:beecomb");// 默认beecomb:beecomb
 
@@ -80,9 +81,9 @@ public class SampleApp {
 					CreateJobResponse response = beeCombClient.createJob(job);
 					if (response.getDispatchException() == null) {
 						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功，队列所在实例："
-								+ response.getJob().getQueuedAtInstance());
+								+ response.getJob().getQueuedAtInstance()/*若使用async方式，则该字段是null*/);
 					} else {
-						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功：" + response + ", 但分配队列失败："
+						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功，但分配队列失败："
 								+ response.getDispatchException());
 					}
 				}
@@ -110,8 +111,8 @@ public class SampleApp {
 		System.out.println("退出");
 	}
 
-	private static BeeCombExecutor startExecutor() {
-		ZooKeeper zookeeper = new ZooKeeper("192.168.80.128:2181");
+	private static BeeCombExecutor startExecutor(String zkConnectString) {
+		ZooKeeper zookeeper = new ZooKeeper(zkConnectString);
 		ZooKeeperSupportInstanceProperties properties = new ZooKeeperSupportInstanceProperties(zookeeper);
 		BeeCombExecutor beeCombExecutor = BeeCombExecutor.start(EXECUTOR_NAME, properties);
 

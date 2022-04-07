@@ -41,6 +41,9 @@ public class CreateJobResponse {
 		private Integer priority;
 		private Integer weight;
 		private Boolean queued;
+		/**
+		 * 若使用async方式，则该字段是null
+		 */
 		private String queuedAtInstance;
 
 		public Long getId() {

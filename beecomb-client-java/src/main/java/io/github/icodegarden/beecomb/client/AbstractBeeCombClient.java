@@ -65,7 +65,17 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 
 	@Override
 	public CreateJobResponse createJob(CreateJobDTO job) throws ExchangeException {
-		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs", HttpMethod.POST, CreateJobResponse.class);
+		return doCreateJob(false, job);
+	}
+
+	@Override
+	public CreateJobResponse createJobAsync(CreateJobDTO job) throws ExchangeException {
+		return doCreateJob(true, job);
+	}
+
+	private CreateJobResponse doCreateJob(boolean async, CreateJobDTO job) throws ExchangeException {
+		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs?async=" + async, HttpMethod.POST,
+				CreateJobResponse.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
@@ -93,23 +103,19 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 			sb.append("&queued=").append(query.getQueued());
 		}
 		if (query.getCreatedAtGte() != null) {
-			sb.append("&createdAtGte=")
-					.append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtGte()));
+			sb.append("&createdAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtGte()));
 		}
 		if (query.getCreatedAtLte() != null) {
-			sb.append("&createdAtLte=")
-					.append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtLte()));
+			sb.append("&createdAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtLte()));
 		}
 		if (query.getCreatedBy() != null) {
 			sb.append("&createdBy=").append(query.getCreatedBy());
 		}
 		if (query.getLastTrigAtGte() != null) {
-			sb.append("&lastTrigAtGte=")
-					.append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtGte()));
+			sb.append("&lastTrigAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtGte()));
 		}
 		if (query.getLastTrigAtLte() != null) {
-			sb.append("&lastTrigAtLte=")
-					.append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtLte()));
+			sb.append("&lastTrigAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtLte()));
 		}
 		if (query.getNameLike() != null) {
 			sb.append("&nameLike=").append(query.getNameLike());

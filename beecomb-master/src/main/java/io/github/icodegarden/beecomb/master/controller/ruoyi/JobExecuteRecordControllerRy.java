@@ -53,7 +53,7 @@ public class JobExecuteRecordControllerRy extends BaseControllerRy {
 	@GetMapping("view/jobExecuteRecord/{id}/detail")
 	public String jobExecuteRecordDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
 		JobExecuteRecordVO vo = jobExecuteRecordManager.findOne(id,
-				JobExecuteRecordQuery.With.builder().executeExecutor(true).executeReturns(true).build());
+				JobExecuteRecordQuery.With.builder().trigResult(true).executeReturns(true).build());
 
 		mmap.addAttribute("record", vo);
 		return "/job/jobExecuteRecord/detail";

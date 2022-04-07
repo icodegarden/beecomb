@@ -34,7 +34,7 @@ public class JobExecuteRecordQuery extends BaseQuery {
 	@Builder
 	@Data
 	public static class With {
-		private boolean executeExecutor;
+		private boolean trigResult;
 		private boolean executeReturns;
 	}
 

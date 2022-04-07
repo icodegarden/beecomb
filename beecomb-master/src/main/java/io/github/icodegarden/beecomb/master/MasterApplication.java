@@ -13,7 +13,8 @@ import io.github.icodegarden.commons.springboot.SpringContext;
  *
  */
 @SpringBootApplication(scanBasePackages = { "io.github.icodegarden.beecomb.master",
-		"io.github.icodegarden.beecomb.common.backend.manager" })
+		"io.github.icodegarden.beecomb.common.backend.manager",
+		"io.github.icodegarden.commons.shardingsphere.springboot.properties" })
 public class MasterApplication {
 
 	public static void main(String[] args) {

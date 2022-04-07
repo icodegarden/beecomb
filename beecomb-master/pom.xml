@@ -54,6 +54,11 @@
 			<artifactId>commons-springboot_2.5.5</artifactId>
 			<version>${commons-version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>commons-shardingsphere</artifactId>
+			<version>${commons-version}</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

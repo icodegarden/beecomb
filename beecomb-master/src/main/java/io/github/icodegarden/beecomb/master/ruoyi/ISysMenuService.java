@@ -41,12 +41,13 @@ public class ISysMenuService {
 
 	private NullableTuple2<PlatformRole, SysMenu> getJobLevel0() {
 		SysMenu m1 = getJobList();
-		SysMenu m2 = getJobRecoveryRecordList();
+		SysMenu m2 = getJobExecuteRecordList();
+		SysMenu m3 = getJobRecoveryRecordList();
 
 		SysMenu sysMenu = new SysMenu();
 		sysMenu.setMenuId(1L);
 		sysMenu.setParentId(0L);
-		sysMenu.setChildren(Arrays.asList(m1,m2));
+		sysMenu.setChildren(Arrays.asList(m1,m2,m3));
 		sysMenu.setMenuName("任务管理");
 		sysMenu.setMenuType(null);
 		sysMenu.setOrderNum("1");
@@ -70,14 +71,28 @@ public class ISysMenuService {
 		return sysMenu;
 	}
 	
-	private SysMenu getJobRecoveryRecordList() {
+	private SysMenu getJobExecuteRecordList() {
 		SysMenu sysMenu = new SysMenu();
 		sysMenu.setMenuId(101L);
 		sysMenu.setParentId(1L);
 		sysMenu.setChildren(null);
-		sysMenu.setMenuName("任务恢复记录列表");
+		sysMenu.setMenuName("任务执行记录列表");
 		sysMenu.setMenuType(null);
 		sysMenu.setOrderNum("2");
+		sysMenu.setParams(null);
+		sysMenu.setUrl("/view/jobExecuteRecord/list");
+//		sysMenu.setVisible(visible);
+		return sysMenu;
+	}
+	
+	private SysMenu getJobRecoveryRecordList() {
+		SysMenu sysMenu = new SysMenu();
+		sysMenu.setMenuId(102L);
+		sysMenu.setParentId(1L);
+		sysMenu.setChildren(null);
+		sysMenu.setMenuName("任务恢复记录列表");
+		sysMenu.setMenuType(null);
+		sysMenu.setOrderNum("3");
 		sysMenu.setParams(null);
 		sysMenu.setUrl("/view/jobRecoveryRecord/list");
 //		sysMenu.setVisible(visible);

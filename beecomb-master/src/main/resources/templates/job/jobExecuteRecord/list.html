@@ -83,7 +83,7 @@
 		function queryUserList() {
 		    var options = {
 		        url: prefix + "/list",
-		        detailUrl: "/view/jobRecoveryRecord/{id}/detail",
+		        detailUrl: "/view/jobExecuteRecord/{id}/detail",
 		        createUrl: "/view/user/create",
 		        updateUrl: "/view/user/{id}/update",
 		        removeUrl: prefix + "/remove",
@@ -101,25 +101,17 @@
 		            title: '编号'
 		        },
 		        {
-		        	field: 'id',
+		        	field: 'jobId',
 		        	title: '任务编号'		        	
 		        },
 		        {
 		        	field : 'trigAt',
-		        	title: '任务触发时间'		        	
-		        },
-		        {
-		        	field: 'trigResult',
-		        	title: '任务触发结果'
+		        	title: '触发时间'		        	
 		        },
 		        {
 		        	field: 'executeExecutor',
-		        	title: '执行地址'
+		        	title: '执行器地址'
 		        },		        
-		        {
-		        	field: 'executeReturns',
-		        	title: '执行返回结果'
-		        },		        		        
 		        {
 		        	title: '执行是否成功',
 		        	align: 'center',

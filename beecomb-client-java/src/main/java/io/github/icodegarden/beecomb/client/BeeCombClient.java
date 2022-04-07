@@ -18,6 +18,8 @@ public interface BeeCombClient extends Closeable {
 
 	CreateJobResponse createJob(CreateJobDTO job) throws ExchangeException;
 	
+	CreateJobResponse createJobAsync(CreateJobDTO job) throws ExchangeException;
+	
 	PageResponse<FindJobResponse> pageJobs(JobQuery query) throws ExchangeException;
 	
 	FindJobResponse findJob(Long jobId)throws ExchangeException;

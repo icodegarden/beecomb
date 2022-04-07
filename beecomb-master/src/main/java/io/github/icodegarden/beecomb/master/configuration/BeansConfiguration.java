@@ -39,7 +39,7 @@ import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.springboot.aop.NativeRestApiTransferAspect;
 import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
-import io.github.icodegarden.commons.springboot.web.handler.NativeRestApiParameterInvalidExceptionHandler;
+import io.github.icodegarden.commons.springboot.web.handler.NativeRestApiExceptionHandler;
 import io.github.icodegarden.commons.springboot.web.util.MappingJackson2HttpMessageConverters;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
@@ -84,8 +84,8 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public NativeRestApiParameterInvalidExceptionHandler nativeRestApiParameterInvalidExceptionHandler() {
-		return new NativeRestApiParameterInvalidExceptionHandler();
+	public NativeRestApiExceptionHandler nativeRestApiParameterInvalidExceptionHandler() {
+		return new NativeRestApiExceptionHandler();
 	}
 
 	@Bean
