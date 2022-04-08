@@ -1,5 +1,6 @@
 package io.github.icodegarden.beecomb.worker.service;
 
+import io.github.icodegarden.beecomb.common.backend.service.BackendJobService;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
@@ -13,7 +14,7 @@ import io.github.icodegarden.commons.lang.result.Result2;
  * @author Fangfang.Xu
  *
  */
-public interface JobService {
+public interface JobService extends BackendJobService {
 
 	void updateEnQueue(ExecutableJobBO job);
 

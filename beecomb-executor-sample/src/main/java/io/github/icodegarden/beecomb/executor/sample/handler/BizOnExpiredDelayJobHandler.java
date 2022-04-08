@@ -3,6 +3,9 @@ package io.github.icodegarden.beecomb.executor.sample.handler;
 import java.io.IOException;
 import java.util.Random;
 
+import org.springframework.util.Assert;
+
+import io.github.icodegarden.beecomb.common.executor.DelayJob;
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.Job;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
@@ -24,7 +27,7 @@ import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 public class BizOnExpiredDelayJobHandler implements JobHandler {
 
 	public static final String NAME = "BizOnExpired";
-	
+
 	@Override
 	public String name() {
 		return NAME;
@@ -36,20 +39,23 @@ public class BizOnExpiredDelayJobHandler implements JobHandler {
 	@Override
 	public ExecuteJobResult handle(Job job) throws Exception {
 		/**
-		 * 获取红包id，这里在业务上约定job的uuid = "biz_packct_" + 红包的id
+		 * 获取红包id，这里在业务上约定job的uuid = "biz_packct_" + 红包的id（推荐使用）
 		 */
 		String uuid = job.getUuid();
 		String packctIdStr = uuid.substring("biz_packct_".length(), uuid.length());
 		Long packctId = Long.valueOf(packctIdStr);
 
-		/**
-		 * 退款
-		 */
-		refund(packctId);// 抛出任务异常表示处理失败
+		System.out.println(job);
+		Assert.isTrue(job instanceof DelayJob, "红包退款任务类型不是Delay");
+		
+		refund(packctId);
 
 		return new ExecuteJobResult();// 成功
 	}
 
+	/**
+	 * 退款处理
+	 */
 	private void refund(Long packctId) throws Exception {
 		/**
 		 * 检查是否已退款，是则不再处理
@@ -60,13 +66,13 @@ public class BizOnExpiredDelayJobHandler implements JobHandler {
 		 */
 		Random random = new Random();
 		if (random.nextInt(3) == 0) {
-			throw new IOException("数据入库失败");
+			throw new IOException("packctId:" + packctId + " 数据入库失败");
 		}
 
 		/**
 		 * 处理成功
 		 */
-		System.out.println("退款成功");
+		System.out.println("packctId:" + packctId + " 退款成功");
 	}
 
 }

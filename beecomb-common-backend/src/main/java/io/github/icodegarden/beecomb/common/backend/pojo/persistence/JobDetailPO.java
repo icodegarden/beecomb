@@ -1,8 +1,10 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.persistence;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -16,8 +18,9 @@ public class JobDetailPO {
 	private String params;// TEXT comment '任务参数',
 	private String desc;// varchar(200) comment '任务描述',
 	
-	@Builder
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Update{
 		@NonNull
 		private Long jobId;// bigint NOT NULL,

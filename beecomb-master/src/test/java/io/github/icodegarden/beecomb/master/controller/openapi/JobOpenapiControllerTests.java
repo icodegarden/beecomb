@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.master.controller.openapi;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,6 +13,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
+import org.assertj.core.api.Assertions;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,9 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO.Delay;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import lombok.Data;
 
@@ -67,6 +70,8 @@ public class JobOpenapiControllerTests {
 		body.setType(JobType.Delay);
 		body.setExecutorName("e1");
 		body.setJobHandlerName("h1");
+		body.setParams("param");
+		body.setDesc("desc");
 		Delay delay = new CreateJobOpenapiDTO.Delay();
 		delay.setDelay(3000);
 		body.setDelay(delay);
@@ -155,6 +160,28 @@ public class JobOpenapiControllerTests {
 				}));
 
 	}
+	
+	@Test
+	public void updateJob() throws Exception {
+		createJob();
+		Long id = jobMainManager.page(JobMainQuery.builder().build()).get(0).getId();
+		
+		UpdateJobOpenapiDTO body = new UpdateJobOpenapiDTO();
+		body.setId(id);
+		body.setName("newname");
+		body.setParams("newparam");
+		body.setDesc("newdesc");
+		
+		mvc.perform(put("/openapi/v1/jobs")
+//               .with(user("blaze").password("Q1w2e3r4"))
+				.header("Authorization", token).contentType(APPLICATION_JSON).content(JsonUtils.serialize(body)))
+				.andExpect(status().isOk());
+
+		JobMainVO one = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
+		Assertions.assertThat(one.getName()).isEqualTo(body.getName());
+		Assertions.assertThat(one.getJobDetail().getParams()).isEqualTo(body.getParams());
+		Assertions.assertThat(one.getJobDetail().getDesc()).isEqualTo(body.getDesc());
+	}
 
 	@Data
 	public static class Test_CreateJobOpenapiVO {
@@ -240,7 +267,8 @@ public class JobOpenapiControllerTests {
 		private Long scheduledTimes;// bigint,
 
 	}
-
+	
+	@Data
 	public static class Test_GetJobOpenapiVO extends Test_PageJobsOpenapiVO {
 	}
 }

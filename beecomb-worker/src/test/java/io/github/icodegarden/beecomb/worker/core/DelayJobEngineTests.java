@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -25,6 +25,7 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.test.NioClientSuppliers4Test;
+import io.github.icodegarden.beecomb.test.PrepareDatasUtils;
 import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
@@ -55,7 +56,7 @@ class DelayJobEngineTests extends Properties4Test {
 	ExecutorInstanceDiscovery<ExecutorRegisteredInstance> executorInstanceDiscovery;
 	InstanceMetrics<Metrics> instanceMetrics;
 	MetricsOverload jobOverload;
-	DelayJobService delayJobStorage;
+	DelayJobService delayJobService;
 	DelayJobEngine delayJobEngine;
 
 	@BeforeEach
@@ -63,9 +64,9 @@ class DelayJobEngineTests extends Properties4Test {
 		executorInstanceDiscovery = mock(ExecutorInstanceDiscovery.class);
 		instanceMetrics = mock(InstanceMetrics.class);
 		jobOverload = mock(MetricsOverload.class);
-		delayJobStorage = mock(DelayJobService.class);
+		delayJobService = mock(DelayJobService.class);
 
-		delayJobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
+		delayJobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobService,
 				instanceProperties);
 		assertThat(delayJobEngine.queuedSize()).isEqualTo(0);
 	}
@@ -99,12 +100,12 @@ class DelayJobEngineTests extends Properties4Test {
 	void runJob_noQualifiedExecutor_noThreshold() {
 		// --------------------------------没有合格的executor，CASE 失败没到阈值reEnQueue
 		doReturn(Collections.emptyList()).when(executorInstanceDiscovery).listInstances(anyString());// 没有合格的executor
-		doReturn(Results.of(true, false/* 没到阈值 */, null)).when(delayJobStorage).updateOnNoQualifiedExecutor(any());
+		doReturn(Results.of(true, false/* 没到阈值 */, null)).when(delayJobService).updateOnNoQualifiedExecutor(any());
 
 		ExecutableJobBO job = getJob();
 		delayJobEngine.runJob(job);
 
-		verify(delayJobStorage, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
+		verify(delayJobService, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
 		verify(jobOverload, times(0)).decrementOverload(job);// 0次
 		verify(jobOverload, times(0)).flushMetrics();// 0次
 		assertThat(delayJobEngine.queuedSize()).isEqualTo(1);// reEnQueue成功后队列1个
@@ -115,12 +116,12 @@ class DelayJobEngineTests extends Properties4Test {
 		// --------------------------------没有合格的executor，CASE 失败次数达到阈值 decrementOverload
 		// and flushMetrics
 		doReturn(Collections.emptyList()).when(executorInstanceDiscovery).listInstances(anyString());// 没有合格的executor
-		doReturn(Results.of(true, true/* 到阈值 */, null)).when(delayJobStorage).updateOnNoQualifiedExecutor(any());
+		doReturn(Results.of(true, true/* 到阈值 */, null)).when(delayJobService).updateOnNoQualifiedExecutor(any());
 
 		ExecutableJobBO job = getJob();
 		delayJobEngine.runJob(job);
 
-		verify(delayJobStorage, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
+		verify(delayJobService, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
 		verify(jobOverload, times(1)).decrementOverload(job);// 度量减少
 		verify(jobOverload, times(1)).flushMetrics();// 刷新
 
@@ -135,7 +136,7 @@ class DelayJobEngineTests extends Properties4Test {
 		DelayJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new",
 				NioClientSuppliers4Test.returnExchangeResultAlwaysSuccess(new ExecuteJobResult())));
 		DelayJobEngine delayJobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				delayJobStorage, instanceProperties);
+				delayJobService, instanceProperties);
 
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
 		jobHandlerRegistrationBean.setExecutorName(EXECUTOR_NAME);
@@ -148,12 +149,12 @@ class DelayJobEngineTests extends Properties4Test {
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
 		
-		doReturn(Results.of(true, null)).when(delayJobStorage).updateOnExecuteSuccess(any());
+		doReturn(Results.of(true, null)).when(delayJobService).updateOnExecuteSuccess(any());
 
 		ExecutableJobBO job = getJob();
 		delayJobEngine.runJob(job);
 
-		verify(delayJobStorage, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
+		verify(delayJobService, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
 		verify(jobOverload, times(1)).decrementOverload(job);// 度量减少
 		verify(jobOverload, times(1)).flushMetrics();// 刷新
 
@@ -170,7 +171,7 @@ class DelayJobEngineTests extends Properties4Test {
 		DelayJobEngine.protocol_for_Test = new NioProtocol(
 				NioClientPool.newPool("new", NioClientSuppliers4Test.returnExchangeResultAlwaysFailed()));
 		DelayJobEngine delayJobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				delayJobStorage, instanceProperties);
+				delayJobService, instanceProperties);
 
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
 		jobHandlerRegistrationBean.setExecutorName(EXECUTOR_NAME);
@@ -188,12 +189,12 @@ class DelayJobEngineTests extends Properties4Test {
 		/**
 		 * 需要返回值
 		 */
-		doReturn(Results.of(true, false/* 没到阈值 */, null)).when(delayJobStorage).updateOnExecuteFailed(any());
+		doReturn(Results.of(true, false/* 没到阈值 */, null)).when(delayJobService).updateOnExecuteFailed(any());
 
 		ExecutableJobBO job = getJob();
 		delayJobEngine.runJob(job);
 
-		verify(delayJobStorage, times(1)).updateOnExecuteFailed(any());// 触发数据更新
+		verify(delayJobService, times(1)).updateOnExecuteFailed(any());// 触发数据更新
 		verify(jobOverload, times(0)).decrementOverload(job);// 0次
 		verify(jobOverload, times(0)).flushMetrics();// 0次
 
@@ -210,7 +211,7 @@ class DelayJobEngineTests extends Properties4Test {
 		DelayJobEngine.protocol_for_Test = new NioProtocol(
 				NioClientPool.newPool("new", NioClientSuppliers4Test.returnExchangeResultAlwaysFailed()));
 		DelayJobEngine delayJobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				delayJobStorage, instanceProperties);
+				delayJobService, instanceProperties);
 
 		// --------------------------------CASE 失败次数达到阈值 decrementOverload and
 		// flushMetrics
@@ -226,12 +227,12 @@ class DelayJobEngineTests extends Properties4Test {
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
 		
-		doReturn(Results.of(true, true/* 到阈值 */, null)).when(delayJobStorage).updateOnExecuteFailed(any());
+		doReturn(Results.of(true, true/* 到阈值 */, null)).when(delayJobService).updateOnExecuteFailed(any());
 
 		ExecutableJobBO job = getJob();
 		delayJobEngine.runJob(job);
 
-		verify(delayJobStorage, times(1)).updateOnExecuteFailed(any());// 触发数据更新
+		verify(delayJobService, times(1)).updateOnExecuteFailed(any());// 触发数据更新
 		verify(jobOverload, times(1)).decrementOverload(job);// 0次
 		verify(jobOverload, times(1)).flushMetrics();// 0次
 
@@ -243,8 +244,9 @@ class DelayJobEngineTests extends Properties4Test {
 	@Test
 	void doEnQueue() throws Exception {
 		// 利用executorInstanceDiscovery验证任务是否真实触发
-
 		ExecutableJobBO job = getJob();
+		doReturn(job).when(delayJobService).findOneExecutableJob(anyLong());
+		
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = delayJobEngine.doEnQueue(job);
 
 		assertThat(result3.isSuccess()).isTrue();

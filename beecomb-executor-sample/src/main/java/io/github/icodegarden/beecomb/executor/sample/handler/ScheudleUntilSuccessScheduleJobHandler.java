@@ -3,6 +3,8 @@ package io.github.icodegarden.beecomb.executor.sample.handler;
 import java.util.List;
 import java.util.Random;
 
+import org.springframework.util.Assert;
+
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.Job;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
@@ -46,6 +48,7 @@ public class ScheudleUntilSuccessScheduleJobHandler implements JobHandler {
 		 * 获取用户信息和购票参数
 		 */
 		String params = job.getParams();
+		Assert.hasText(params, "Missing:params");
 		TicketGrabbingParams ticketGrabbingParams = JsonUtils.deserialize(params, TicketGrabbingParams.class);
 
 		/**

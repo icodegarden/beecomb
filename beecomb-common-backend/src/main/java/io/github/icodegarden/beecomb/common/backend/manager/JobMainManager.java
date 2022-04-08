@@ -18,6 +18,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO.Update;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
@@ -78,6 +79,13 @@ public class JobMainManager {
 	public JobMainVO findByUUID(String uuid, @Nullable JobMainQuery.With with) {
 		JobMainDO jobDO = jobMainMapper.findByUUID(uuid, with);
 		return JobMainVO.of(jobDO);
+	}
+	
+	public boolean update(UpdateJobMainDTO dto) {
+		Update update = new JobMainPO.Update();
+		BeanUtils.copyProperties(dto, update);
+
+		return jobMainMapper.update(update) == 1;
 	}
 
 	public boolean updateOnExecuted(UpdateJobMainOnExecutedDTO dto) {

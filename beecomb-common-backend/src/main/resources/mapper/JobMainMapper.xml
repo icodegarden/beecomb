@@ -245,7 +245,7 @@
 			<if test="end != null">is_end = #{end},</if>
 			<if test="nextTrigAtNull == true">next_trig_at = null,</if>
 		</trim>
-		where id = #{id} and is_end = 0
+		where id = #{id}
 	</update>
 	
 	<delete id="delete">

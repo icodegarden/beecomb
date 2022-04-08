@@ -49,25 +49,25 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 	private ExecutorInstanceDiscovery executorInstanceDiscovery;
 	private InstanceMetrics instanceMetrics;
-	private DelayJobService delayJobStorage;
+	private DelayJobService delayJobService;
 
 	private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
 	public DelayJobEngine(ExecutorInstanceDiscovery<? extends ExecutorRegisteredInstance> executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage,
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobService,
 			InstanceProperties instanceProperties) {
 		super(jobOverload, instanceProperties);
-		
+
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;
-		this.delayJobStorage = delayJobStorage;
-		
+		this.delayJobService = delayJobService;
+
 		this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
 				instanceProperties.getOverload().getJobs().getMax(), new NamedThreadFactory("delay-jobs"),
 				new ThreadPoolExecutor.AbortPolicy());
 		scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
 	}
-	
+
 	@Override
 	public String shutdownName() {
 		return "delay";
@@ -92,7 +92,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 	 */
 	private Result3<ExecutableJobBO, JobTrigger, JobEngineException> doEnQueue(ExecutableJobBO job, long delayMillis) {
 		try {
-			DelayJobTrigger delayJob = new DelayJobTrigger(job);
+			DelayJobTrigger delayJob = new DelayJobTrigger(job.getId());
 			ScheduledFuture<?> future = scheduledThreadPoolExecutor.schedule(delayJob, delayMillis,
 					TimeUnit.MILLISECONDS);
 			delayJob.setFuture(future);
@@ -106,14 +106,15 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 	private class DelayJobTrigger extends JobTrigger {
 
-		private final ExecutableJobBO job;
+		private final Long jobId;
 
-		public DelayJobTrigger(ExecutableJobBO job) {
-			this.job = job;
+		public DelayJobTrigger(Long jobId) {
+			this.jobId = jobId;
 		}
 
 		@Override
 		public void doRun() {
+			ExecutableJobBO job = DelayJobEngine.this.delayJobService.findOneExecutableJob(jobId);
 			DelayJobEngine.this.runJob(job);
 		}
 	}
@@ -131,7 +132,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 		try {
 			UpdateOnExecuteSuccessDTO update = exchange(executableJobBO);
-			Result1<RuntimeException> result1 = delayJobStorage.updateOnExecuteSuccess(update);
+			Result1<RuntimeException> result1 = delayJobService.updateOnExecuteSuccess(update);
 			if (!result1.isSuccess()) {
 				/**
 				 * 如果最终还是失败，则该任务因为状态没更新，未来可能被再次触发，业务端最好能识别重复任务
@@ -149,10 +150,11 @@ public class DelayJobEngine extends AbstractJobEngine {
 						e.getCandidates());
 			}
 
-			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder().jobId(executableJobBO.getId())
-					.lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
-					.callback(buildJobFreshParamsCallback(executableJobBO)).build();
-			Result2<Boolean, RuntimeException> result2 = delayJobStorage.updateOnNoQualifiedExecutor(update);
+			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
+					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
+//					.callback(buildJobFreshParamsCallback(executableJobBO))
+					.build();
+			Result2<Boolean, RuntimeException> result2 = delayJobService.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
 			}
@@ -194,8 +196,10 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */)
-					.lastTrigAt(SystemUtils.now()).callback(buildJobFreshParamsCallback(executableJobBO)).build();
-			
+					.lastTrigAt(SystemUtils.now())
+//					.callback(buildJobFreshParamsCallback(executableJobBO))
+					.build();
+
 			return update;
 		} else {
 			CandidatesSwitchableLoadBalanceExchanger loadBalanceExchanger = new CandidatesSwitchableLoadBalanceExchanger(
@@ -210,16 +214,19 @@ public class DelayJobEngine extends AbstractJobEngine {
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp(instance.getIp()).executorPort(instance.getPort())
 					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(SystemUtils.now())
-					.callback(buildJobFreshParamsCallback(executableJobBO)).build();
-			
+//					.callback(buildJobFreshParamsCallback(executableJobBO))
+					.build();
+
 			return update;
 		}
 	}
 
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
 		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).callback(buildJobFreshParamsCallback(job)).build();
-		Result2<Boolean, RuntimeException> result2 = delayJobStorage.updateOnExecuteFailed(update);
+				.lastTrigAt(trigAt)
+//				.callback(buildJobFreshParamsCallback(job))
+				.build();
+		Result2<Boolean, RuntimeException> result2 = delayJobService.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {
 			log.error("WARNING ex on update job", result2.getT2());
@@ -295,7 +302,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 	public int queuedSize() {
 		return scheduledThreadPoolExecutor.getQueue().size();
 	}
-	
+
 	@Override
 	public void shutdownBlocking(long blockTimeoutMillis) {
 		scheduledThreadPoolExecutor.shutdown();

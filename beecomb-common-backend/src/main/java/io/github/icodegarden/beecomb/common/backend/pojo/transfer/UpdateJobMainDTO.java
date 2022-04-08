@@ -1,10 +1,10 @@
-package io.github.icodegarden.beecomb.master.pojo.transfer;
+package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Length;
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
@@ -17,16 +17,16 @@ import lombok.Data;
  *
  */
 @Data
-public class UpdateJobDTO implements Validateable {
+public class UpdateJobMainDTO implements Validateable {
 
 	@NotNull
 	private Long id;
 
-	@Length(max = 30)
+	@Size(max = 30)
 	private String name;// varchar(30) NOT NULL,
-	@Length(max = 30)
+	@Size(max = 30)
 	private String executorName;// varchar(30) NOT NULL,
-	@Length(max = 30)
+	@Size(max = 30)
 	private String jobHandlerName;// varchar(30) NOT NULL,
 	@Min(1)
 	@Max(10)
@@ -40,9 +40,9 @@ public class UpdateJobDTO implements Validateable {
 	@Min(JobConstants.MIN_EXECUTE_TIMEOUT)
 	@Max(JobConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
-	@Length(max = 65535)
+	@Max(65535)
 	private String params;// TEXT comment '任务参数',
-	@Length(max = 200)
+	@Max(200)
 	private String desc;// varchar(200) comment '任务描述',
 
 	@Override

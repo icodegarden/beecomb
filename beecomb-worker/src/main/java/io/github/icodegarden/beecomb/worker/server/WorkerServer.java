@@ -56,6 +56,16 @@ public class WorkerServer implements GracefullyShutdown {
 
 			@Override
 			public Object reply(Object obj) {
+				if (log.isDebugEnabled()) {
+					log.debug("worker server receive a reply obj:{}", obj);
+				}
+				/**
+				 * 适配其他请求
+				 */
+				if(!(obj instanceof ExecutableJobBO)) {
+					return null;
+				}
+				
 				ExecutableJobBO job = (ExecutableJobBO) obj;
 
 				InstanceExchangeResult.Default exchangeResult = new InstanceExchangeResult.Default();

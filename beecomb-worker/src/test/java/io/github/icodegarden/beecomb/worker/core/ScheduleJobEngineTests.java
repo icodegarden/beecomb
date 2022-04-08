@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.worker.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -54,7 +55,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	ExecutorInstanceDiscovery<ExecutorRegisteredInstance> executorInstanceDiscovery;
 	InstanceMetrics instanceMetrics;
 	MetricsOverload jobOverload;
-	ScheduleJobService scheduleJobStorage;
+	ScheduleJobService scheduleJobService;
 	ScheduleJobEngine scheduleJobEngine;
 
 	@BeforeEach
@@ -62,10 +63,10 @@ class ScheduleJobEngineTests extends Properties4Test {
 		executorInstanceDiscovery = mock(ExecutorInstanceDiscovery.class);
 		instanceMetrics = mock(InstanceMetrics.class);
 		jobOverload = mock(MetricsOverload.class);
-		scheduleJobStorage = mock(ScheduleJobService.class);
+		scheduleJobService = mock(ScheduleJobService.class);
 
 		scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				scheduleJobStorage, instanceProperties);
+				scheduleJobService, instanceProperties);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(0);
 	}
 
@@ -93,6 +94,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 		// --------------------------------没有合格的executor
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixDelay(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_noQualifiedExecutor(job);
 	}
 
@@ -101,6 +104,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 		// --------------------------------没有合格的executor
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixRate(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_noQualifiedExecutor(job);
 	}
 
@@ -109,13 +114,15 @@ class ScheduleJobEngineTests extends Properties4Test {
 		// --------------------------------没有合格的executor
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setSheduleCron("* * * * * *");// 每秒
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_noQualifiedExecutor(job);
 	}
 
 	void runJob_noQualifiedExecutor(ExecutableJobBO job) throws Exception {
 		// --------------------------------没有合格的executor
 		doReturn(Collections.emptyList()).when(executorInstanceDiscovery).listInstances(anyString());// 没有合格的executor
-		doReturn(Results.of(true, true/* 对阈值无感 */, null)).when(scheduleJobStorage).updateOnNoQualifiedExecutor(any());
+		doReturn(Results.of(true, true/* 对阈值无感 */, null)).when(scheduleJobService).updateOnNoQualifiedExecutor(any());
 
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.doEnQueue(job);
 
@@ -131,7 +138,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 			Thread.yield();
 		}
 
-		verify(scheduleJobStorage, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
+		verify(scheduleJobService, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
 		verify(jobOverload, times(0)).decrementOverload(job);// 0次
 		verify(jobOverload, times(0)).flushMetrics();// 0次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 执行失败后队列依然1个
@@ -141,6 +148,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok_scheduleFixDelay() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixDelay(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_ok(job);
 	}
 
@@ -148,6 +157,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok_scheduleFixRate() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixRate(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_ok(job);
 	}
 
@@ -155,6 +166,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok_cron() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setSheduleCron("* * * * * *");// 每秒
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_ok(job);
 	}
 
@@ -162,7 +175,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		ScheduleJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new",
 				NioClientSuppliers4Test.returnExchangeResultAlwaysSuccess(new ExecuteJobResult())));
 		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				scheduleJobStorage, instanceProperties);
+				scheduleJobService, instanceProperties);
 		
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
 		jobHandlerRegistrationBean.setExecutorName(EXECUTOR_NAME);
@@ -174,7 +187,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
-		doReturn(Results.of(true, null)).when(scheduleJobStorage).updateOnExecuteSuccess(any());
+		doReturn(Results.of(true, null)).when(scheduleJobService).updateOnExecuteSuccess(any());
 
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.doEnQueue(job);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 队列1个
@@ -192,7 +205,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 			Thread.yield();
 		}
 
-		verify(scheduleJobStorage, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
+		verify(scheduleJobService, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
 		verify(jobOverload, times(0)).decrementOverload(job);// 0次
 		verify(jobOverload, times(0)).flushMetrics();// 0次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 成功后队列依然1个
@@ -204,6 +217,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok_end_scheduleFixDelay() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixDelay(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_ok_end(job);
 	}
 
@@ -211,6 +226,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok_end_scheduleFixRate() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixRate(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_ok_end(job);
 	}
 
@@ -218,6 +235,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok_end_cron() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setSheduleCron("* * * * * *");// 每秒
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_ok_end(job);
 	}
 
@@ -228,7 +247,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		ScheduleJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new",
 				NioClientSuppliers4Test.returnExchangeResultAlwaysSuccess(executeJobResult)));
 		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				scheduleJobStorage, instanceProperties);
+				scheduleJobService, instanceProperties);
 		
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
 		jobHandlerRegistrationBean.setExecutorName(EXECUTOR_NAME);
@@ -240,7 +259,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
-		doReturn(Results.of(true, null)).when(scheduleJobStorage).updateOnExecuteSuccess(any());
+		doReturn(Results.of(true, null)).when(scheduleJobService).updateOnExecuteSuccess(any());
 
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.doEnQueue(job);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 队列1个
@@ -255,7 +274,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 			Thread.yield();
 		}
 
-		verify(scheduleJobStorage, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
+		verify(scheduleJobService, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
 		verify(jobOverload, times(1)).decrementOverload(job);// 1次
 		verify(jobOverload, times(1)).flushMetrics();// 1次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(0);// 成功后0个
@@ -267,6 +286,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_nok_scheduleFixDelay() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixDelay(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_nok(job);
 	}
 
@@ -274,6 +295,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_nok_scheduleFixRate() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setScheduleFixRate(1000);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_nok(job);
 	}
 
@@ -281,13 +304,15 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_nok_cron() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setSheduleCron("* * * * * *");// 每秒
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		
 		runJob_nok(job);
 	}
 
 	void runJob_nok(ExecutableJobBO job) throws Exception {
 		ScheduleJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new", NioClientSuppliers4Test.returnExchangeResultAlwaysFailed()));
 		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
-				scheduleJobStorage, instanceProperties);
+				scheduleJobService, instanceProperties);
 		
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
 		jobHandlerRegistrationBean.setExecutorName(EXECUTOR_NAME);
@@ -299,7 +324,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
-		doReturn(Results.of(true, true/* 无感 */, null)).when(scheduleJobStorage).updateOnExecuteFailed(any());
+		doReturn(Results.of(true, true/* 无感 */, null)).when(scheduleJobService).updateOnExecuteFailed(any());
 
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.doEnQueue(job);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 队列1个
@@ -314,7 +339,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 			Thread.yield();
 		}
 
-		verify(scheduleJobStorage, times(1)).updateOnExecuteFailed(any());// 触发数据更新
+		verify(scheduleJobService, times(1)).updateOnExecuteFailed(any());// 触发数据更新
 		verify(jobOverload, times(0)).decrementOverload(job);// 0次
 		verify(jobOverload, times(0)).flushMetrics();// 0次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 成功后1个

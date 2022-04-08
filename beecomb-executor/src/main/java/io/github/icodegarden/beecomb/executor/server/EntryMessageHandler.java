@@ -29,6 +29,9 @@ public class EntryMessageHandler implements MessageHandler {
 
 	@Override
 	public Object reply(Object obj) {
+		if (log.isDebugEnabled()) {
+			log.debug("executor receive a reply obj:{}", obj);
+		}
 		Job job = null;
 		if (obj instanceof ParallelShardObject) {
 			ParallelShardObject parallelShardObject = ((ParallelShardObject) obj);
@@ -47,7 +50,7 @@ public class EntryMessageHandler implements MessageHandler {
 			if (job != null) {
 				result2 = jobReceiver.receive(job);
 				if (!result2.isSuccess()) {
-					log.warn("job was failed on receive, reason:{}", result2.getT2());
+					log.warn("receive job failed, reason:{}", result2.getT2());
 				}
 			} else {
 				result2 = Results.of(true, null, null);

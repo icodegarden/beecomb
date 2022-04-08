@@ -97,4 +97,14 @@ public class DelayJob extends Job {
 		DelayBO bo = DelayBO.of(this);
 		return getWeight() * bo.rateOfSecond();
 	}
+
+	@Override
+	public String toString() {
+		return "DelayJob [delay=" + delay + ", retryOnExecuteFailed=" + retryOnExecuteFailed
+				+ ", retryBackoffOnExecuteFailed=" + retryBackoffOnExecuteFailed + ", retriedTimesOnExecuteFailed="
+				+ retriedTimesOnExecuteFailed + ", retryOnNoQualified=" + retryOnNoQualified
+				+ ", retryBackoffOnNoQualified=" + retryBackoffOnNoQualified + ", retriedTimesOnNoQualified="
+				+ retriedTimesOnNoQualified + ", toString()=" + super.toString() + "]";
+	}
+	
 }

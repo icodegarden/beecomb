@@ -158,19 +158,6 @@ class DelayJobServiceTests {
 		assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
 
-		// ------------------------------------后续触发返回true，但数据不变
-		update = UpdateOnExecuteSuccessDTO.builder().jobId(createJobMainDTO.getId()).lastTrigAt(LocalDateTime.now().minusHours(1))
-				.executorIp("1.1.1.2").executorPort(10002).lastExecuteReturns("[{...}]").build();
-		result1 = delayJobService.updateOnExecuteSuccess(update);
-		assertThat(result1.isSuccess()).isEqualTo(true);
-
-		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
-		assertThat(main.getLastTrigAt()).isEqualTo(now);
-		assertThat(main.getLastTrigResult()).isEqualTo("Success");
-		assertThat(main.getEnd()).isEqualTo(true);
-		assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:10001");//
-		assertThat(main.getLastExecuteReturns()).isEqualTo("[{}]");//
-		assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 	}
 
 	@Test

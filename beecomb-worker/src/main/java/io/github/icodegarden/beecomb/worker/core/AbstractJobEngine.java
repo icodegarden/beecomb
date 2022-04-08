@@ -107,21 +107,21 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	 */
 	protected abstract Result3<ExecutableJobBO, JobTrigger, JobEngineException> doEnQueue(ExecutableJobBO job);
 
-	/**
-	 * 每次任务的结果更新到 内存job, 以便下次触发时相关字段参数是正确的而不用查库
-	 * 
-	 * @param job
-	 * @return
-	 */
-	protected Consumer<JobFreshParams> buildJobFreshParamsCallback(ExecutableJobBO job) {
-		return params -> {
-			job.setLastExecuteExecutor(params.getLastExecuteExecutor());// 只在成功时有参数
-			job.setLastExecuteReturns(params.getLastExecuteReturns());// 只在成功时有参数
-			job.setLastExecuteSuccess(params.isLastExecuteSuccess());
-			job.setLastTrigAt(params.getLastTrigAt());
-			job.setLastTrigResult(params.getLastTrigResult());
-		};
-	}
+//	/**
+//	 * 每次任务的结果更新到 内存job, 以便下次触发时相关字段参数是正确的而不用查库
+//	 * 
+//	 * @param job
+//	 * @return
+//	 */
+//	protected Consumer<JobFreshParams> buildJobFreshParamsCallback(ExecutableJobBO job) {
+//		return params -> {
+//			job.setLastExecuteExecutor(params.getLastExecuteExecutor());// 只在成功时有参数
+//			job.setLastExecuteReturns(params.getLastExecuteReturns());// 只在成功时有参数
+//			job.setLastExecuteSuccess(params.isLastExecuteSuccess());
+//			job.setLastTrigAt(params.getLastTrigAt());
+//			job.setLastTrigResult(params.getLastTrigResult());
+//		};
+//	}
 
 	@Override
 	public void shutdown() {

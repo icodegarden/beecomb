@@ -4,13 +4,13 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
+import org.hibernate.validator.constraints.Length;
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
+import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.master.MasterConstants;
 import lombok.Data;
 
 /**
@@ -23,15 +23,15 @@ public class CreateJobOpenapiDTO implements Validateable {
 
 	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
 	@NotEmpty
-	@Size(max = 30)
+	@Length(max = 30)
 	private String name;// varchar(30) NOT NULL,
 	@NotNull
 	private JobType type;// tinyint NOT NULL comment '任务类型 0延时 1调度',
 	@NotNull
-	@Size(max = 30)
+	@Length(max = 30)
 	private String executorName;// varchar(30) NOT NULL,
 	@NotNull
-	@Size(max = 30)
+	@Length(max = 30)
 	private String jobHandlerName;// varchar(30) NOT NULL,
 	@Min(1)
 	@Max(10)
@@ -43,12 +43,12 @@ public class CreateJobOpenapiDTO implements Validateable {
 	@Min(2)
 	@Max(64)
 	private Integer maxParallelShards;
-	@Min(MasterConstants.MIN_EXECUTE_TIMEOUT)
-	@Max(MasterConstants.MAX_EXECUTE_TIMEOUT)
+	@Min(JobConstants.MIN_EXECUTE_TIMEOUT)
+	@Max(JobConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
-	@Max(65535)
+	@Length(max = 65535)
 	private String params;// TEXT comment '任务参数',
-	@Max(200)
+	@Length(max = 200)
 	private String desc;// varchar(200) comment '任务描述',
 
 	private Delay delay;

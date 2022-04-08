@@ -11,18 +11,18 @@ import io.github.icodegarden.commons.lang.annotation.NotNull;
 public class CreateScheduleJobDTO extends CreateJobDTO {
 
 	@NotNull
-	private CreateScheduleJobDTO schedule;
+	private Schedule schedule;
 
-	public CreateScheduleJobDTO(String name, String executorName, String jobHandlerName, CreateScheduleJobDTO schedule) {
+	public CreateScheduleJobDTO(String name, String executorName, String jobHandlerName, Schedule schedule) {
 		super(name, JobType.Schedule, executorName, jobHandlerName);
 		this.schedule = schedule;
 	}
 
-	public CreateScheduleJobDTO getSchedule() {
+	public Schedule getSchedule() {
 		return schedule;
 	}
 
-	public void setSchedule(CreateScheduleJobDTO schedule) {
+	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
 	}
 

@@ -49,16 +49,16 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 	private ExecutorInstanceDiscovery executorInstanceDiscovery;
 	private InstanceMetrics instanceMetrics;
-	private ScheduleJobService scheduleJobStorage;
+	private ScheduleJobService scheduleJobService;
 
 	private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
 	public ScheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery, InstanceMetrics instanceMetrics,
-			MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage, InstanceProperties instanceProperties) {
+			MetricsOverload jobOverload, ScheduleJobService scheduleJobService, InstanceProperties instanceProperties) {
 		super(jobOverload, instanceProperties);
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;
-		this.scheduleJobStorage = scheduleJobStorage;
+		this.scheduleJobService = scheduleJobService;
 		this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
 				instanceProperties.getOverload().getJobs().getMax(), new NamedThreadFactory("schedule-jobs"),
 				new ThreadPoolExecutor.AbortPolicy());
@@ -77,7 +77,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			return Results.of(false, job, null, new InvalidParamJobEngineException("param schedule must not null"));
 		}
 		try {
-			ScheduleJobTrigger scheduleJob = new ScheduleJobTrigger(job);
+			ScheduleJobTrigger scheduleJob = new ScheduleJobTrigger(job.getId());
 
 			/**
 			 * 任务的首次执行延迟
@@ -105,26 +105,27 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	}
 
 	private class ScheduleJobTrigger extends JobTrigger {
-		private final ExecutableJobBO job;
+		private final Long jobId;
 
-		public ScheduleJobTrigger(ExecutableJobBO job) {
-			this.job = job;
+		public ScheduleJobTrigger(Long jobId) {
+			this.jobId = jobId;
 		}
 
 		@Override
 		public void doRun() {
+			ExecutableJobBO job = ScheduleJobEngine.this.scheduleJobService.findOneExecutableJob(jobId);
 			boolean end = ScheduleJobEngine.this.runJob(job);
 			if (end) {
-				removeQueueOnEnd();
+				removeQueueOnEnd(job);
 			} else {
-				reEnQueueIfNecessary();
+				reEnQueueIfNecessary(job);
 			}
 		}
 
 		/**
 		 * 任务end时从队列移除，并减少度量
 		 */
-		private void removeQueueOnEnd() {
+		private void removeQueueOnEnd(ExecutableJobBO job) {
 			Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, this, null);
 			removeQueue(enQueueResult);
 
@@ -134,7 +135,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		/**
 		 * 如果是cron的，则需要重进队列
 		 */
-		private void reEnQueueIfNecessary() {
+		private void reEnQueueIfNecessary(ExecutableJobBO job) {
 			if (job.getSchedule().getSheduleCron() != null) {
 				Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 重进队列
 				if (result3.isSuccess()) {
@@ -164,7 +165,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 		try {
 			UpdateOnExecuteSuccessDTO update = exchange(executableJobBO, trigAt);
-			Result1<RuntimeException> result1 = scheduleJobStorage.updateOnExecuteSuccess(update);
+			Result1<RuntimeException> result1 = scheduleJobService.updateOnExecuteSuccess(update);
 
 			if (!result1.isSuccess()) {
 				/**
@@ -182,8 +183,10 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					SystemUtils.now());
 			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
 					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
-					.nextTrigAt(nextTrigAt).callback(buildJobFreshParamsCallback(executableJobBO)).build();
-			Result2<Boolean, RuntimeException> result2 = scheduleJobStorage.updateOnNoQualifiedExecutor(update);
+					.nextTrigAt(nextTrigAt)
+//					.callback(buildJobFreshParamsCallback(executableJobBO))
+					.build();
+			Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
 			}
@@ -211,9 +214,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		ExecutorInstanceLoadBalance executorInstanceLoadBalance = new ExecutorInstanceLoadBalance(
 				executorInstanceDiscovery, instanceMetrics, executorName, jobHandlerName);
 
+		ScheduleJob job = ScheduleJob.of(executableJobBO);
 		if (executableJobBO.getParallel()) {
-			ScheduleJob job = ScheduleJob.of(executableJobBO);
-
 			ParallelExchanger.Config config = new ParallelExchanger.Config(
 					instanceProperties.getLoadBalance().getMaxCandidates(), executableJobBO.getMaxParallelShards(),
 					instanceProperties.getOverload().getJobs().getMax());
@@ -236,15 +238,16 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					SystemUtils.now());
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */).lastTrigAt(trigAt)
-					.end(end).nextTrigAt(nextTrigAt).callback(buildJobFreshParamsCallback(executableJobBO)).build();
+					.end(end).nextTrigAt(nextTrigAt)
+//					.callback(buildJobFreshParamsCallback(executableJobBO))
+					.build();
 			return update;
 		} else {
 			CandidatesSwitchableLoadBalanceExchanger loadBalanceExchanger = new CandidatesSwitchableLoadBalanceExchanger(
 					this.protocol, executorInstanceLoadBalance, NodeRole.Executor.getRoleName(),
 					instanceProperties.getLoadBalance().getMaxCandidates());
 
-			ShardExchangeResult result = loadBalanceExchanger.exchange(executableJobBO,
-					executableJobBO.getExecuteTimeout());
+			ShardExchangeResult result = loadBalanceExchanger.exchange(job, executableJobBO.getExecuteTimeout());
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
@@ -254,7 +257,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					.executorIp(instance.getIp()).executorPort(instance.getPort())
 					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(trigAt)
 					.end(executeJobResult.isEnd()).nextTrigAt(nextTrigAt)
-					.callback(buildJobFreshParamsCallback(executableJobBO)).build();
+//					.callback(buildJobFreshParamsCallback(executableJobBO))
+					.build();
 			return update;
 		}
 	}
@@ -262,8 +266,10 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
 		LocalDateTime nextTrigAt = job.getSchedule().calcNextTrigAtOnTriggered(trigAt, SystemUtils.now());
 		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt).callback(buildJobFreshParamsCallback(job)).build();
-		Result2<Boolean, RuntimeException> result2 = scheduleJobStorage.updateOnExecuteFailed(update);
+				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt)
+//				.callback(buildJobFreshParamsCallback(job))
+				.build();
+		Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {
 			log.error("WARNING ex on update job", result2.getT2());

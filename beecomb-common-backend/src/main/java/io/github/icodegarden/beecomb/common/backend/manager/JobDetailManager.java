@@ -11,6 +11,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.data.JobDetailDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobDetailPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobDetailQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobDetailVO;
 import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
 
@@ -41,5 +42,12 @@ public class JobDetailManager {
 	public JobDetailVO findOne(Long jobId, @Nullable JobDetailQuery.With with) {
 		JobDetailDO one = jobDetailMapper.findOne(jobId, with);
 		return JobDetailVO.of(one);
+	}
+	
+	public boolean update(UpdateJobDetailDTO dto) {
+		JobDetailPO.Update update = new JobDetailPO.Update();
+		BeanUtils.copyProperties(dto, update);
+
+		return jobDetailMapper.update(update) == 1;
 	}
 }

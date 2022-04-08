@@ -16,9 +16,6 @@ import lombok.ToString;
 @ToString
 public class CreateJobOpenapiVO {
 
-	/**
-	 * 失败时null
-	 */
 	private Job job;
 	/**
 	 * dispatch失败时有

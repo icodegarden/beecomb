@@ -39,7 +39,13 @@ public class JobReceiver {
 	 */
 	@Transactional
 	public void receive(ExecutableJobBO job) throws WorkerException {
+		if (log.isDebugEnabled()) {
+			log.debug("receive job:{}", job);
+		}
 		if (closed) {
+			if (log.isWarnEnabled()) {
+				log.warn("job was rejected on receive, reason:workerClosed");
+			}
 			throw WorkerException.workerClosed();
 		}
 

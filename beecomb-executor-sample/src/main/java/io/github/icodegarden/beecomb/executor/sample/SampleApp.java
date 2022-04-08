@@ -11,6 +11,8 @@ import io.github.icodegarden.beecomb.client.ZooKeeperClientProperties;
 import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO.Delay;
+import io.github.icodegarden.beecomb.client.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.client.pojo.transfer.CreateScheduleJobDTO.Schedule;
 import io.github.icodegarden.beecomb.client.security.Authentication;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
@@ -64,32 +66,13 @@ public class SampleApp {
 
 		for (;;) {
 			try {
-				System.out.println("请输入指令：");
+				System.out.println("请输入任务类型：");
 				int read = System.in.read();
 				if (read == '1') {
-					int packetId = new Random().nextInt(100000);
-
-					Delay delay = new CreateDelayJobDTO.Delay(3000);
-					delay.setRetryOnExecuteFailed(3);// 任务执行失败时重试次数
-					delay.setRetryBackoffOnExecuteFailed(3000);
-					delay.setRetryOnNoQualified(3);// 没有合格的Executor时重试次数
-					delay.setRetryBackoffOnNoQualified(10000);
-					CreateDelayJobDTO job = new CreateDelayJobDTO("testBizOnExpired" + packetId, EXECUTOR_NAME,
-							BizOnExpiredDelayJobHandler.NAME, delay);
-					job.setUuid("biz_packct_" + packetId);
-
-					CreateJobResponse response = beeCombClient.createJob(job);
-					if (response.getDispatchException() == null) {
-						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功，队列所在实例："
-								+ response.getJob().getQueuedAtInstance()/*若使用async方式，则该字段是null*/);
-					} else {
-						System.out.println("创建 BizOnExpiredDelayJobHandler 示例任务成功，但分配队列失败："
-								+ response.getDispatchException());
-					}
+					bizOnExpiredDelayJob(beeCombClient);
 				}
 				if (read == '2') {
-//					beeCombClient.createJob(job);
-//					System.out.println("创建 ScheudleUntilSuccessScheduleJobHandler 示例任务成功："+response);
+					scheudleUntilSuccessScheduleJob(beeCombClient);
 				}
 				if (read == '3') {
 //					beeCombClient.createJob(job);
@@ -109,6 +92,40 @@ public class SampleApp {
 		 */
 		startExecutor.close();
 		System.out.println("退出");
+	}
+
+	private static void bizOnExpiredDelayJob(BeeCombClient beeCombClient) {
+		int packetId = new Random().nextInt(Integer.MAX_VALUE);
+
+		Delay delay = new CreateDelayJobDTO.Delay(3000);
+		delay.setRetryOnExecuteFailed(3);// 任务执行失败时重试次数
+		delay.setRetryBackoffOnExecuteFailed(3000);
+		delay.setRetryOnNoQualified(3);// 没有合格的Executor时重试次数
+		delay.setRetryBackoffOnNoQualified(10000);
+		CreateDelayJobDTO job = new CreateDelayJobDTO("testBizOnExpired" + packetId, EXECUTOR_NAME,
+				BizOnExpiredDelayJobHandler.NAME, delay);
+		job.setUuid("biz_packct_" + packetId);
+
+		CreateJobResponse response = beeCombClient.createJob(job);
+		pringResponse(response);
+	}
+
+	private static void scheudleUntilSuccessScheduleJob(BeeCombClient beeCombClient) {
+		Schedule schedule = CreateScheduleJobDTO.Schedule.sheduleCron("1/3 * * * * *");
+		CreateScheduleJobDTO job = new CreateScheduleJobDTO("testScheudleUntilSuccess", EXECUTOR_NAME,
+				ScheudleUntilSuccessScheduleJobHandler.NAME, schedule);
+		job.setParams("{}");//json
+
+		CreateJobResponse response = beeCombClient.createJob(job);
+		pringResponse(response);
+	}
+
+	private static void pringResponse(CreateJobResponse response) {
+		if (response.getDispatchException() == null) {
+			System.out.println("创建示例任务成功，队列所在实例：" + response.getJob().getQueuedAtInstance()/* 若使用async方式，则该字段是null */);
+		} else {
+			System.out.println("创建示例任务成功，但分配队列失败：" + response.getDispatchException());
+		}
 	}
 
 	private static BeeCombExecutor startExecutor(String zkConnectString) {

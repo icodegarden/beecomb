@@ -9,8 +9,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.MasterConstants;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
 import io.github.icodegarden.beecomb.master.service.JobDispatcher;
@@ -35,7 +35,7 @@ public class JobRecoverySchedule implements Closeable {
 	{
 		scheduleRecoveryThreadPool.setRemoveOnCancelPolicy(true);
 	}
-	
+
 	private final AtomicBoolean closed = new AtomicBoolean(true);
 	private final DistributedLock lock;
 	private final JobService jobStorage;
@@ -55,8 +55,8 @@ public class JobRecoverySchedule implements Closeable {
 	public boolean start(long scheduleMillis) {
 		if (closed.compareAndSet(true, false)) {
 			future = scheduleRecoveryThreadPool.scheduleWithFixedDelay(() -> {
-				synchronized(JobRecoverySchedule.this) {
-					if(closed.get()) {
+				synchronized (JobRecoverySchedule.this) {
+					if (closed.get()) {
 						/**
 						 * 如果已关闭，终止执行
 						 */
@@ -68,7 +68,8 @@ public class JobRecoverySchedule implements Closeable {
 								doRecovery();
 
 								/**
-								 * FIXME 需要优化？当前recoveryThatNoQueuedActually 和 listJobsShouldRecovery处于相同的schedule中
+								 * FIXME 需要优化？当前recoveryThatNoQueuedActually 和
+								 * listJobsShouldRecovery处于相同的schedule中
 								 */
 								doDispatch();
 							} finally {
@@ -85,10 +86,10 @@ public class JobRecoverySchedule implements Closeable {
 		}
 		return false;
 	}
-	
+
 	private void doRecovery() {
-		LocalDateTime nextTrigAtLt = SystemUtils.now()
-				.minus(MasterConstants.MAX_EXECUTE_TIMEOUT + 60 * 1000, ChronoUnit.MILLIS);
+		LocalDateTime nextTrigAtLt = SystemUtils.now().minus(JobConstants.MAX_EXECUTE_TIMEOUT + 60 * 1000,
+				ChronoUnit.MILLIS);
 		if (log.isInfoEnabled()) {
 			log.info("recovery jobs nextTrigAtLt:{}", nextTrigAtLt);
 		}
@@ -107,13 +108,13 @@ public class JobRecoverySchedule implements Closeable {
 	private void doDispatch() {
 		int skip = 0;
 		for (;;) {
-			if(closed.get()) {
+			if (closed.get()) {
 				/**
 				 * 如果在执行过程中关闭，终止执行
 				 */
 				return;
 			}
-			
+
 			if (!lock.isAcquired()) {
 				log.warn("lock was not Acquired, stop list Jobs Should Recovery");
 				/**
@@ -134,19 +135,19 @@ public class JobRecoverySchedule implements Closeable {
 				dto.setRecoveryAt(SystemUtils.now());
 				try {
 					jobDispatcher.dispatch(job);
-					
+
 					dto.setSuccess(true);
 					dto.setDesc("");
 				} catch (NoSwitchableExchangeException e) {
 					log.warn("exchange failed on dispatch job on JobRecovery", e);
 					dto.setSuccess(false);
 					dto.setDesc(e.getMessage());
-					
+
 					/**
 					 * 当出现NoSwitchableExchangeException时说明还可以尝试下一波的任务,
 					 * 因为这个异常是RequestTimeout或ServerException
 					 */
-					
+
 					/**
 					 * 所以后几波的查询都需要跳过这个任务，以免陷入循环
 					 */
@@ -155,11 +156,11 @@ public class JobRecoverySchedule implements Closeable {
 					log.warn("exchange failed on dispatch job on JobRecovery", e);
 					dto.setSuccess(false);
 					dto.setDesc(e.getMessage());
-					
+
 					/**
 					 * 其他的ExchangeException时说明没有worker可以接收，可以终止了
 					 */
-					return;//IMPT
+					return;// IMPT
 				} finally {
 					jobRecoveryRecordService.createOrUpdate(dto);
 				}
@@ -176,11 +177,11 @@ public class JobRecoverySchedule implements Closeable {
 			future.cancel(true);
 		}
 		closed.set(true);
-		
+
 		/**
 		 * 使用synchronized保障如果任务正在处理中，则等待任务处理完毕
 		 */
-		synchronized(this) {
+		synchronized (this) {
 		}
 	}
 

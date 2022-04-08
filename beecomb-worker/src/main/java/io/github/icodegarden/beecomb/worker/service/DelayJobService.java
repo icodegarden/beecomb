@@ -127,8 +127,6 @@ public class DelayJobService extends BaseJobService {
 				return null;
 			});
 
-			jobExecuteRecordManager.createOnExecuted(mainUpdate);
-
 			return Results.of(true, null);
 		} catch (RuntimeException e) {
 			log.error("ex on updateOnExecuteSuccess, update param:{}", update, e);

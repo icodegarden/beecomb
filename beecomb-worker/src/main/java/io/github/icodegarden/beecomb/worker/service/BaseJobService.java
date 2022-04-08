@@ -7,6 +7,7 @@ import org.springframework.retry.support.RetryTemplate;
 
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
+import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -17,7 +18,7 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
  * @author Fangfang.Xu
  *
  */
-public abstract class BaseJobService implements JobService {
+public abstract class BaseJobService extends AbstractBackendJobService implements JobService {
 	
 	protected static final RetryTemplate RETRY_TEMPLATE = RetryTemplate.builder().fixedBackoff(1000).maxAttempts(3)
 			.retryOn(Exception.class).build();

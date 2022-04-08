@@ -172,4 +172,16 @@ public abstract class Job implements OverloadCalc, Serializable {
 	public int getShardTotal() {
 		return shardTotal;
 	}
+
+	@Override
+	public String toString() {
+		return "Job [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
+				+ executorName + ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight
+				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt
+				+ ", lastTrigResult=" + lastTrigResult + ", lastExecuteExecutor=" + lastExecuteExecutor
+				+ ", lastExecuteReturns=" + lastExecuteReturns + ", lastExecuteSuccess=" + lastExecuteSuccess
+				+ ", executeTimeout=" + executeTimeout + ", createdAt=" + createdAt + ", params=" + params
+				+ ", parallel=" + parallel + ", shard=" + shard + ", shardTotal=" + shardTotal + "]";
+	}
+	
 }

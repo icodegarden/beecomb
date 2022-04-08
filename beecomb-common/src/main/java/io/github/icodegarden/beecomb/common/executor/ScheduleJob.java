@@ -73,4 +73,12 @@ public class ScheduleJob extends Job {
 		ScheduleBO bo = ScheduleBO.of(this);
 		return getWeight() * bo.rateOfSecond();
 	}
+
+	@Override
+	public String toString() {
+		return "ScheduleJob [scheduleFixRate=" + scheduleFixRate + ", scheduleFixDelay=" + scheduleFixDelay
+				+ ", sheduleCron=" + sheduleCron + ", scheduledTimes=" + scheduledTimes + ", toString()="
+				+ super.toString() + "]";
+	}
+	
 }

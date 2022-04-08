@@ -13,11 +13,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.esotericsoftware.minlog.Log;
 import com.github.pagehelper.Page;
 
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
@@ -29,20 +29,24 @@ import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.GetJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.PageJobsOpenapiVO;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
+import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
+@Slf4j
 @Validated
 @RestController
 public class JobOpenapiController {
@@ -51,6 +55,8 @@ public class JobOpenapiController {
 	private JobReceiver jobReceiver;
 	@Autowired
 	private JobMainManager jobMainManager;
+	@Autowired
+	private JobService jobService;
 
 	@PostMapping(value = { "openapi/v1/jobs" })
 	public ResponseEntity<CreateJobOpenapiVO> createJob(@RequestParam(defaultValue = "true") boolean async,
@@ -74,7 +80,7 @@ public class JobOpenapiController {
 			return ResponseEntity.ok(vo);
 		} else {
 			ErrorCodeException errorCodeException = result2.getT2();
-			Log.error("ex on createjob", errorCodeException);
+			log.error("ex on createjob", errorCodeException);
 			return (ResponseEntity) ResponseEntity.status(errorCodeException.httpStatus())
 					.body(errorCodeException.getMessage());
 		}
@@ -136,6 +142,9 @@ public class JobOpenapiController {
 	public ResponseEntity<GetJobOpenapiVO> getJob(@PathVariable Long id) {
 		JobMainVO one = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 
+		if (one == null) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
+		}
 		/**
 		 * 校验归属权
 		 */
@@ -152,6 +161,9 @@ public class JobOpenapiController {
 	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(@PathVariable String uuid) {
 		JobMainVO one = jobMainManager.findByUUID(uuid, JobMainQuery.With.WITH_MOST);
 
+		if (one == null) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
+		}
 		/**
 		 * 校验归属权
 		 */
@@ -164,8 +176,23 @@ public class JobOpenapiController {
 		return ResponseEntity.ok(vo);
 	}
 
-//	@PutMapping(value = { "openapi/v1/jobs"})
-//	public ResponseEntity<Void> updateJob(@RequestBody @Validated UpdateJobDTO dto) {
-//		
-//	}
+	@PutMapping(value = { "openapi/v1/jobs" })
+	public ResponseEntity<Void> updateJob(@RequestBody @Validated UpdateJobOpenapiDTO dto) {
+		dto.validate();
+
+		JobMainVO one = jobMainManager.findOne(dto.getId(), JobMainQuery.With.builder().createdBy(true).build());
+
+		if (one == null) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
+		}
+
+		jobService.update(dto);
+		return ResponseEntity.ok().build();
+	}
 }

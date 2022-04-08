@@ -145,12 +145,6 @@ class ScheduleJobServiceTests {
 			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(true);// 结束
 			assertThat(main.getQueued()).isEqualTo(false);// 不是queued状态
-			assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:" + (10000 + 1));// 不变
-			assertThat(main.getLastExecuteReturns()).isEqualTo(1 + "");// 不变
-			assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
-
-			ScheduleJobVO scheduleJob = scheduleJobManager.findOne(createJobMainDTO.getId(), null);
-			assertThat(scheduleJob.getScheduledTimes()).isEqualTo(1);// 不变
 		}
 	}
 

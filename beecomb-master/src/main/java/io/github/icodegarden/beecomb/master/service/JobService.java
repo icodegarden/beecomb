@@ -20,10 +20,14 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJob
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobDetailDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
@@ -32,7 +36,7 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
  *
  */
 @Service
-public class JobService {
+public class JobService extends AbstractBackendJobService {
 
 	@Autowired
 	private JobMainMapper jobMainMapper;
@@ -46,7 +50,7 @@ public class JobService {
 	private ScheduleJobManager scheduleJobManager;
 
 	@Transactional
-	public ExecutableJobBO create(CreateJobOpenapiDTO dto) throws IllegalArgumentException {
+	public ExecutableJobBO create(CreateJobOpenapiDTO dto) {
 		CreateJobMainDTO createJobMainDTO = new CreateJobMainDTO();
 		BeanUtils.copyProperties(dto, createJobMainDTO);
 		createJobMainDTO.setCreatedBy(SecurityUtils.getUsername());// IMPT
@@ -73,15 +77,20 @@ public class JobService {
 		return findOneExecutableJob(createJobMainDTO.getId());
 	}
 
-	/**
-	 * FIXME 返回体确定要这样吗
-	 */
-	public ExecutableJobBO findOneExecutableJob(Long id) {
-		JobMainVO vo = jobMainManager.findOne(id, JobMainQuery.With.WITH_EXECUTABLE);
-		if (vo == null) {
-			return null;
+	@Transactional
+	public boolean update(UpdateJobOpenapiDTO dto) {
+		dto.validate();
+
+		UpdateJobMainDTO updateJobMainDTO = new UpdateJobMainDTO();
+		BeanUtils.copyProperties(dto, updateJobMainDTO);
+		boolean update = jobMainManager.update(updateJobMainDTO);
+		if (update) {
+			UpdateJobDetailDTO updateJobDetailDTO = new UpdateJobDetailDTO();
+			BeanUtils.copyProperties(dto, updateJobDetailDTO);
+			updateJobDetailDTO.setJobId(dto.getId());
+			jobDetailManager.update(updateJobDetailDTO);
 		}
-		return vo.toExecutableJob();
+		return update;
 	}
 
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
