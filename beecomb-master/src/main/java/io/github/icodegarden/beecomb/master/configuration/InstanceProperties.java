@@ -42,7 +42,10 @@ public class InstanceProperties {
 
 	@Data
 	public static class Job {
-		private int dispatchTimeoutMillis = 3000;
+		/**
+		 * dispatch的过程正常是很快的，但在服务刚启动使用阶段可能会需要更大的延迟（worker需要初始化数据库连接等）
+		 */
+		private int dispatchTimeoutMillis = 10000;
 		private int recoveryScheduleMillis = 60000;
 	}
 

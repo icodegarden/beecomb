@@ -13,6 +13,7 @@ import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
+import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
@@ -115,6 +116,11 @@ public class DelayJobEngine extends AbstractJobEngine {
 		@Override
 		public void doRun() {
 			ExecutableJobBO job = DelayJobEngine.this.delayJobService.findOneExecutableJob(jobId);
+			if(job.getEnd()) {
+				Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, this, null);
+				removeQueue(enQueueResult);
+				return;
+			}
 			DelayJobEngine.this.runJob(job);
 		}
 	}
@@ -290,7 +296,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 		JobTrigger jobTrigger = enQueueResult.getT2();
 		ScheduledFuture<?> future = jobTrigger.getFuture();
 		if (!future.isDone() && !future.isCancelled()) {
-			return future.cancel(true);
+			return future.cancel(false);
 		}
 		return true;
 	}

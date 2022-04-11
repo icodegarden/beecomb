@@ -55,7 +55,7 @@ public class ScheudleUntilSuccessScheduleJobHandler implements JobHandler {
 		 * 使用 ticketGrabbingParams 购票，这里表示有几率买到
 		 */
 		Random random = new Random();
-		if (random.nextInt(10) == 0) {
+		if (random.nextInt(5) == 0) {
 			System.out.println("购票成功");
 			ExecuteJobResult executeJobResult = new ExecuteJobResult();
 			/**
@@ -69,9 +69,16 @@ public class ScheudleUntilSuccessScheduleJobHandler implements JobHandler {
 		 * 票没买成功，但是整个执行是成功的，因此不抛出异常<br>
 		 * 由于任务没有end，下次依然会进行调度
 		 */
-		return new ExecuteJobResult();
+		ExecuteJobResult executeJobResult = new ExecuteJobResult();
+		executeJobResult.setExecuteReturns("Ticket Grabbing Failed");
+		return executeJobResult;
 	}
 
+	/**
+	 * 以下代码仅表示场景，并不代表sample代码一定正确执行
+	 * @param job
+	 * @return
+	 */
 	private ExecuteJobResult bigData(Job job) {
 		/**
 		 * 假设这个大任务需要处理100万个用户数据，我们采用每次调度只处理1000个用户<br>

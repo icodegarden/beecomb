@@ -1,7 +1,10 @@
 package io.github.icodegarden.beecomb.executor.sample.handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.Job;
@@ -23,7 +26,14 @@ import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 public class ParallelJobHandler implements JobHandler {
 
 	public static final String NAME = "Parallel";
-	
+
+	static List<Long> datas = new ArrayList<Long>();
+	static {
+		for (long i = 0; i < 10; i++) {
+			datas.add(i);
+		}
+	}
+
 	@Override
 	public String name() {
 		return "Parallel";
@@ -32,7 +42,7 @@ public class ParallelJobHandler implements JobHandler {
 	@Override
 	public ExecuteJobResult handle(Job job) throws Exception {
 		/**
-		 * 本次任务执行中，本实例对应的分片number
+		 * 本次任务执行中，本实例对应的分片number，0表示第一个分片
 		 */
 		int shard = job.getShard();
 		/**
@@ -41,8 +51,12 @@ public class ParallelJobHandler implements JobHandler {
 		int shardTotal = job.getShardTotal();
 
 		/**
-		 * 使用shard 、 shardTotal处理本实例对应的分片数据
+		 * 使用shard 、 shardTotal获取本实例应该处理的分片数据
 		 */
+		List<Long> currentShardDatas = datas.stream().filter(i -> i % shardTotal == shard).collect(Collectors.toList());
+		System.out.println(
+				String.format("shard:%d, shardTotal:%s, currentShardDatas:%s", shard, shardTotal, currentShardDatas));
+
 		Random random = new Random();
 		if (random.nextInt(5) == 0) {
 			/**
@@ -61,12 +75,12 @@ public class ParallelJobHandler implements JobHandler {
 		 * Scheudle类型：如果 所有的 分片的ExecuteJobResult的end没有设置为true，则下次会继续 并行的 调度<br>
 		 * Delay类型：任务将会结束
 		 */
-		if(job instanceof ScheduleJob) {
+		if (job instanceof ScheduleJob) {
 			ExecuteJobResult executeJobResult = new ExecuteJobResult();
 			executeJobResult.setEnd(true);
 			return executeJobResult;
 		}
-		//Delay
+		// Delay
 		return new ExecuteJobResult();
 	}
 

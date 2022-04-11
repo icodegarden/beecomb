@@ -17,6 +17,7 @@ import io.github.icodegarden.beecomb.client.security.Authentication;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.beecomb.executor.BeeCombExecutor;
+import io.github.icodegarden.beecomb.executor.InstanceProperties;
 import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.sample.handler.BizOnExpiredDelayJobHandler;
@@ -75,8 +76,7 @@ public class SampleApp {
 					scheudleUntilSuccessScheduleJob(beeCombClient);
 				}
 				if (read == '3') {
-//					beeCombClient.createJob(job);
-//					System.out.println("创建 ParallelJobHandler 示例任务成功："+response);
+					parallelJobHandler(beeCombClient);
 				}
 
 				if (read == 'e') {
@@ -114,7 +114,18 @@ public class SampleApp {
 		Schedule schedule = CreateScheduleJobDTO.Schedule.sheduleCron("1/3 * * * * *");
 		CreateScheduleJobDTO job = new CreateScheduleJobDTO("testScheudleUntilSuccess", EXECUTOR_NAME,
 				ScheudleUntilSuccessScheduleJobHandler.NAME, schedule);
-		job.setParams("{}");//json
+		job.setParams("{}");// json
+
+		CreateJobResponse response = beeCombClient.createJob(job);
+		pringResponse(response);
+	}
+
+	private static void parallelJobHandler(BeeCombClient beeCombClient) {
+		Schedule schedule = CreateScheduleJobDTO.Schedule.sheduleCron("1/3 * * * * *");
+		CreateScheduleJobDTO job = new CreateScheduleJobDTO("testParallelJob", EXECUTOR_NAME, ParallelJobHandler.NAME,
+				schedule);
+		job.setParallel(true);
+		job.setMaxParallelShards(8);
 
 		CreateJobResponse response = beeCombClient.createJob(job);
 		pringResponse(response);
@@ -131,6 +142,9 @@ public class SampleApp {
 	private static BeeCombExecutor startExecutor(String zkConnectString) {
 		ZooKeeper zookeeper = new ZooKeeper(zkConnectString);
 		ZooKeeperSupportInstanceProperties properties = new ZooKeeperSupportInstanceProperties(zookeeper);
+		InstanceProperties.Server server = new InstanceProperties.Server();
+		server.setExecutorPort(new Random().nextInt(10000) + 10000);// 默认不需要修改
+		properties.setServer(server);
 		BeeCombExecutor beeCombExecutor = BeeCombExecutor.start(EXECUTOR_NAME, properties);
 
 		List<JobHandler> jobHandlers = Arrays.asList(new BizOnExpiredDelayJobHandler(),

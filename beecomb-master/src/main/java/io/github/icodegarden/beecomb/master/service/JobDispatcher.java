@@ -26,9 +26,9 @@ import io.github.icodegarden.commons.nio.pool.NioClientPool;
 public class JobDispatcher {
 
 	private final LoadBalanceExchanger<ShardExchangeResult> loadBalanceExchanger;
-	private final int timeoutMillis;
+	private final int dispatchTimeoutMillis;
 
-	public JobDispatcher(InstanceLoadBalance instanceLoadBalance, int timeoutMillis, int maxCandidate) {
+	public JobDispatcher(InstanceLoadBalance instanceLoadBalance, int dispatchTimeoutMillis, int maxCandidate) {
 		NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Master.getRoleName(), (ip, port) -> {
 			return new NettyNioClient(new InetSocketAddress(ip, port));
 		});
@@ -38,7 +38,7 @@ public class JobDispatcher {
 				instanceLoadBalance, NodeRole.Worker.getRoleName(), maxCandidate);
 		loadBalanceExchanger = new MetricsManagedLoadBalanceExchanger(delegator);
 
-		this.timeoutMillis = timeoutMillis;
+		this.dispatchTimeoutMillis = dispatchTimeoutMillis;
 	}
 
 	/**
@@ -48,7 +48,7 @@ public class JobDispatcher {
 	 * @return 成功的实例
 	 */
 	public MetricsInstance dispatch(ExecutableJobBO job) throws ExchangeException {
-		ShardExchangeResult result = loadBalanceExchanger.exchange(job, timeoutMillis);
+		ShardExchangeResult result = loadBalanceExchanger.exchange(job, dispatchTimeoutMillis);
 		MetricsInstance loadBalancedInstance = result.successResult().instance();
 		return loadBalancedInstance;
 	}

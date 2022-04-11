@@ -13,6 +13,7 @@
 	<logger name="org.apache.kafka" level="WARN"/>
 	<logger name="org.springframework.data.redis" level="WARN"/>
 	<logger name="io.github.icodegarden.beecomb" level="DEBUG"/>
+	<logger name="io.github.icodegarden.commons.exchange" level="DEBUG"/>
 	<logger name="io.github.icodegarden.beecomb.common.backend.mapper" level="INFO"/>
 
 	<root level="INFO">

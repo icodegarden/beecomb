@@ -85,10 +85,12 @@ public class JobService extends AbstractBackendJobService {
 		BeanUtils.copyProperties(dto, updateJobMainDTO);
 		boolean update = jobMainManager.update(updateJobMainDTO);
 		if (update) {
-			UpdateJobDetailDTO updateJobDetailDTO = new UpdateJobDetailDTO();
-			BeanUtils.copyProperties(dto, updateJobDetailDTO);
-			updateJobDetailDTO.setJobId(dto.getId());
-			jobDetailManager.update(updateJobDetailDTO);
+			if(dto.getParams() != null || dto.getDesc() != null) {
+				UpdateJobDetailDTO updateJobDetailDTO = new UpdateJobDetailDTO();
+				BeanUtils.copyProperties(dto, updateJobDetailDTO);
+				updateJobDetailDTO.setJobId(dto.getId());
+				jobDetailManager.update(updateJobDetailDTO);
+			}
 		}
 		return update;
 	}

@@ -38,6 +38,7 @@ public class EntryMessageHandler implements MessageHandler {
 			if (parallelShardObject.getObj() != null && parallelShardObject.getObj() instanceof Job) {
 				job = (Job) parallelShardObject.getObj();
 				job.setShard(parallelShardObject.getShard());
+				job.setShardTotal(parallelShardObject.getShardTotal());
 			}
 		} else {
 			if (obj instanceof Job) {

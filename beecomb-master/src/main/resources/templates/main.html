@@ -13,6 +13,91 @@
 
 <body class="gray-bg">
     <h1>敬请期待...</h1>
+
+总数（按类型）
+已结束
+N日新增（按类型）
+
+
+执行N日 成功 失败 次数
+执行成功率
+   
+   
+    
+    EXPLAIN 
+-- 总数
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+GROUP BY
+	created_by,
+	type
+	
+
+EXPLAIN 
+-- 已结束
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+	where is_end = 1
+GROUP BY
+	created_by,
+	type
+	
+	
+EXPLAIN 
+-- 昨日新增
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+	where DATE_FORMAT(created_at,'%Y-%m-%d') = '2022-04-11'
+GROUP BY
+	created_by,
+	type
+	
+EXPLAIN 
+-- 执行N日(昨日执行)
+SELECT
+	b.created_by,
+	b.type,
+	a.is_success,
+	count( 0 ) AS count 
+FROM
+	job_execute_record a join job_main b on a.job_id=b.id
+	
+	where DATE_FORMAT(a.trig_at,'%Y-%m-%d') = '2022-04-11'
+GROUP BY
+	b.created_by,
+	b.type	,
+	is_success
+	
+EXPLAIN 
+-- 执行成功率
+SELECT
+	b.created_by,
+	b.type,
+	a.is_success,
+	count( 0 ) AS count 
+FROM
+	job_execute_record a join job_main b on a.job_id=b.id
+	
+GROUP BY
+	b.created_by,
+	b.type	,
+	is_success
+	
+    
+    
+    
     <h1><img alt="[ beecomb ]" src="../static/index.jpeg" th:src="@{/index.jpeg}"></h1>
     
     <script th:src="@{/js/jquery.min.js}"></script>

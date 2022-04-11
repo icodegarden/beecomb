@@ -54,9 +54,9 @@ public class JobControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = { "api/job/list" })
-	public ResponseEntity<TableDataInfo> pageJobs(@RequestParam(required = false) String uuid,
-			@RequestParam(required = false) String nameLike, @RequestParam(required = false) JobType type,
-			@RequestParam(required = false) Boolean parallel,
+	public ResponseEntity<TableDataInfo> pageJobs(@RequestParam(required = false) Long id,
+			@RequestParam(required = false) String uuid, @RequestParam(required = false) String nameLike,
+			@RequestParam(required = false) JobType type, @RequestParam(required = false) Boolean parallel,
 			@RequestParam(required = false) Boolean lastExecuteSuccess,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAtGte,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAtLte,
@@ -90,7 +90,7 @@ public class JobControllerRy extends BaseControllerRy {
 				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
 				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 
-		JobMainQuery query = JobMainQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
+		JobMainQuery query = JobMainQuery.builder().id(id).uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
 				.page(pageNum).size(pageSize).sort("order by a.id desc").with(with).build();

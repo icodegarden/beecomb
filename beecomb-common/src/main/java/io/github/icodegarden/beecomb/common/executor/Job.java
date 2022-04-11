@@ -172,7 +172,11 @@ public abstract class Job implements OverloadCalc, Serializable {
 	public int getShardTotal() {
 		return shardTotal;
 	}
-
+	
+	public void setShardTotal(int shardTotal) {
+		this.shardTotal = shardTotal;
+	}
+	
 	@Override
 	public String toString() {
 		return "Job [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="

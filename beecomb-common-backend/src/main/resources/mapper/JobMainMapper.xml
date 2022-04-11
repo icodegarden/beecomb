@@ -163,6 +163,9 @@
 		<include refid="findPrefix"/>
 		
 		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="id != null">
+				and a.id = #{id}
+			</if>
 			<if test="uuid != null">
 				and a.uuid = #{uuid}
 			</if>
@@ -227,7 +230,7 @@
 	<update id="update" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO$Update">
 		update job_main 
 		<trim prefix="set" suffixOverrides=",">
-			<if test="name != null">name = #{name},</if>
+			<if test="name != null">`name` = #{name},</if>
 			<if test="priority != null">priority = #{priority},</if>
 			<if test="weight != null">weight = #{weight},</if>
 			<if test="parallel != null">is_parallel = #{parallel},</if>

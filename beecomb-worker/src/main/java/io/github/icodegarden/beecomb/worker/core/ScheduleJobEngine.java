@@ -114,6 +114,10 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		@Override
 		public void doRun() {
 			ExecutableJobBO job = ScheduleJobEngine.this.scheduleJobService.findOneExecutableJob(jobId);
+			if (job.getEnd()) {
+				removeQueueOnEnd(job);
+				return;
+			}
 			boolean end = ScheduleJobEngine.this.runJob(job);
 			if (end) {
 				removeQueueOnEnd(job);
@@ -287,7 +291,12 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		JobTrigger jobTrigger = enQueueResult.getT2();
 		ScheduledFuture<?> future = jobTrigger.getFuture();
 		if (!future.isDone() && !future.isCancelled()) {
-			return future.cancel(true);
+			/**
+			 * IMPT 这里不要使用true，一方面没必要，另一方面因为remove
+			 * queue后后续要把度量刷入zk，那时zk会报InterruptedException导致无法刷入
+			 * （因为这里true的话会中断线程，即对应的本线程，而zk的sdk会进行object.wait而报InterruptedException）
+			 */
+			return future.cancel(false);
 		}
 		return true;
 	}

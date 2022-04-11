@@ -37,8 +37,8 @@
                         <label class="col-sm-4 control-label is-required">平台角色：</label>
                         <div class="col-sm-8">
 							<select name="platformRole" required class="form-control">
-								<option th:text="Admin" th:value="Admin" th:selected="${user.platformRole}"></option>
-								<option th:text="User" th:value="User" th:selected="${user.platformRole}"></option>
+								<option th:text="Admin" th:value="Admin" th:selected="${user.platformRole} eq 'Admin'"></option>
+								<option th:text="User" th:value="User" th:selected="${user.platformRole} eq 'User'"></option>
 							</select>
 						</div>
                     </div>

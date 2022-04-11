@@ -18,6 +18,7 @@ import lombok.ToString;
 @ToString
 public class JobMainQuery extends BaseQuery {
 
+	private Long id;
 	private String uuid;
 	private Boolean queued;
 	private Boolean end;
@@ -39,11 +40,12 @@ public class JobMainQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public JobMainQuery(int page, int size, String sort, String limit, String uuid, Boolean queued, Boolean end,
-			String createdBy, String nameLike, JobType type, Boolean parallel, Boolean lastExecuteSuccess,
+	public JobMainQuery(int page, int size, String sort, String limit, Long id, String uuid, Boolean queued,
+			Boolean end, String createdBy, String nameLike, JobType type, Boolean parallel, Boolean lastExecuteSuccess,
 			LocalDateTime createdAtGte, LocalDateTime createdAtLte, LocalDateTime lastTrigAtGte,
 			LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, With with) {
 		super(page, size, sort, limit);
+		this.id = id;
 		this.uuid = uuid;
 		this.queued = queued;
 		this.end = end;
