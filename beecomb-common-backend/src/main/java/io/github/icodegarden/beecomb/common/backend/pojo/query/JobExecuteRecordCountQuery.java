@@ -36,5 +36,6 @@ public class JobExecuteRecordCountQuery {
 	public static class GroupBy {
 		private boolean createdBy;
 		private boolean type;
+		private boolean success;
 	}
 }

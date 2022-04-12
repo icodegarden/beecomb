@@ -286,15 +286,14 @@
 			</if>
 		</trim>
 		<if test="groupBy != null">
-			<if test="groupBy.createdBy != null">
-				left join `job_detail` b on a.id = b.job_id
-			</if>
-			<if test="groupBy.type != null">
-				left join `delay_job` c on a.id = c.job_id
-			</if>
-			<if test="with.scheduleJob != null">
-				left join `schedule_job` d on a.id = d.job_id
-			</if>
+			<trim prefix="group by" prefixOverrides=",">
+				<if test="groupBy.createdBy != null">
+					,created_by
+				</if>
+				<if test="groupBy.type != null">
+					,`type`
+				</if>
+			</trim>
 		</if>
 	</select>
 </mapper>

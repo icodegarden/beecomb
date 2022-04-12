@@ -94,5 +94,15 @@
 				and a.is_last_execute_success = #{lastExecuteSuccess}
 			</if>
 		</trim>
+		<if test="groupBy != null">
+			<trim prefix="group by" prefixOverrides=",">
+				<if test="groupBy.createdBy != null">
+					,created_by
+				</if>
+				<if test="groupBy.type != null">
+					,`type`
+				</if>
+			</trim>
+		</if>
 	</select>
 </mapper>
