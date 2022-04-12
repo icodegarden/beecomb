@@ -98,6 +98,15 @@ CREATE TABLE `job_recovery_record` (
   INDEX `idx_is_success_recovery_at`(`is_success`,`recovery_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `report_line`;
+CREATE TABLE `report_line` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(20) NOT NULL UNIQUE comment '报表类型',
+  `content` JSON,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,

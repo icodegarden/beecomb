@@ -78,4 +78,21 @@
 		
 	</select>
 	
+	<select id="count" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordCountQuery" resultMap="countMap">
+		select 
+			count(0)
+		from 
+		`job_execute_record` a
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="end != null">
+				and a.is_end = #{end}
+			</if>
+			<if test="queued != null">
+				and a.is_queued = #{queued}
+			</if>
+			<if test="lastExecuteSuccess != null">
+				and a.is_last_execute_success = #{lastExecuteSuccess}
+			</if>
+		</trim>
+	</select>
 </mapper>

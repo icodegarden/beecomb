@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainCountDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainCountQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 
 /**
@@ -41,4 +43,6 @@ public interface JobMainMapper {
 	void delete(@Param("id") Long id);
 
 	int updateToNoQueued(@Param("nextTrigAtLt") LocalDateTime nextTrigAtLt);
+	
+	List<JobMainCountDO> count(JobMainCountQuery query);
 }

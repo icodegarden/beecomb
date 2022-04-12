@@ -36,6 +36,12 @@
         <association property="scheduleJob" columnPrefix="sj_" resultMap="io.github.icodegarden.beecomb.common.backend.mapper.ScheduleJobMapper.DOMap">
         </association>
 	</resultMap>
+	
+	<resultMap id="countMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainCountDO">
+		<result property="count" column="count" />
+		<result property="type" column="type" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
 
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO" useGeneratedKeys="true" keyProperty="id">
 		insert into `job_main` (
@@ -262,4 +268,33 @@
 		set is_queued = 0, next_trig_at = null
 		where next_trig_at &lt; #{nextTrigAtLt}
 	</update>
+	
+	<select id="count" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainCountQuery" resultMap="countMap">
+		select 
+			count(0)
+		from 
+		`job_main` a
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="end != null">
+				and a.is_end = #{end}
+			</if>
+			<if test="queued != null">
+				and a.is_queued = #{queued}
+			</if>
+			<if test="lastExecuteSuccess != null">
+				and a.is_last_execute_success = #{lastExecuteSuccess}
+			</if>
+		</trim>
+		<if test="groupBy != null">
+			<if test="groupBy.createdBy != null">
+				left join `job_detail` b on a.id = b.job_id
+			</if>
+			<if test="groupBy.type != null">
+				left join `delay_job` c on a.id = c.job_id
+			</if>
+			<if test="with.scheduleJob != null">
+				left join `schedule_job` d on a.id = d.job_id
+			</if>
+		</if>
+	</select>
 </mapper>

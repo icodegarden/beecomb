@@ -13,14 +13,17 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
 import io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper;
+import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainCountDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO.Update;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainCountQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainCountVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.backend.util.PageHelperUtils;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
@@ -80,7 +83,7 @@ public class JobMainManager {
 		JobMainDO jobDO = jobMainMapper.findByUUID(uuid, with);
 		return JobMainVO.of(jobDO);
 	}
-	
+
 	public boolean update(UpdateJobMainDTO dto) {
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
@@ -108,5 +111,84 @@ public class JobMainManager {
 		update.setQueuedAt(SystemUtils.now());
 
 		return jobMainMapper.update(update) == 1;
+	}
+
+	/**
+EXPLAIN -- 总数
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+GROUP BY
+	created_by,
+	type
+	 * @return
+	 */
+	public List<JobMainCountVO> countTotalGroupByTypeAndCreateBy() {
+		JobMainCountQuery query = JobMainCountQuery.builder()
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
+	/**
+    EXPLAIN 
+-- 队列中
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+	where is_queued = 1
+GROUP BY
+	created_by,
+	type
+	 * @return
+	 */
+	public List<JobMainCountVO> countQueuedGroupByTypeAndCreateBy() {
+		JobMainCountQuery query = JobMainCountQuery.builder().queued(true)
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
+	/**
+    EXPLAIN 
+-- 未队列未结束
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+	where is_queued = 0 and is_end = 0
+GROUP BY
+	created_by,
+	type	
+	 * @return
+	 */
+	public List<JobMainCountVO> countNoQueuedNoEndGroupByTypeAndCreateBy() {
+		JobMainCountQuery query = JobMainCountQuery.builder().queued(false).end(false)
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
+	/**
+	    EXPLAIN 
+-- 已结束已成功
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+	where is_end = 1 and is_last_execute_success = 1
+GROUP BY
+	created_by,
+	type	
+	 * @return
+	 */
+	public List<JobMainCountVO> countEndLastExecuteSuccessGroupByTypeAndCreateBy() {
+		JobMainCountQuery query = JobMainCountQuery.builder().end(true).lastExecuteSuccess(true)
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
 	}
 }
