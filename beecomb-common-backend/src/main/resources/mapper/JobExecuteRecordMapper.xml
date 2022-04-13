@@ -15,6 +15,13 @@
 	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO" extends="baseMap">
 	</resultMap>
 	
+	<resultMap id="countMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordCountDO">
+		<result property="count" column="count" />
+		<result property="type" column="type" />
+		<result property="createdBy" column="created_by" />
+		<result property="success" column="is_success" />
+	</resultMap>
+	
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO" useGeneratedKeys="true" keyProperty="id">
 		insert into `job_execute_record` (
 		<if test="id != null">`id`,</if>
@@ -80,27 +87,26 @@
 	
 	<select id="count" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordCountQuery" resultMap="countMap">
 		select 
-			count(0)
+			count(0) as count
+			<if test="groupBy != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="groupBy.createdBy == true">created_by,</if>
+					<if test="groupBy.type == true">`type`,</if>
+					<if test="groupBy.success == true">`is_success`,</if>
+				</trim>
+			</if>
 		from 
-		`job_execute_record` a
-		<trim prefix="WHERE" prefixOverrides="AND">
-			<if test="end != null">
-				and a.is_end = #{end}
-			</if>
-			<if test="queued != null">
-				and a.is_queued = #{queued}
-			</if>
-			<if test="lastExecuteSuccess != null">
-				and a.is_last_execute_success = #{lastExecuteSuccess}
-			</if>
-		</trim>
+		`job_execute_record` a join job_main b on a.job_id = b.id
 		<if test="groupBy != null">
 			<trim prefix="group by" prefixOverrides=",">
-				<if test="groupBy.createdBy != null">
+				<if test="groupBy.createdBy == true">
 					,created_by
 				</if>
-				<if test="groupBy.type != null">
+				<if test="groupBy.type == true">
 					,`type`
+				</if>
+				<if test="groupBy.success == true">
+					,`is_success`
 				</if>
 			</trim>
 		</if>

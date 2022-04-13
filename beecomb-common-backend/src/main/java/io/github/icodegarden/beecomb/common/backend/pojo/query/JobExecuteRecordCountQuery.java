@@ -15,18 +15,11 @@ import lombok.ToString;
 @ToString
 public class JobExecuteRecordCountQuery {
 
-	private Boolean queued;
-	private Boolean end;
-	private Boolean lastExecuteSuccess;
-
 	private GroupBy groupBy;
 
 	@Builder
-	public JobExecuteRecordCountQuery(Boolean queued, Boolean end, Boolean lastExecuteSuccess, GroupBy groupBy) {
+	public JobExecuteRecordCountQuery(GroupBy groupBy) {
 		super();
-		this.queued = queued;
-		this.end = end;
-		this.lastExecuteSuccess = lastExecuteSuccess;
 		this.groupBy = groupBy;
 	}
 

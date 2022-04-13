@@ -95,7 +95,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers("/api/**").authenticated()
             .antMatchers("/openapi/**").authenticated()
         .and()
-        	.addFilterBefore(new JWTAuthenticationFilter(jwtProperties, Arrays.asList("/api/**","/view/**")).setCookieEnable(true),
+        	.addFilterBefore(new JWTAuthenticationFilter(jwtProperties, Arrays.asList("/api/**","/view/**","/system/main"/*main页面需要用户信息*/)).setCookieEnable(true),
         			UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(
 						new BasicAuthenticationFilter(userService,

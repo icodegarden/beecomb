@@ -1,8 +1,9 @@
 package io.github.icodegarden.beecomb.master.pojo.transfer;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 
+import io.github.icodegarden.beecomb.master.pojo.persistence.ReportLinePO;
 import lombok.Data;
 
 /**
@@ -13,9 +14,8 @@ import lombok.Data;
 @Data
 public class CreateReportLineDTO {
 
-	@Size(max = 20)
-	@NotEmpty
-	private String type;
+	@NotNull
+	private ReportLinePO.Type type;
 	@NotEmpty
 	private String content;
 }

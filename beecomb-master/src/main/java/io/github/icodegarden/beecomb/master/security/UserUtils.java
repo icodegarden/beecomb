@@ -1,5 +1,6 @@
 package io.github.icodegarden.beecomb.master.security;
 
+import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
@@ -20,4 +21,15 @@ public abstract class UserUtils {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return Nullable
+	 */
+	public static UserPO.PlatformRole getUserPlatformRole() {
+		UserDetails userDetails = (UserDetails) SecurityUtils.getAuthenticatedUser();
+		if (userDetails != null) {
+			return userDetails.getUser().getPlatformRole();
+		}
+		return null;
+	}
 }

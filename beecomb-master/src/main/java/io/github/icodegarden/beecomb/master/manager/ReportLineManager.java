@@ -49,8 +49,8 @@ public class ReportLineManager {
 		return reportLineMapper.findOne(id, with);
 	}
 
-	public ReportLinePO findOneByType(String type, ReportLineQuery.With with) {
-		return reportLineMapper.findOneByType(type, with);
+	public ReportLinePO findOneByType(ReportLinePO.Type type, ReportLineQuery.With with) {
+		return reportLineMapper.findOneByType(type.name(), with);
 	}
 
 	public void update(UpdateReportLineDTO dto) {

@@ -11,7 +11,7 @@
 	
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.master.pojo.persistence.ReportLinePO" useGeneratedKeys="true" keyProperty="id">
 		insert into `report_line` (
-		<if test="type != null">`username`,</if>
+		<if test="type != null">`type`,</if>
 		<if test="content != null">`content`,</if>
 		`updated_at`
 		)

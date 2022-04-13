@@ -40,7 +40,7 @@
 	<resultMap id="countMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainCountDO">
 		<result property="count" column="count" />
 		<result property="type" column="type" />
-		<result property="createdAt" column="created_at" />
+		<result property="createdBy" column="created_by" />
 	</resultMap>
 
 	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO" useGeneratedKeys="true" keyProperty="id">
@@ -271,7 +271,13 @@
 	
 	<select id="count" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainCountQuery" resultMap="countMap">
 		select 
-			count(0)
+			count(0) as count
+			<if test="groupBy != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="groupBy.createdBy == true">created_by,</if>
+					<if test="groupBy.type == true">`type`,</if>
+				</trim>
+			</if>
 		from 
 		`job_main` a
 		<trim prefix="WHERE" prefixOverrides="AND">
@@ -287,10 +293,10 @@
 		</trim>
 		<if test="groupBy != null">
 			<trim prefix="group by" prefixOverrides=",">
-				<if test="groupBy.createdBy != null">
+				<if test="groupBy.createdBy == true">
 					,created_by
 				</if>
-				<if test="groupBy.type != null">
+				<if test="groupBy.type == true">
 					,`type`
 				</if>
 			</trim>

@@ -30,17 +30,12 @@ CREATE TABLE `job_main` (
   `created_by` varchar(30) comment 'user.username',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  INDEX `idx_name`(`name`),
-  INDEX `idx_is_end`(`is_end`),
-  INDEX `idx_is_queued`(`is_queued`),
-  INDEX `idx_type`(`type`),
-  INDEX `idx_is_parallel`(`is_parallel`),
-  INDEX `idx_is_last_execute_success`(`is_last_execute_success`),
-  INDEX `idx_created_at`(`created_at`),
-  INDEX `idx_last_trig_at`(`last_trig_at`),
-  INDEX `idx_next_trig_at`(`next_trig_at`),
-  INDEX `idx_for_recovery`(`is_end`,`is_queued`,`priority`),
-  INDEX `idx_created_by`(`created_by`)
+  INDEX `idx_uuid`(`uuid`), -- uuid不约束唯一，是否需要唯一由用户自己保障
+  INDEX `idx_for_update_to_recovery`(`next_trig_at`),
+  INDEX `idx_for_list_recovery`(`is_end`,`is_queued`,`priority`),  
+  INDEX `idx_for_searchby_createdby`(`created_by`,`type`,`id`,`uuid`,`name`,`is_end`,`is_queued`,`is_parallel`,`is_last_execute_success`,`created_at`,`next_trig_at`),
+  INDEX `idx_for_count_queued`(`is_queued`, `created_by`, `type`),
+  INDEX `idx_for_count_end_success`(`is_end`, `is_last_execute_success`, `created_by`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `job_detail`;
@@ -101,7 +96,7 @@ CREATE TABLE `job_recovery_record` (
 DROP TABLE IF EXISTS `report_line`;
 CREATE TABLE `report_line` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `type` varchar(20) NOT NULL UNIQUE comment '报表类型',
+  `type` varchar(50) NOT NULL UNIQUE comment '报表类型',
   `content` JSON,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
