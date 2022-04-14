@@ -6,7 +6,7 @@ beecomb也能作为传统定时任务调度系统。
 
 ## Architecture
 
-![Architecture](https://dubbo.apache.org/imgs/architecture.png)
+![Architecture](./imgs/architecture.png)
 
 ## 特性
 
