@@ -8,12 +8,25 @@ beecomb也能作为传统定时任务调度系统。
 
 ![Architecture](./imgs/architecture.png)
 
+* Registry&Metrics 注册中心、高性能轻量数据读写，使用zookeeper
+* Master 
+感知Worker的压力，负载均衡分发任务给Worker
+任务自动恢复处理
+RESTAPI
+可视化web
+* Worker 
+实际的任务调度引擎，管理延迟（delay）任务、调度（schedule）任务
+感知Executor的压力，负载均衡决定任务让哪个Executor执行
+* Executor 任务执行器，任务执行代码在这里
+* Application 使用beecomb的业务应用系统，可以使用beecomb client SDK，可以跟Executor是一个应用
+
 ## 特性
 
 * 大规模任务数量，由于beecomb分布式部署水平扩容、数据水平切分、调度与执行器解耦等设计，大规模集群可支持千万级任务（活跃任务）
 * 高可靠保障，数据持久化，集群实例故障时任务自动恢复
 * 高精度时间，每个任务在delay多少时间、多少周期时间执行是比较精确的
 * 智能压力负载均衡，任务在集群中将根据调度引擎、执行器的cpu、内存、已分配的任务数量进行负载均衡
+* 分片并行执行任务
 * 集群内高性能NIO通讯
 * 可视化Web
 
