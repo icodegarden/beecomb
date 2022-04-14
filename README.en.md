@@ -1,8 +1,8 @@
 # beecomb
 
-    beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
-    如果你有诸如延时退款、抢票等面向N个对象的任务场景，beecomb将会特别适合。
-    beecomb也能作为传统定时任务调度系统。
+beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
+如果你有诸如延时退款、抢票等面向N个对象的任务场景，beecomb将会特别适合。
+beecomb也能作为传统定时任务调度系统。
 
 ## Architecture
 
