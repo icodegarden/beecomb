@@ -1,23 +1,23 @@
 # beecomb
 
-beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
-如果你有诸如延时退款、抢票等面向N个对象的任务场景，beecomb将会特别适合。
-beecomb也能作为传统定时任务调度系统。
+    beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
+    如果你有诸如延时退款、抢票等面向N个对象的任务场景，beecomb将会特别适合。
+    beecomb也能作为传统定时任务调度系统。
 
 ## Architecture
 
 ![Architecture](https://dubbo.apache.org/imgs/architecture.png)
 
-## Features
+## 特性
 
-* Transparent interface based RPC
-* Intelligent load balancing
-* Automatic service registration and discovery
-* High extensibility
-* Runtime traffic routing
-* Visualized service governance
+* 大规模任务数量，由于beecomb分布式部署水平扩容、数据水平切分、调度与执行器解耦等设计，大规模集群可支持千万级任务（活跃任务）
+* 高可靠保障，数据持久化，集群实例故障时任务自动恢复
+* 高精度时间，每个任务在delay多少时间、多少周期时间执行是比较精确的
+* 智能压力负载均衡，任务在集群中将根据调度引擎、执行器的cpu、内存、已分配的任务数量进行负载均衡
+* 集群内高性能NIO通讯
+* 可视化Web
 
-## Getting started
+## 快速开始
 
 The following code snippet comes from [Dubbo Samples](https://github.com/apache/dubbo-samples/tree/master/dubbo-samples-api). You may clone the sample project and step into the `dubbo-samples-api` subdirectory before proceeding.
 
