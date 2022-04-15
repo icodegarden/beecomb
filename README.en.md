@@ -1,8 +1,8 @@
 # beecomb
 
-*beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务*
-*如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合*
-*beecomb也能作为传统定时任务调度系统*
+* beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务
+* 如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合
+* beecomb也能作为传统定时任务调度系统
 
 ## 架构
 
@@ -52,7 +52,66 @@ java -jar beecomb-master.jar --zookeeper.connectString={假设已部署好zookee
 java -jar beecomb-worker.jar ...参数与master一样
 ```
 
-*下载 [beecomb-executor-sample](./beecomb-executor-sample)，QuickStartApp.java 演示了简单的任务场景.更多示例见 SampleApp.java*
+*下载 [beecomb-executor-sample](./beecomb-executor-sample)，QuickStartApp.java 演示了简单的任务场景*
+
+编写JobHandler
+```java
+public class QuickStartJobHandler implements JobHandler {
+	public static final String NAME = "QuickStartAppJobHandler";
+
+	@Override
+	public String name() {
+		return NAME;
+	}
+
+	@Override
+	public ExecuteJobResult handle(Job job) throws Exception {
+		System.out.println("handle job:" + job);
+
+		if (job instanceof DelayJob) {
+			int delay = ((DelayJob) job).getDelay();
+			System.out.println(delay);
+		}
+
+		if (new Random().nextInt(3) == 0) {
+			return new ExecuteJobResult();// 执行成功
+		} else {
+			throw new Exception("执行失败");
+		}
+	}
+}
+```
+
+启动Executor并注册JobHandler
+```java
+ZooKeeper zookeeper = new ZooKeeper(zkConnectString);
+ZooKeeperSupportInstanceProperties properties = new ZooKeeperSupportInstanceProperties(zookeeper);
+BeeCombExecutor beeCombExecutor = BeeCombExecutor.start(EXECUTOR_NAME, properties);
+List<JobHandler> jobHandlers = Arrays.asList(new QuickStartJobHandler());
+beeCombExecutor.registerReplace(jobHandlers);
+```
+
+创建Client（在本例中Executor和Application是同一个应用）
+```java
+Authentication authentication = new BasicAuthentication("beecomb", "beecomb");//client认证方式
+ZooKeeper zooKeeper = new ZooKeeper(zkConnectString);
+ZooKeeperClientProperties clientProperties = new ZooKeeperClientProperties(authentication, zooKeeper);
+BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
+```
+
+创建任务
+```java
+                        /**
+			 * 创建延迟任务，达到延迟后 {@link QuickStartAppJobHandler} 将触发任务执行
+			 */
+			Delay delay = new CreateDelayJobDTO.Delay(3000);
+			CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAME, QuickStartJobHandler.NAME,
+					delay);
+			CreateJobResponse response = beeCombClient.createJob(job);
+```
+
+
+*更多示例见 SampleApp.java*
 
 
 
