@@ -1,10 +1,10 @@
 # beecomb
 
-beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
-如果你有诸如延时退款、抢票等面向N个对象的任务场景，beecomb将会特别适合。
-beecomb也能作为传统定时任务调度系统。
+*beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
+*如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合。
+*beecomb也能作为传统定时任务调度系统。
 
-## Architecture
+## 架构
 
 ![Architecture](./imgs/architecture.png)
 
@@ -18,10 +18,10 @@ beecomb也能作为传统定时任务调度系统。
 
 * 大规模任务数量，由于beecomb分布式部署水平扩容、数据水平切分、调度与执行器解耦等设计，大规模集群可支持千万级任务（活跃任务）
 * 高可靠保障，数据持久化，集群实例故障时任务自动恢复
-* 高精度时间，每个任务在delay多少时间、多少周期时间执行是比较精确的
+* 高精度时间，每个任务在什么时间执行是比较精确的
 * 智能压力负载均衡，任务在集群中将根据调度引擎、执行器的cpu、内存、已分配的任务数量进行负载均衡
 * 分片并行执行任务
-* 集群内高性能NIO通讯
+* 集群内NIO通讯
 * 可视化Web
 
 ## 环境要求
@@ -30,9 +30,32 @@ beecomb也能作为传统定时任务调度系统。
 * Mysql 5.7（推荐8.0及以上）
 
 
-## 快速开始
+## 开始
 
-The following code snippet comes from [Dubbo Samples](https://github.com/apache/dubbo-samples/tree/master/dubbo-samples-api). You may clone the sample project and step into the `dubbo-samples-api` subdirectory before proceeding.
+*下面演示如何快速开始使用
+
+*创建2个database（beecomb使用shardingsphere分库），可以在相同mysql实例上
+```bash
+create DATABASE `beecomb_0`;
+create DATABASE `beecomb_1`;
+```
+
+*下载 [scripts/mysql文件夹](./scripts/mysql) ，在2个database中都执行初始化脚本 init.sql、mysql_sequence.sql *
+
+*启动master（它是springboot项目）
+```bash
+java -jar beecomb-master.jar --zookeeper.connectString={假设已部署好zookeeper，例如127.0.0.1:2181} --spring.shardingsphere.datasource.ds0.username={beecomb_0的用户名} --spring.shardingsphere.datasource.ds0.password={beecomb_0的密码} --spring.shardingsphere.datasource.ds1.username={beecomb_1的用户名} --spring.shardingsphere.datasource.ds1.password={beecomb_1的密码} 
+```
+
+*启动worker（它是springboot项目）
+```bash
+java -jar beecomb-worker.jar ...参数与master一样
+```
+
+*下载 [beecomb-executor-sample](./beecomb-executor-sample)，[QuickStartApp.java] 演示了简单的任务场景.更多示例见 [SampleApp.java] *
+
+
+
 
 ```bash
 # git clone https://github.com/apache/dubbo-samples.git
