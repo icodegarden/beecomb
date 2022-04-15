@@ -30,31 +30,33 @@
 * Mysql 5.7（推荐8.0及以上）
 
 
-## 开始
+## 快速开始
+下面展示如何快速开始使用
 
-*下面演示如何快速开始使用*
-
-*创建2个database（beecomb使用shardingsphere分库），可以在相同mysql实例上*
+### 创建数据库
+创建2个database（beecomb使用shardingsphere分库），可以在相同mysql实例上
 ```bash
 create DATABASE `beecomb_0`;
 create DATABASE `beecomb_1`;
 ```
 
-*下载 [scripts/mysql文件夹](./scripts/mysql) ，在2个database中都执行初始化脚本 init.sql、mysql_sequence.sql*
+### 初始化数据库
+下载 [scripts/mysql文件夹](./scripts/mysql) ，在2个database中都执行初始化脚本 init.sql、mysql_sequence.sql
 
-*启动master（它是springboot项目）
+### 启动master
+master是springboot项目
 ```bash
 java -jar beecomb-master.jar --zookeeper.connectString={假设已部署好zookeeper，例如127.0.0.1:2181} --spring.shardingsphere.datasource.ds0.username={beecomb_0的用户名} --spring.shardingsphere.datasource.ds0.password={beecomb_0的密码} --spring.shardingsphere.datasource.ds1.username={beecomb_1的用户名} --spring.shardingsphere.datasource.ds1.password={beecomb_1的密码} 
 ```
 
-*启动worker（它是springboot项目）
+### 启动worker
+worker是springboot项目
 ```bash
 java -jar beecomb-worker.jar ...参数与master一样
 ```
 
-*下载 [beecomb-executor-sample](./beecomb-executor-sample)，QuickStartApp.java 演示了简单的任务场景*
-
-编写JobHandler
+### 编写JobHandler
+下载 [beecomb-executor-sample](./beecomb-executor-sample)，下面是QuickStartJobHandler.java代码
 ```java
 public class QuickStartJobHandler implements JobHandler {
 	public static final String NAME = "QuickStartAppJobHandler";
@@ -82,7 +84,8 @@ public class QuickStartJobHandler implements JobHandler {
 }
 ```
 
-启动Executor并注册JobHandler
+### 启动Executor和注册JobHandler
+下载 [beecomb-executor-sample](./beecomb-executor-sample)，下面的代码在 QuickStartApp.java
 ```java
 ZooKeeper zookeeper = new ZooKeeper(zkConnectString);
 ZooKeeperSupportInstanceProperties properties = new ZooKeeperSupportInstanceProperties(zookeeper);
@@ -91,7 +94,8 @@ List<JobHandler> jobHandlers = Arrays.asList(new QuickStartJobHandler());
 beeCombExecutor.registerReplace(jobHandlers);
 ```
 
-创建Client（在本例中Executor和Application是同一个应用）
+### 创建Client
+下载 [beecomb-executor-sample](./beecomb-executor-sample)，下面的代码在 QuickStartApp.java，在本例中Executor和Application是同一个应用
 ```java
 Authentication authentication = new BasicAuthentication("beecomb", "beecomb");//client认证方式
 ZooKeeper zooKeeper = new ZooKeeper(zkConnectString);
@@ -99,7 +103,8 @@ ZooKeeperClientProperties clientProperties = new ZooKeeperClientProperties(authe
 BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
 ```
 
-创建任务
+### 创建任务
+下载 [beecomb-executor-sample](./beecomb-executor-sample)，下面的代码在 QuickStartApp.java
 ```java
 /**
  * 创建延迟任务，达到延迟后 {@link QuickStartAppJobHandler} 将触发任务执行
