@@ -146,7 +146,7 @@ beeCombClient.createJob(...);
 请自行部署，这里不再赘述
 ## Mysql
 beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysql实例），支持自定义多个库，下面以4个库为例
-```java
+```properties
 # 配置真实数据源
 spring.shardingsphere.datasource.names=ds0,ds1,ds2,ds3  名称可以自定义，但需要跟下面对应，最好按此规则编写
 
@@ -194,7 +194,7 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups
 spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].modLoadBalance={"ds0":[0],"ds1":[1],"ds2":[2],"ds3":[3]}
 ```
 通过以上示例可以看出分多少库是可以自定义的，并且分片算法配置可以让数据 避免热点、避免迁移，下面展示当上面的几个库即将不够用时，继续增加库如何避免迁移
-```java
+```properties
 # 分片算法配置    这是原来那些库的配置，不用变
 spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].name=group0  组名称可以自定义
 spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].rangeGte=0   表示该组的库的任务id范围支持从0开始
