@@ -115,10 +115,7 @@ CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAM
 CreateJobResponse response = beeCombClient.createJob(job);
 ```
 
-任务执行log
-```java
-TODO
-```
+### 查看Web
 
 
 *更多示例见 SampleApp.java*
