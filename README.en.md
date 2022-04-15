@@ -1,8 +1,8 @@
 # beecomb
 
-*beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务。
-*如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合。
-*beecomb也能作为传统定时任务调度系统。
+*beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务*
+*如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合*
+*beecomb也能作为传统定时任务调度系统*
 
 ## 架构
 
@@ -32,15 +32,15 @@
 
 ## 开始
 
-*下面演示如何快速开始使用
+*下面演示如何快速开始使用*
 
-*创建2个database（beecomb使用shardingsphere分库），可以在相同mysql实例上
+*创建2个database（beecomb使用shardingsphere分库），可以在相同mysql实例上*
 ```bash
 create DATABASE `beecomb_0`;
 create DATABASE `beecomb_1`;
 ```
 
-*下载 [scripts/mysql文件夹](./scripts/mysql) ，在2个database中都执行初始化脚本 init.sql、mysql_sequence.sql *
+*下载 [scripts/mysql文件夹](./scripts/mysql) ，在2个database中都执行初始化脚本 init.sql、mysql_sequence.sql*
 
 *启动master（它是springboot项目）
 ```bash
@@ -52,7 +52,7 @@ java -jar beecomb-master.jar --zookeeper.connectString={假设已部署好zookee
 java -jar beecomb-worker.jar ...参数与master一样
 ```
 
-*下载 [beecomb-executor-sample](./beecomb-executor-sample)，[QuickStartApp.java] 演示了简单的任务场景.更多示例见 [SampleApp.java] *
+*下载 [beecomb-executor-sample](./beecomb-executor-sample)，QuickStartApp.java 演示了简单的任务场景.更多示例见 SampleApp.java*
 
 
 
