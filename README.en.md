@@ -101,13 +101,18 @@ BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
 
 创建任务
 ```java
-                        /**
-			 * 创建延迟任务，达到延迟后 {@link QuickStartAppJobHandler} 将触发任务执行
-			 */
-			Delay delay = new CreateDelayJobDTO.Delay(3000);
-			CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAME, QuickStartJobHandler.NAME,
-					delay);
-			CreateJobResponse response = beeCombClient.createJob(job);
+/**
+ * 创建延迟任务，达到延迟后 {@link QuickStartAppJobHandler} 将触发任务执行
+*/
+Delay delay = new CreateDelayJobDTO.Delay(3000);
+CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAME, QuickStartJobHandler.NAME,
+    delay);
+CreateJobResponse response = beeCombClient.createJob(job);
+```
+
+任务执行log
+```java
+
 ```
 
 
