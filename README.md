@@ -175,7 +175,8 @@ beeCombClient.createJob(...);
 restapi认证使用basic auth，即使用http header Authorization:base64(username:password)
 
 ### 创建任务
-*接口地址 openapi/v1/jobs*
+接口地址 openapi/v1/jobs
+
 path参数
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
