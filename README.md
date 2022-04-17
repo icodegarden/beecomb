@@ -149,7 +149,7 @@ beeCombClient.createJob(...);
 
 # 部署
 ## Zookeeper
-请自行部署，这里不再赘述
+对于Zookeeper的依赖，只需有可用的环境，并没有数据需要初始化
 ## Mysql
 beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysql实例），支持自定义多个库，下面以4个库为例
 ```properties
@@ -218,5 +218,66 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups
 通过以上示例可以看出数据库可以随着业务发展逐渐的增加，实现水平扩容
 ## Master
 
-# 参数说明
+# 配置参数说明
+除了 部署 中已涉及的参数，还支持更多参数，用于高级配置
+## Master
+|参数   |描述   |默认值   |配置范围   |
+|---|---|---|---|
+|server.port   |matser的http端口   |9898   |按端口规则   |
+|server.bindIp   |master的ip地址   |网络地址   |按ip规则   |
+|server.shutdownGracefullyWaitMillis   |优雅停机最大等待毫秒   |30000   |0-N   |
+|zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
+|zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
+|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
+|zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
+|zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
+|zookeeper.lockRoot   |zk的分布式锁目录   |/beecomb-lock   |按需   |
+|loadBalance.maxCandidates   |对Worker分配每一个任务时的候选合格Worker数量。候选的实例是根据压力来筛选的，通常会给候选中的第一个（压力最小的），但是在网络发生问题时会切换候选中的其他实例   |3   |1-N   |
+|job.dispatchTimeoutMillis   |向Worker分配任务时的超时毫秒。dispatch的过程正常是很快的，但在服务刚启动使用阶段可能会需要更大的延迟（worker需要初始化数据库连接等）   |10000   |按需   |
+|job.recoveryScheduleMillis   |检查有可能需要恢复的任务的频率毫秒   |60000   |按需   |
+|schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
+|schedule.metricsCacheRefreshIntervalMillis   |压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |1000   |按需   |
+|security.jwt.issuer   |web的jwt issuer   |beecomb   |按需   |
+|security.jwt.secretKey   |web的jwt secretKey   |beecomb_jwt@icodegarden   |按需   |
+|security.jwt.tokenExpireSeconds   |web的jwt token过期秒数   |3600   |按需   |
+|security.basicAuth.maxUserCacheSeconds   |beecomb的restapi认证使用basic auth，不会每次都会从数据库加载身份信息，而是缓存方式   |1800   |按需   |
+
+## Worker
+|参数   |描述   |默认值   |配置范围   |
+|---|---|---|---|
+|server.port   |worker的tcp端口   |19898   |按端口规则   |
+|server.bindIp   |worker的ip地址   |网络地址   |按ip规则   |
+|server.nioServerShutdownBlockingTimeoutMillis   |影响nioServer关闭时等待已接收处理中的任务完毕   |30000   |0-N   |
+|server.engineShutdownBlockingTimeoutMillis   |影响任务引擎shutdown时等待正在处理中的任务完毕   |60000   |0-N   |
+|zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
+|zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
+|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
+|zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
+|zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
+|loadBalance.maxCandidates   |对Executor执行每一个任务时的候选合格Executor数量。候选的实例是根据压力来筛选的，通常会给候选中的第一个（压力最小的），但是在网络发生问题时会切换候选中的其他实例   |3   |1-N   |
+|schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
+|schedule.metricsCacheRefreshIntervalMillis   |压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |1000   |按需   |
+|overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
+|overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
+|overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |
+|overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值   |1-N   |
+
+## Executor
+|参数   |描述   |默认值   |配置范围   |
+|---|---|---|---|
+|server.executorPort   |tcp端口   |29898   |按端口规则   |
+|server.executorIp   |ip地址   |网络地址   |按ip规则   |
+|server.nioServerShutdownBlockingTimeoutMillis   |影响nioServer关闭时等待已接收处理中的任务完毕   |60000   |0-N   |
+|zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
+|zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
+|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
+|zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
+|zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
+|schedule.flushMetricsIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
+|overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
+|overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
+|overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |
+|overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/4资源用于Executor   |1-N   |
+
+
 
