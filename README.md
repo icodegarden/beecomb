@@ -1,8 +1,10 @@
 # 概览
 
-* beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务
-* 如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合
-* beecomb也能作为传统定时任务调度系统
+beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务
+
+如果你有诸如延时退款、抢票平台等面向N个有各自调度对象的任务场景，beecomb将会特别适合
+
+beecomb也能作为传统定时任务调度系统
 
 # 架构
 
@@ -191,7 +193,7 @@ body参数
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
-|weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务，   |e1   |
+|weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务   |e1   |
 |parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
 |maxParallelShards   |int   |N   2-64   |最大并行分片数，默认8，当合格的Executor数大于等于该值时，按该值分片，小于时按实际Executor数分片   |8   |
 |executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
