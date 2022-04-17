@@ -162,9 +162,9 @@ public class InstanceProperties {
 		public static class Jobs {
 			private int weight = 8;
 			/**
-			 * 默认executor是业务混合的，1/8用于executor
+			 * 默认executor是业务混合的，1/4用于executor
 			 */
-			private int max = (int) SystemUtils.getVmRuntime().maxConcurrentThreadsPerSecond() / 8;
+			private int max = (int) SystemUtils.getVmRuntime().maxConcurrentThreadsPerSecond() / 4;
 
 			public void setWeight(int weight) {
 				this.weight = weight;
