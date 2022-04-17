@@ -120,7 +120,18 @@ CreateJobResponse response = beeCombClient.createJob(job);
 
 # 开发者
 ## Executor
-任务的执行是在Executor中的JobHandler中进行的，每个Executor都可以有N个JobHandler，开发者需要做的就是编写JobHandler
+*任务的执行是在Executor中的JobHandler中进行的，每个Executor都可以有N个JobHandler，开发者需要做的就是编写JobHandler*
+
+首先引入依赖
+```xml
+                <dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>beecomb-executor</artifactId>
+			<version>最新版本可在maven中央仓库找到</version>
+		</dependency>
+```
+
+编写JobHandler
 ```java
 public class QuickStartJobHandler implements JobHandler {	
         @Override
@@ -131,21 +142,101 @@ public class QuickStartJobHandler implements JobHandler {
 	}
 }
 ```
+
 启动Executor并注册JobHandler
 ```java
 BeeCombExecutor beeCombExecutor = BeeCombExecutor.start(EXECUTOR_NAME, properties);
 List<JobHandler> jobHandlers = Arrays.asList(new QuickStartJobHandler());
 beeCombExecutor.registerReplace(jobHandlers);
 ```
+
 可以看到JobHandler有name，BeeCombExecutor也有name，任务该由哪个Executor的哪个JobHandler处理，正是由name决定的，创建job时每个job都需要executorName和jobHandlerName
 
 ## Application
-业务应用需要能够创建、查询任务，java语言可以直接使用Client SDK，非java语言可以使用restapi
+*业务应用需要能够创建、查询任务，java语言可以直接使用Client SDK，非java语言可以使用 restapi*
+
+首先引入依赖
+```xml
+                <dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>beecomb-client-java</artifactId>
+			<version>最新版本可在maven中央仓库找到</version>
+		</dependency>
+```
+
+使用Client创建任务
 ```java
 BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
 beeCombClient.createJob(...);
 ```
+创建任务的详细参数见 restapi 介绍
+
 ## restapi
+restapi认证使用basic auth，即使用http header Authorization:base64(username:password)
+
+### 创建任务
+*接口地址 openapi/v1/jobs*
+path参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|async   |boolean   |N   |1   |是否异步处理，默认true   |true   |
+
+body参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|uuid   |string   |N   |0-64   |任务的uuid，注意beecomb并不会保证该值唯一性，而是由用户自己决定   |j21ccde2334   |
+|name   |string   |Y   |1-30   |任务名   |jname   |
+|type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
+|executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
+|jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
+|priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
+|weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务，   |e1   |
+|parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
+|maxParallelShards   |int   |N   2-64   |最大并行分片数，默认8，当合格的Executor数大于等于该值时，按该值分片，小于时按实际Executor数分片   |8   |
+|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
+|params   |string   |N   |65535   |任务执行的参数   |id=100   |
+|desc   |string   |N   |200   |任务描述   |我的任务   |
+|delay   |Delay   |当type是Delay时必须   |1   |delay参数   |   |
+
+|Delay|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|delay   |int   |Y   |0-N   |任务的延迟执行时间毫秒   |60000   |
+|retryOnExecuteFailed   |int   |N   |0-N   |当任务执行失败时重试次数，默认0   |3   |
+|retryBackoffOnExecuteFailed   |int   |N   |1000-N   |重试回退时间毫秒，默认3000   |10000   |
+|retryOnNoQualified   |int   |N   |0-N   |当任务执行没有合格的Executor时重试次数，默认0   |3   |
+|retryBackoffOnNoQualified   |int   |N   |5000-N   |重试回退时间毫秒，默认30000   |30000   |
+
+|Schedule|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|scheduleFixRate   |int   |N   |1-N   |任务执行FixRate时间毫秒   |60000   |
+|scheduleFixDelay   |int   |N   |1-N   |任务执行FixDelay时间毫秒   |60000   |
+|sheduleCron   |string   |N   |符合cron   |任务cron   |0 0/2 * * * *   |
+scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
+
+响应参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|job   |Job   |Y   |1   |job的返回参数   |   |
+|dispatchException   |string   |N   |0-N   |dispatch失败时有   |   |
+
+|Job|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|id   |long   |Y   |1-N   |任务的唯一序列   |1   |
+|uuid   |string   |N   |0-64   |任务的uuid   |j21ccde2334   |
+|name   |string   |Y   |1-30   |任务名   |jname   |
+|type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
+|priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
+|weight   |int   |N   |1-5   |任务的重量   |e1   |
+|queued   |boolean   |Y   |1   |任务是否已队列   |true   |
+|queuedAtInstance   |string   |N   |1-N   |任务已队列时对应的地址   |145.23.12.3:19898   |
+
+### 查询任务
+
+
+
 
 # 部署
 ## Zookeeper
@@ -217,6 +308,8 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups
 ```
 通过以上示例可以看出数据库可以随着业务发展逐渐的增加，实现水平扩容
 ## Master
+
+
 
 # 配置参数
 除了 部署 中已涉及的参数，还支持更多参数，用于高级配置
