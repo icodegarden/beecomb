@@ -120,6 +120,10 @@ CreateJobResponse response = beeCombClient.createJob(job);
 ## 更多示例
 更多示例见 SampleApp.java
 
+## 打开Web
+访问 {master地址}:9898 默认用户密码beecomb/beecomb
+TODO
+
 # 开发者
 ## Executor
 *任务的执行是在Executor中的JobHandler中进行的，每个Executor都可以有N个JobHandler，开发者需要做的就是编写JobHandler*
