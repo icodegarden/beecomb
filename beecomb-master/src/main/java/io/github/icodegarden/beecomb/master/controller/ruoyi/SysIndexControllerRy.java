@@ -41,7 +41,7 @@ public class SysIndexControllerRy
     private ISysMenuService menuService;
 
     // 系统首页
-    @GetMapping("/index")
+	@GetMapping({ "/index", "/" })
     public String index(HttpServletRequest request,ModelMap mmap)
     {
     	Jwt jwtConfig = instanceProperties.getSecurity().getJwt();

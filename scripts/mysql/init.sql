@@ -1,6 +1,6 @@
-drop DATABASE IF EXISTS `beecomb`;
-create DATABASE `beecomb`;
-USE beecomb;
+-- drop DATABASE IF EXISTS `beecomb`;
+-- create DATABASE `beecomb`;
+-- USE beecomb;
 
 
 

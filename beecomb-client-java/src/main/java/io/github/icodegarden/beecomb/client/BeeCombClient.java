@@ -4,7 +4,7 @@ import java.io.Closeable;
 
 import io.github.icodegarden.beecomb.client.pojo.request.JobQuery;
 import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
-import io.github.icodegarden.beecomb.client.pojo.response.FindJobResponse;
+import io.github.icodegarden.beecomb.client.pojo.response.GetJobResponse;
 import io.github.icodegarden.beecomb.client.pojo.response.PageResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -20,10 +20,10 @@ public interface BeeCombClient extends Closeable {
 	
 	CreateJobResponse createJobAsync(CreateJobDTO job) throws ExchangeException;
 	
-	PageResponse<FindJobResponse> pageJobs(JobQuery query) throws ExchangeException;
+	PageResponse<GetJobResponse> pageJobs(JobQuery query) throws ExchangeException;
 	
-	FindJobResponse findJob(Long jobId)throws ExchangeException;
+	GetJobResponse getJob(Long jobId)throws ExchangeException;
 	
-	FindJobResponse findJobByUUID(String uuid)throws ExchangeException;
+	GetJobResponse getJobByUUID(String uuid)throws ExchangeException;
 
 }

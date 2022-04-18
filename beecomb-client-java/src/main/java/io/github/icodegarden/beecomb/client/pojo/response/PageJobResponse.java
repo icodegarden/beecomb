@@ -15,7 +15,7 @@ public class PageJobResponse {
 	private int totalPages;
 	private long totalCount;
 	
-	private List<FindJobResponse> jobs;
+	private List<GetJobResponse> jobs;
 
 	public int getPage() {
 		return page;
@@ -49,11 +49,11 @@ public class PageJobResponse {
 		this.totalCount = totalCount;
 	}
 
-	public List<FindJobResponse> getJobs() {
+	public List<GetJobResponse> getJobs() {
 		return jobs;
 	}
 
-	public void setJobs(List<FindJobResponse> jobs) {
+	public void setJobs(List<GetJobResponse> jobs) {
 		this.jobs = jobs;
 	}
 

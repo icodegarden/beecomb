@@ -16,19 +16,19 @@ spring:
   application:
     name: beecomb-worker
   mvc.servlet.load-on-startup: 1  
-  datasource:
-    url: jdbc:mysql://172.22.122.23:53306/beecomb?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root
-    password: 123456
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      minimum-idle: 10
-      maximum-pool-size: 20
-#      max-lifetime: 1800000
-#      idle-timeout: 600000
-#      connection-timeout: 3000
-#      connection-test-query: SELECT 1  
+#  datasource:
+#    url: jdbc:mysql://172.22.122.23:53306/beecomb?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: 123456
+#    type: com.zaxxer.hikari.HikariDataSource
+#    hikari:
+#      minimum-idle: 10
+#      maximum-pool-size: 20
+##      max-lifetime: 1800000
+##      idle-timeout: 600000
+##      connection-timeout: 3000
+##      connection-test-query: SELECT 1  
   
 
 

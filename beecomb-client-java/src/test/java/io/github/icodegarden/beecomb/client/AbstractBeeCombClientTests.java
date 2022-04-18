@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.client.pojo.request.JobQuery;
 import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
-import io.github.icodegarden.beecomb.client.pojo.response.FindJobResponse;
+import io.github.icodegarden.beecomb.client.pojo.response.GetJobResponse;
 import io.github.icodegarden.beecomb.client.pojo.response.PageResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
@@ -64,7 +64,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 
 		JobQuery query = new JobQuery();
 		query.setSize(1);
-		PageResponse<FindJobResponse> page = beeCombClient.pageJobs(query);
+		PageResponse<GetJobResponse> page = beeCombClient.pageJobs(query);
 
 		Assertions.assertThat(page).isNotNull();
 		Assertions.assertThat(page.getResult()).isNotEmpty();
@@ -78,7 +78,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 				new CreateDelayJobDTO.Delay(1000));
 		CreateJobResponse response = beeCombClient.createJob(dto);
 
-		FindJobResponse findJob = beeCombClient.findJob(response.getJob().getId());
+		GetJobResponse findJob = beeCombClient.getJob(response.getJob().getId());
 
 		Assertions.assertThat(findJob).isNotNull();
 		Assertions.assertThat(findJob.getId()).isEqualTo(response.getJob().getId());
@@ -91,7 +91,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 		dto.setUuid(UUID.randomUUID().toString());
 		CreateJobResponse response = beeCombClient.createJob(dto);
 
-		FindJobResponse findJob = beeCombClient.findJobByUUID(response.getJob().getUuid());
+		GetJobResponse findJob = beeCombClient.getJobByUUID(response.getJob().getUuid());
 
 		Assertions.assertThat(findJob).isNotNull();
 		Assertions.assertThat(findJob.getId()).isEqualTo(response.getJob().getId());

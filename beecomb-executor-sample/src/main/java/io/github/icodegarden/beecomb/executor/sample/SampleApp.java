@@ -38,7 +38,7 @@ public class SampleApp {
 		 * 如果是spring/springboot项目，可以在bean初始化阶段启动，具体取决于用户自己的项目情况
 		 */
 		String zkConnectString = "127.0.0.1:2181";/* 多个以,号分割 */
-		BeeCombExecutor startExecutor = startExecutor(zkConnectString);
+		BeeCombExecutor executor = startExecutor(zkConnectString);
 
 		/**
 		 * 使用sdk 调用openapi接口
@@ -90,7 +90,7 @@ public class SampleApp {
 		/**
 		 * 进程退出前，执行优雅停机
 		 */
-		startExecutor.close();
+		executor.close();
 		System.out.println("退出");
 	}
 

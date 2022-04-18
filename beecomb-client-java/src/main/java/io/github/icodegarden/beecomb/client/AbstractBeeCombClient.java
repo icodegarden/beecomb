@@ -8,7 +8,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import io.github.icodegarden.beecomb.client.pojo.request.JobQuery;
 import io.github.icodegarden.beecomb.client.pojo.request.JobQuery.JobWith;
 import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
-import io.github.icodegarden.beecomb.client.pojo.response.FindJobResponse;
+import io.github.icodegarden.beecomb.client.pojo.response.GetJobResponse;
 import io.github.icodegarden.beecomb.client.pojo.response.PageResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.client.util.WebUtils;
@@ -86,7 +86,7 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 	}
 
 	@Override
-	public PageResponse<FindJobResponse> pageJobs(JobQuery query) throws ExchangeException {
+	public PageResponse<GetJobResponse> pageJobs(JobQuery query) throws ExchangeException {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append(pathPrefix()).append("/openapi/v1/jobs?page=").append(query.getPage())
 				.append("&size=" + query.getSize());
@@ -174,49 +174,49 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 		}
 
 		Protocol protocol = buildProtocol(sb.toString(), HttpMethod.GET,
-				new ParameterizedTypeReference<List<FindJobResponse>>() {
+				new ParameterizedTypeReference<List<GetJobResponse>>() {
 				});
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(null, Integer.MAX_VALUE);
 
-		HttpEntity<List<FindJobResponse>> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<List<GetJobResponse>> httpEntity = (HttpEntity) shardExchangeResult.response();
 
 		HttpHeaders headers = httpEntity.getHeaders();
-		List<FindJobResponse> list = httpEntity.getBody();
+		List<GetJobResponse> list = httpEntity.getBody();
 
 		String totalPageStr = headers.getFirst(WebUtils.HTTPHEADER_TOTALPAGES);
 		String totalCountStr = headers.getFirst(WebUtils.HTTPHEADER_TOTALCOUNT);
 
-		return new PageResponse<FindJobResponse>(query.getPage(), query.getSize(),
+		return new PageResponse<GetJobResponse>(query.getPage(), query.getSize(),
 				totalPageStr != null ? Integer.parseInt(totalPageStr) : 0,
 				totalCountStr != null ? Long.parseLong(totalCountStr) : 0, list);
 	}
 
 	@Override
-	public FindJobResponse findJob(Long jobId) throws ExchangeException {
+	public GetJobResponse getJob(Long jobId) throws ExchangeException {
 		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs/" + jobId, HttpMethod.GET,
-				FindJobResponse.class);
+				GetJobResponse.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(null, Integer.MAX_VALUE);
 
-		HttpEntity<FindJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<GetJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
 		return httpEntity.getBody();
 	}
 
 	@Override
-	public FindJobResponse findJobByUUID(String uuid) throws ExchangeException {
+	public GetJobResponse getJobByUUID(String uuid) throws ExchangeException {
 		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs/uuid/" + uuid, HttpMethod.GET,
-				FindJobResponse.class);
+				GetJobResponse.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(null, Integer.MAX_VALUE);
 
-		HttpEntity<FindJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<GetJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
 		return httpEntity.getBody();
 	}
 }

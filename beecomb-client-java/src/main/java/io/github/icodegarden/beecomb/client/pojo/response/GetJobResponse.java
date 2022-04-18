@@ -10,7 +10,7 @@ import io.github.icodegarden.commons.lang.annotation.NotNull;
  * @author Fangfang.Xu
  *
  */
-public class FindJobResponse {
+public class GetJobResponse {
 
 	/**
 	 * main
@@ -59,24 +59,128 @@ public class FindJobResponse {
 	private String params;
 	private String desc;
 
-	/**
-	 * delay
-	 */
-	private Integer delay;
-	private Integer retryOnExecuteFailed;
-	private Integer retryBackoffOnExecuteFailed;
-	private Integer retriedTimesOnExecuteFailed;
-	private Integer retryOnNoQualified;
-	private Integer retryBackoffOnNoQualified;
-	private Integer retriedTimesOnNoQualified;
+	private Delay delay;
+	private Schedule schedule;
 
-	/**
-	 * schedule
-	 */
-	private Integer scheduleFixRate;
-	private Integer scheduleFixDelay;
-	private String sheduleCron;
-	private Long scheduledTimes;
+	public static class Delay {
+		private Integer delay;// int comment 'ms',
+		private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
+		private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
+		private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
+		private Integer retryOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时重试次数，包括不在线、超载时',
+		private Integer retryBackoffOnNoQualified;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
+		private Integer retriedTimesOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时已重试次数',
+
+		public Integer getDelay() {
+			return delay;
+		}
+
+		public void setDelay(Integer delay) {
+			this.delay = delay;
+		}
+
+		public Integer getRetryOnExecuteFailed() {
+			return retryOnExecuteFailed;
+		}
+
+		public void setRetryOnExecuteFailed(Integer retryOnExecuteFailed) {
+			this.retryOnExecuteFailed = retryOnExecuteFailed;
+		}
+
+		public Integer getRetryBackoffOnExecuteFailed() {
+			return retryBackoffOnExecuteFailed;
+		}
+
+		public void setRetryBackoffOnExecuteFailed(Integer retryBackoffOnExecuteFailed) {
+			this.retryBackoffOnExecuteFailed = retryBackoffOnExecuteFailed;
+		}
+
+		public Integer getRetriedTimesOnExecuteFailed() {
+			return retriedTimesOnExecuteFailed;
+		}
+
+		public void setRetriedTimesOnExecuteFailed(Integer retriedTimesOnExecuteFailed) {
+			this.retriedTimesOnExecuteFailed = retriedTimesOnExecuteFailed;
+		}
+
+		public Integer getRetryOnNoQualified() {
+			return retryOnNoQualified;
+		}
+
+		public void setRetryOnNoQualified(Integer retryOnNoQualified) {
+			this.retryOnNoQualified = retryOnNoQualified;
+		}
+
+		public Integer getRetryBackoffOnNoQualified() {
+			return retryBackoffOnNoQualified;
+		}
+
+		public void setRetryBackoffOnNoQualified(Integer retryBackoffOnNoQualified) {
+			this.retryBackoffOnNoQualified = retryBackoffOnNoQualified;
+		}
+
+		public Integer getRetriedTimesOnNoQualified() {
+			return retriedTimesOnNoQualified;
+		}
+
+		public void setRetriedTimesOnNoQualified(Integer retriedTimesOnNoQualified) {
+			this.retriedTimesOnNoQualified = retriedTimesOnNoQualified;
+		}
+
+		@Override
+		public String toString() {
+			return "Delay [delay=" + delay + ", retryOnExecuteFailed=" + retryOnExecuteFailed
+					+ ", retryBackoffOnExecuteFailed=" + retryBackoffOnExecuteFailed + ", retriedTimesOnExecuteFailed="
+					+ retriedTimesOnExecuteFailed + ", retryOnNoQualified=" + retryOnNoQualified
+					+ ", retryBackoffOnNoQualified=" + retryBackoffOnNoQualified + ", retriedTimesOnNoQualified="
+					+ retriedTimesOnNoQualified + "]";
+		}
+	}
+
+	public static class Schedule {
+		private Integer scheduleFixRate;// int comment 'ms',
+		private Integer scheduleFixDelay;// int comment 'ms',
+		private String sheduleCron;// varchar(20),
+		private Long scheduledTimes;// bigint,
+
+		public Integer getScheduleFixRate() {
+			return scheduleFixRate;
+		}
+
+		public void setScheduleFixRate(Integer scheduleFixRate) {
+			this.scheduleFixRate = scheduleFixRate;
+		}
+
+		public Integer getScheduleFixDelay() {
+			return scheduleFixDelay;
+		}
+
+		public void setScheduleFixDelay(Integer scheduleFixDelay) {
+			this.scheduleFixDelay = scheduleFixDelay;
+		}
+
+		public String getSheduleCron() {
+			return sheduleCron;
+		}
+
+		public void setSheduleCron(String sheduleCron) {
+			this.sheduleCron = sheduleCron;
+		}
+
+		public Long getScheduledTimes() {
+			return scheduledTimes;
+		}
+
+		public void setScheduledTimes(Long scheduledTimes) {
+			this.scheduledTimes = scheduledTimes;
+		}
+
+		@Override
+		public String toString() {
+			return "Schedule [scheduleFixRate=" + scheduleFixRate + ", scheduleFixDelay=" + scheduleFixDelay
+					+ ", sheduleCron=" + sheduleCron + ", scheduledTimes=" + scheduledTimes + "]";
+		}
+	}
 
 	public Long getId() {
 		return id;
@@ -278,97 +382,25 @@ public class FindJobResponse {
 		this.desc = desc;
 	}
 
-	public Integer getDelay() {
+	public Delay getDelay() {
 		return delay;
 	}
 
-	public void setDelay(Integer delay) {
+	public void setDelay(Delay delay) {
 		this.delay = delay;
 	}
 
-	public Integer getRetryOnExecuteFailed() {
-		return retryOnExecuteFailed;
+	public Schedule getSchedule() {
+		return schedule;
 	}
 
-	public void setRetryOnExecuteFailed(Integer retryOnExecuteFailed) {
-		this.retryOnExecuteFailed = retryOnExecuteFailed;
-	}
-
-	public Integer getRetryBackoffOnExecuteFailed() {
-		return retryBackoffOnExecuteFailed;
-	}
-
-	public void setRetryBackoffOnExecuteFailed(Integer retryBackoffOnExecuteFailed) {
-		this.retryBackoffOnExecuteFailed = retryBackoffOnExecuteFailed;
-	}
-
-	public Integer getRetriedTimesOnExecuteFailed() {
-		return retriedTimesOnExecuteFailed;
-	}
-
-	public void setRetriedTimesOnExecuteFailed(Integer retriedTimesOnExecuteFailed) {
-		this.retriedTimesOnExecuteFailed = retriedTimesOnExecuteFailed;
-	}
-
-	public Integer getRetryOnNoQualified() {
-		return retryOnNoQualified;
-	}
-
-	public void setRetryOnNoQualified(Integer retryOnNoQualified) {
-		this.retryOnNoQualified = retryOnNoQualified;
-	}
-
-	public Integer getRetryBackoffOnNoQualified() {
-		return retryBackoffOnNoQualified;
-	}
-
-	public void setRetryBackoffOnNoQualified(Integer retryBackoffOnNoQualified) {
-		this.retryBackoffOnNoQualified = retryBackoffOnNoQualified;
-	}
-
-	public Integer getRetriedTimesOnNoQualified() {
-		return retriedTimesOnNoQualified;
-	}
-
-	public void setRetriedTimesOnNoQualified(Integer retriedTimesOnNoQualified) {
-		this.retriedTimesOnNoQualified = retriedTimesOnNoQualified;
-	}
-
-	public Integer getScheduleFixRate() {
-		return scheduleFixRate;
-	}
-
-	public void setScheduleFixRate(Integer scheduleFixRate) {
-		this.scheduleFixRate = scheduleFixRate;
-	}
-
-	public Integer getScheduleFixDelay() {
-		return scheduleFixDelay;
-	}
-
-	public void setScheduleFixDelay(Integer scheduleFixDelay) {
-		this.scheduleFixDelay = scheduleFixDelay;
-	}
-
-	public String getSheduleCron() {
-		return sheduleCron;
-	}
-
-	public void setSheduleCron(String sheduleCron) {
-		this.sheduleCron = sheduleCron;
-	}
-
-	public Long getScheduledTimes() {
-		return scheduledTimes;
-	}
-
-	public void setScheduledTimes(Long scheduledTimes) {
-		this.scheduledTimes = scheduledTimes;
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
 	}
 
 	@Override
 	public String toString() {
-		return "FindJobResponse [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
+		return "GetJobResponse [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
 				+ executorName + ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight
 				+ ", parallel=" + parallel + ", maxParallelShards=" + maxParallelShards + ", queued=" + queued
 				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt
@@ -376,12 +408,6 @@ public class FindJobResponse {
 				+ ", lastExecuteReturns=" + lastExecuteReturns + ", lastExecuteSuccess=" + lastExecuteSuccess
 				+ ", executeTimeout=" + executeTimeout + ", nextTrigAt=" + nextTrigAt + ", end=" + end + ", createdBy="
 				+ createdBy + ", createdAt=" + createdAt + ", params=" + params + ", desc=" + desc + ", delay=" + delay
-				+ ", retryOnExecuteFailed=" + retryOnExecuteFailed + ", retryBackoffOnExecuteFailed="
-				+ retryBackoffOnExecuteFailed + ", retriedTimesOnExecuteFailed=" + retriedTimesOnExecuteFailed
-				+ ", retryOnNoQualified=" + retryOnNoQualified + ", retryBackoffOnNoQualified="
-				+ retryBackoffOnNoQualified + ", retriedTimesOnNoQualified=" + retriedTimesOnNoQualified
-				+ ", scheduleFixRate=" + scheduleFixRate + ", scheduleFixDelay=" + scheduleFixDelay + ", sheduleCron="
-				+ sheduleCron + ", scheduledTimes=" + scheduledTimes + "]";
+				+ ", schedule=" + schedule + "]";
 	}
-
 }
