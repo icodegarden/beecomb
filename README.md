@@ -2,7 +2,7 @@
 
 beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务
 
-如果你有诸如延时退款、抢票平台等面向N个有各自调度对象，或分批处理大批量数据、并行分片处理大数据的任务场景，beecomb将会是你想要的
+如果你有诸如延时退款、抢票平台等面向N个有各自调度对象，或分批处理大批量数据、并行分片处理大数据的任务场景，beecomb或许就是你想要的
 
 beecomb也能作为传统定时任务调度系统
 
@@ -28,7 +28,7 @@ beecomb也能作为传统定时任务调度系统
 
 # 环境要求
 * Java 8及以上
-* Zookeeper（推荐3.7.0及以上）
+* Zookeeper（不低于3.6.0，推荐3.7.0及以上）
 * Mysql 5.7（推荐8.0及以上）
 
 
@@ -181,7 +181,7 @@ beeCombClient.createJob(...);
 restapi认证使用basic auth，即使用http header Authorization:base64(username:password)
 
 ### 创建任务
-接口地址 openapi/v1/jobs
+接口地址 POST openapi/v1/jobs
 
 path参数
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
@@ -204,6 +204,7 @@ body参数
 |params   |string   |N   |65535   |任务执行的参数   |id=100   |
 |desc   |string   |N   |200   |任务描述   |我的任务   |
 |delay   |Delay   |当type是Delay时必须   |1   |delay参数   |   |
+|schedule   |Schedule   |当type是Schedule时必须   |1   |schedule参数   |   |
 
 |Delay|
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
@@ -240,10 +241,117 @@ scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
 |queued   |boolean   |Y   |1   |任务是否已队列   |true   |
 |queuedAtInstance   |string   |N   |1-N   |任务已队列时对应的地址   |145.23.12.3:19898   |
 
-### 查询任务
+### 查询任务（id）
+接口地址 GET openapi/v1/jobs/{id}
 
+path参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|id   |long   |Y   |1-N   |任务id   |1   |
 
+响应参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|id   |long   |Y   |1-N   |任务的唯一序列   |1   |
+|uuid   |string   |N   |0-64   |任务的uuid，注意beecomb并不会保证该值唯一性，而是由用户自己决定   |j21ccde2334   |
+|name   |string   |Y   |1-30   |任务名   |jname   |
+|type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
+|executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
+|jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
+|priority   |int   |N   |1-10   |任务的优先级   |5   |
+|weight   |int   |N   |1-5   |任务的重量   |e1   |
+|parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
+|maxParallelShards   |int   |N   2-64   |最大并行分片数   |8   |
+|queued   |boolean   |Y   |1   |任务是否已队列   |true   |
+|queuedAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |进队列时间   |2021-05-01 12:12:12   |
+|queuedAtInstance   |string   |N   |1-N   |任务已队列时对应的地址   |145.23.12.3:19898   |
 
+|lastTrigAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |上次触发时间   |2021-05-02 12:01:02   |
+|lastTrigResult   |string   |N   |0-200   |上次触发结果   |   |
+|lastExecuteExecutor   |string   |N   |0-N   |上次有哪个执行器执行   |145.23.12.3:19898   |
+|lastExecuteReturns   |string   |N   |0-200   |上次执行任务返回结果，这是你自己写的返回参数   |id=200   |
+|lastExecuteSuccess   |boolean   |Y   |1   |上次执行是否成功   |true   |
+|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒   |1000   |
+|nextTrigAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |下次触发时间   |2021-05-02 12:01:30   |
+|end   |boolean   |Y   |1   |任务是否结束   |false   |
+|createdBy   |string   |Y   |1-30   |任务创建者   |beecomb   |
+|createdAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |任务创建时间   |2021-05-02 12:12:12   |
+|params   |string   |N   |65535   |任务执行的参数   |id=100   |
+|desc   |string   |N   |200   |任务描述   |我的任务   |
+|delay   |Delay   |当type是Delay时   |1   |delay参数   |   |
+|schedule   |Schedule   |当type是Schedule时   |1   |schedule参数   |   |
+
+|Delay|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|delay   |int   |Y   |0-N   |任务的延迟执行时间毫秒   |60000   |
+|retryOnExecuteFailed   |int   |N   |0-N   |当任务执行失败时重试次数，默认0   |3   |
+|retryBackoffOnExecuteFailed   |int   |N   |1000-N   |重试回退时间毫秒，默认3000   |10000   |
+|retriedTimesOnExecuteFailed   |int   |Y   |0-N   |已重试次数，默认0   |2   |
+|retryOnNoQualified   |int   |N   |0-N   |当任务执行没有合格的Executor时重试次数，默认0   |3   |
+|retryBackoffOnNoQualified   |int   |N   |5000-N   |重试回退时间毫秒，默认30000   |30000   |
+|retriedTimesOnNoQualified   |int   |Y   |0-N   |已重试次数，默认0   |2   |
+
+|Schedule|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|scheduleFixRate   |int   |N   |1-N   |任务执行FixRate时间毫秒   |60000   |
+|scheduleFixDelay   |int   |N   |1-N   |任务执行FixDelay时间毫秒   |60000   |
+|sheduleCron   |string   |N   |符合cron   |任务cron   |0 0/2 * * * *   |
+|scheduledTimes   |int   |Y   |0-N   |已调度次数   |2   |
+scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
+
+### 查询任务（uuid）
+接口地址 GET  openapi/v1/jobs/uuid/{uuid}
+
+path参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|uuid   |string   |Y   |1-N   |任务uuid   |j21ccde2334   |
+
+响应参数，同 查询任务（id）
+
+### 分页查询任务
+接口地址 GET  openapi/v1/jobs
+
+path参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|uuid   |string   |N   |1-N   |任务uuid   |j21ccde2334   |
+|nameLike   |string   |N   |1-N   |任务名模糊，左匹配   |jname   |
+|type   |string   |N   |枚举Delay, Schedule   |任务类型   |Delay   |
+|parallel   |boolean   |N   |1   |是否并行任务   |false   |
+|lastExecuteSuccess   |boolean   |N   |1   |上次执行是否成功   |true   |
+|queued   |boolean   |N   |1    |任务是否已队列   |true   |
+|end   |boolean   |N   |1   |任务是否结束   |false   |
+|page   |int   |N   |1-N   |第几页，从1开始，默认1，最大1000   |1   |
+|size   |int   |N   |1-N   |每页几条，默认10，最大100   |10   |
+
+响应header
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|X-Total-Pages   |int   |Y   |1-1000   |总页数，最大1000   |10   |
+
+响应参数，是 查询任务（id） 的jsonarray格式
+
+### 更新任务
+接口地址 PUT openapi/v1/jobs
+
+body参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|id   |long   |Y   |1-N   |任务的唯一序列   |1   |
+|name   |string   |N   |1-30   |任务名   |jname   |
+|executorName   |string   |N   |1-30   |任务由哪个Executor执行   |e1   |
+|jobHandlerName   |string   |N   |1-30   |任务由哪个JobHandler执行   |j1   |
+|priority   |int   |N   |1-10   |任务的优先级   |5   |
+|weight   |int   |N   |1-5   |任务的重量   |e1   |
+|maxParallelShards   |int   |N   2-64   |最大并行分片数   |8   |
+|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
+|params   |string   |N   |65535   |任务执行的参数   |id=100   |
+|desc   |string   |N   |200   |任务描述   |我的任务   |
+
+响应参数，无参
 
 # 部署
 ## Zookeeper
