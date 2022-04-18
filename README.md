@@ -159,7 +159,7 @@ beeCombExecutor.registerReplace(jobHandlers);
 可以看到JobHandler有name，BeeCombExecutor也有name，任务该由哪个Executor的哪个JobHandler处理，正是由name决定的，创建job时每个job都需要executorName和jobHandlerName
 
 ## Application
-业务应用需要能够创建、查询任务，java语言可以直接使用Client SDK，非java语言可以使用 restapi
+业务应用需要能够创建、查询任务，java语言可以直接使用Client SDK，非java语言可以使用 [restapi](#restapi)
 
 首先引入maven依赖
 ```xml
