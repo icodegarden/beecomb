@@ -435,7 +435,6 @@ TODO
 |---|---|---|---|
 |server.port   |matser的http端口   |9898   |按端口规则   |
 |server.bindIp   |master的ip地址   |网络地址   |按ip规则   |
-|server.sqlUnhealthMillis   |超过多少ms的sql执行视为不健康，将输出日志   |-1，忽略   |0-N   |
 |server.shutdownGracefullyWaitMillis   |优雅停机最大等待毫秒   |30000   |0-N   |
 |zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
 |zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
@@ -458,7 +457,6 @@ TODO
 |---|---|---|---|
 |server.port   |worker的tcp端口   |19898   |按端口规则   |
 |server.bindIp   |worker的ip地址   |网络地址   |按ip规则   |
-|server.sqlUnhealthMillis   |超过多少ms的sql执行视为不健康，将输出日志   |-1，忽略   |0-N   |
 |server.nioServerShutdownBlockingTimeoutMillis   |影响nioServer关闭时等待已接收处理中的任务完毕   |30000   |0-N   |
 |server.engineShutdownBlockingTimeoutMillis   |影响任务引擎shutdown时等待正在处理中的任务完毕   |60000   |0-N   |
 |zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
