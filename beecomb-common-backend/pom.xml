@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.github.icodegarden</groupId>
 		<artifactId>beecomb</artifactId>
-		<version>0.0.1</version>
+		<version>0.1.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>beecomb-common-backend</artifactId>
@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>beecomb-common</artifactId>
-			<version>0.0.1</version>
+			<version>0.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
@@ -56,29 +56,18 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 		  	<groupId>org.apache.shardingsphere</groupId>
 			<artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
 			<version>5.1.0</version>
-			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
-		
-		
-
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.projectlombok</groupId> -->
-<!-- 			<artifactId>lombok</artifactId> -->
-<!-- 			<version>1.18.20</version> -->
-<!-- 		</dependency> -->
-
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
