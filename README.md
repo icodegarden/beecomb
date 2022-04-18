@@ -126,15 +126,15 @@ TODO
 
 # 开发者
 ## Executor
-*任务的执行是在Executor中的JobHandler中进行的，每个Executor都可以有N个JobHandler，开发者需要做的就是编写JobHandler*
+任务的执行是在Executor中的JobHandler中进行的，每个Executor都可以有N个JobHandler，开发者需要做的就是编写JobHandler
 
-首先引入依赖
+首先引入maven依赖
 ```xml
-                <dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>beecomb-executor</artifactId>
-			<version>最新版本可在maven中央仓库找到</version>
-		</dependency>
+<dependency>
+	<groupId>io.github.icodegarden</groupId>
+	<artifactId>beecomb-executor</artifactId>
+	<version>最新版本可在maven中央仓库找到</version>
+</dependency>
 ```
 
 编写JobHandler
@@ -159,15 +159,15 @@ beeCombExecutor.registerReplace(jobHandlers);
 可以看到JobHandler有name，BeeCombExecutor也有name，任务该由哪个Executor的哪个JobHandler处理，正是由name决定的，创建job时每个job都需要executorName和jobHandlerName
 
 ## Application
-*业务应用需要能够创建、查询任务，java语言可以直接使用Client SDK，非java语言可以使用 restapi*
+业务应用需要能够创建、查询任务，java语言可以直接使用Client SDK，非java语言可以使用 restapi
 
-首先引入依赖
+首先引入maven依赖
 ```xml
-                <dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>beecomb-client-java</artifactId>
-			<version>最新版本可在maven中央仓库找到</version>
-		</dependency>
+<dependency>
+	<groupId>io.github.icodegarden</groupId>
+	<artifactId>beecomb-client-java</artifactId>
+	<version>最新版本可在maven中央仓库找到</version>
+</dependency>
 ```
 
 使用Client创建任务
