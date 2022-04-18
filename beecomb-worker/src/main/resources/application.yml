@@ -8,7 +8,7 @@ pagehelper.params=count: countSql
 
 server:
   #生产环境只关注大于该值的sql
-  sqlUnhealthMillis: 150
+#  sqlUnhealthMillis: 150
 zookeeper:
   connectString: 127.0.0.1:2181
   
