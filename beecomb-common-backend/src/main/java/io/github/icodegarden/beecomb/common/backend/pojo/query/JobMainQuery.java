@@ -13,7 +13,6 @@ import lombok.ToString;
  * @author Fangfang.Xu
  *
  */
-@Builder
 @Getter
 @ToString
 public class JobMainQuery extends BaseQuery {
