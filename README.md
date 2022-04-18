@@ -423,8 +423,10 @@ spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups
 ```
 通过以上示例可以看出数据库可以随着业务发展逐渐的增加，实现水平扩容
 ## Master
+TODO
 
-
+## Worker
+TODO
 
 # 配置参数
 除了 [部署](#部署) 中已涉及的参数，还支持更多参数，用于高级配置
