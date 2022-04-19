@@ -35,7 +35,7 @@ public class JobRecoveryRecordControllerRy extends BaseControllerRy {
 	@GetMapping("view/jobRecoveryRecord/list")
 	public String jobRecoveryRecordList(HttpServletRequest request, ModelMap mmap, @RequestParam(required = false) Long jobId) {
 		mmap.addAttribute("jobId", jobId);
-		return "/job/jobRecoveryRecord/list";
+		return "job/jobRecoveryRecord/list";
 	}
 
 	@PostMapping("api/jobRecoveryRecord/list")
@@ -59,7 +59,7 @@ public class JobRecoveryRecordControllerRy extends BaseControllerRy {
 	public String jobRecoveryRecordDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long jobId) {
 		JobRecoveryRecordVO vo = jobRecoveryRecordService.findOne(jobId, JobRecoveryRecordQuery.With.WITH_MOST);
 		mmap.addAttribute("record", vo);
-		return "/job/jobRecoveryRecord/detail";
+		return "job/jobRecoveryRecord/detail";
 	}
 
 }

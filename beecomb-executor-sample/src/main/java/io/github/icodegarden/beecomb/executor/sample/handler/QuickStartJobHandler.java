@@ -1,7 +1,5 @@
 package io.github.icodegarden.beecomb.executor.sample.handler;
 
-import java.util.Random;
-
 import io.github.icodegarden.beecomb.common.executor.DelayJob;
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.Job;
@@ -29,10 +27,6 @@ public class QuickStartJobHandler implements JobHandler {
 			System.out.println(delay);
 		}
 
-		if (new Random().nextInt(3) == 0) {
-			return new ExecuteJobResult();// 执行成功
-		} else {
-			throw new Exception("执行失败");
-		}
+		return new ExecuteJobResult();// 执行成功
 	}
 }

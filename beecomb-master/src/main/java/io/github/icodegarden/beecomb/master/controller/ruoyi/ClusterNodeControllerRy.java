@@ -32,7 +32,7 @@ public class ClusterNodeControllerRy extends BaseControllerRy {
 
 	@GetMapping("view/node/list")
 	public String nodeList(HttpServletRequest request, ModelMap mmap) {
-		return "/cluster/node/list";
+		return "cluster/node/list";
 	}
 
 	@PostMapping("api/node/list")

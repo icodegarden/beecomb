@@ -35,7 +35,7 @@ public class JobExecuteRecordControllerRy extends BaseControllerRy {
 	public String jobExecuteRecordList(HttpServletRequest request, ModelMap mmap,
 			@RequestParam(required = false) Long jobId) {
 		mmap.addAttribute("jobId", jobId);
-		return "/job/jobExecuteRecord/list";
+		return "job/jobExecuteRecord/list";
 	}
 
 	@PostMapping("api/jobExecuteRecord/list")
@@ -56,7 +56,7 @@ public class JobExecuteRecordControllerRy extends BaseControllerRy {
 				JobExecuteRecordQuery.With.builder().trigResult(true).executeReturns(true).build());
 
 		mmap.addAttribute("record", vo);
-		return "/job/jobExecuteRecord/detail";
+		return "job/jobExecuteRecord/detail";
 	}
 
 }

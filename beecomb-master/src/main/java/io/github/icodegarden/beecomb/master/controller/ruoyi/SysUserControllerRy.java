@@ -44,7 +44,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	@GetMapping("view/user/list")
 	public String userList(HttpServletRequest request, ModelMap mmap) {
 //		mmap.put("dict2", JsonSerialization.deserializeArray("[{\"dictLabel\":\"可用\",\"dictValue\":true},{\"dictLabel\":\"禁用\",\"dictValue\":false}]", Map.class));
-		return "/system/user/list";
+		return "system/user/list";
 	}
 
 	@PostMapping("api/user/list")
@@ -65,7 +65,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	@GetMapping("view/user/create")
 	public String userCreate(HttpServletRequest request, ModelMap mmap) {
 //		mmap.put("dict2", JsonSerialization.deserializeArray("[{\"dictLabel\":\"可用\",\"dictValue\":true},{\"dictLabel\":\"禁用\",\"dictValue\":false}]", Map.class));
-		return "/system/user/create";
+		return "system/user/create";
 	}
 
 	@PostMapping(value = "api/user/create")
@@ -90,7 +90,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	public String userUpdate(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
 		UserPO user = userService.findOne(id, UserQuery.With.WITH_LEAST);
 		mmap.addAttribute("user", user);
-		return "/system/user/update";
+		return "system/user/update";
 	}
 
 	@PostMapping(value = "api/user/update")
@@ -115,7 +115,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	public String resetPwd(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
 		UserPO user = userService.findOne(id, UserQuery.With.WITH_LEAST);
 		mmap.addAttribute("user", user);
-		return "/system/user/resetPwd";
+		return "system/user/resetPwd";
 	}
 
 	@PostMapping("api/user/password")
@@ -180,7 +180,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	public String profileResetPwd(HttpServletRequest request, ModelMap mmap) {
 		UserDetails userDetails = (UserDetails) SecurityUtils.getAuthenticatedUser();
 		request.setAttribute("user", userDetails.getUser());
-		return "/system/user/profile/resetPwd";
+		return "system/user/profile/resetPwd";
 	}
 
 	@PostMapping("api/user/password/profile")

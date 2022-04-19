@@ -104,14 +104,14 @@ public class JobControllerRy extends BaseControllerRy {
 	public String jobDetail(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
 		JobMainVO vo = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 		mmap.addAttribute("job", vo);
-		return "/job/all/detail";
+		return "job/all/detail";
 	}
 
 	@GetMapping("view/job/{id}/update")
 	public String jobUpdate(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
 		JobMainVO vo = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 		mmap.addAttribute("job", vo);
-		return "/job/all/update";
+		return "job/all/update";
 	}
 
 	@PostMapping(value = "api/job/update")

@@ -6,7 +6,7 @@ pagehelper.reasonable: true
 pagehelper.supportMethodsArguments: true
 pagehelper.params=count: countSql
 
-server:
+#server:
   #生产环境只关注大于该值的sql
 #  sqlUnhealthMillis: 150
 zookeeper:

@@ -71,12 +71,14 @@ public class QuickStartApp {
 			log.error("创建示例任务失败", e);
 		}
 
-		beeCombClient.close();
-
 		/**
-		 * 优雅停机
+		 * 当需要关闭时
 		 */
-		beeCombExecutor.close();
+//		beeCombClient.close();
+//		/**
+//		 * 优雅停机
+//		 */
+//		beeCombExecutor.close();
 	}
 
 }
