@@ -75,13 +75,9 @@ public class QuickStartJobHandler implements JobHandler {
 		if (job instanceof DelayJob) {
 			int delay = ((DelayJob) job).getDelay();
 			System.out.println(delay);
-		}
-
-		if (new Random().nextInt(3) == 0) {
-			return new ExecuteJobResult();// 执行成功
-		} else {
-			throw new Exception("执行失败");
-		}
+		}	
+	
+		return new ExecuteJobResult();// 执行成功
 	}
 }
 ```
