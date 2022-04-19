@@ -9,7 +9,7 @@
 	
 	<packaging>pom</packaging>
 	
-	<name>${project.artifactId}}</name>
+	<name>${project.artifactId}</name>
 	
 	<properties>
         <commons-version>0.1.5</commons-version>
@@ -25,6 +25,17 @@
 		<module>beecomb-client-java</module>
 		<module>beecomb-test</module>
     </modules>
+    
+    <distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
     
     <build>
 		<plugins>
