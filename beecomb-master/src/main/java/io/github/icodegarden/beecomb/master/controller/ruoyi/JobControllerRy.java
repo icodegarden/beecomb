@@ -50,7 +50,7 @@ public class JobControllerRy extends BaseControllerRy {
 
 	@GetMapping("view/job/list")
 	public String jobList() {
-		return "/job/all/list";
+		return "job/all/list";
 	}
 
 	@PostMapping(value = { "api/job/list" })
