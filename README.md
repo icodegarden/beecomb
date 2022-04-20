@@ -358,6 +358,7 @@ beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysq
 # 配置真实数据源
 spring.shardingsphere.datasource.names=ds0,ds1,ds2,ds3  名称可以自定义，但需要跟下面对应，最好按此规则编写
 
+#以下数据源支持hikari的配置，如有需要可以自行配置
 # 配置第 1 个数据源
 spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
 spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver

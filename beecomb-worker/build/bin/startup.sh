@@ -37,7 +37,7 @@ if [ -z "$JAVA_HOME" ]; then
   fi
 fi
 
-export SERVER="beecomb-master"
+export SERVER="beecomb-worker"
 
 export JAVA_HOME
 export JAVA="$JAVA_HOME/bin/java"
@@ -47,7 +47,7 @@ export BASE_DIR=`cd $(dirname $0)/..; pwd`
 # JVM Configuration
 #===========================================================================================
     
-    JAVA_OPT="${JAVA_OPT} -server -Xms1024M -Xmx1024M -Xmn512M -Xss256K -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M"
+    JAVA_OPT="${JAVA_OPT} -server -Xms2048M -Xmx2048M -Xmn1024M -Xss256K -XX:MetaspaceSize=256M -XX:MaxMetaspaceSize=256M"
     JAVA_OPT="${JAVA_OPT} -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BASE_DIR}/logs/java_heapdump.hprof"
     JAVA_OPT="${JAVA_OPT} -XX:-UseLargePages"
 
@@ -78,6 +78,6 @@ fi
 # start
 echo "$JAVA ${JAVA_OPT}" > ${BASE_DIR}/logs/start.out 2>&1 &
 
-nohup "$JAVA" ${JAVA_OPT} beecomb.master >> ${BASE_DIR}/logs/start.out 2>&1 &
+nohup "$JAVA" ${JAVA_OPT} beecomb.worker >> ${BASE_DIR}/logs/start.out 2>&1 &
 
 echo "starting，you can check the ${BASE_DIR}/logs/start.out"
