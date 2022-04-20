@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <springProperty name="APP_NAME" scope="context" source="spring.application.name"/>
-    <springProperty name="LOG_DIR" scope="context" source="log.dir" defaultValue="/var/log/beecomb"/>
+    <springProperty name="LOG_DIR" scope="context" source="log.dir" defaultValue="logs"/>
     <springProperty name="LOG_RETAIN_DAYS" scope="context" source="log.retain.days" defaultValue="7"/>
 
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %level ${PID:-} --- [%thread] %logger{5}[%line]:%message %n%exception" />
