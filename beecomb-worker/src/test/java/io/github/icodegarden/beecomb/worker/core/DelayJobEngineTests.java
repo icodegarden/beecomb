@@ -1,7 +1,8 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -25,11 +26,11 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.test.NioClientSuppliers4Test;
-import io.github.icodegarden.beecomb.test.PrepareDatasUtils;
 import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
+import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
@@ -145,7 +146,7 @@ class DelayJobEngineTests extends Properties4Test {
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
 		
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
 		
@@ -183,7 +184,7 @@ class DelayJobEngineTests extends Properties4Test {
 		/**
 		 * lb需要
 		 */
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
 		/**
@@ -223,7 +224,7 @@ class DelayJobEngineTests extends Properties4Test {
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
 		
 		
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
 		

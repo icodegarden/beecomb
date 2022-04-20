@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.JobHandlerRegistration;
-import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBalance;
+import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
@@ -58,7 +58,7 @@ class ExecutorInstanceLoadBalanceTests {
 	@Test
 	void selectCandidates_return0_onDiscovery1serviceNameNotEq() throws Exception {
 		// mock实例发现1，但serviceName不符合，结果0-------------------------
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default("noteq",
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance("noteq",
 				"executor1", "1.1.1.1", 10000, null);
 		List<ExecutorRegisteredInstance> instances = Arrays.asList(executorRegisteredInstance);
 		doReturn(instances).when(executorInstanceDiscovery).listInstances(any());
@@ -72,7 +72,7 @@ class ExecutorInstanceLoadBalanceTests {
 		// mock实例发现1，serviceName也符合，但executorName不符合，结果0-------------------------
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
 		jobHandlerRegistrationBean.setExecutorName("noteq");
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "executor1", "1.1.1.1", 10000, jobHandlerRegistrationBean);
 		List<ExecutorRegisteredInstance> instances = Arrays.asList(executorRegisteredInstance);
 		doReturn(instances).when(executorInstanceDiscovery).listInstances(any());
@@ -94,7 +94,7 @@ class ExecutorInstanceLoadBalanceTests {
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1, jobHandlerRegistration2)));
 
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "executor1", "1.1.1.1", 10000, jobHandlerRegistrationBean);
 
 		List<ExecutorRegisteredInstance> instances = Arrays.asList(executorRegisteredInstance);
@@ -126,9 +126,9 @@ class ExecutorInstanceLoadBalanceTests {
 		/**
 		 * lb需要
 		 */
-		ExecutorRegisteredInstance executorRegisteredInstance1 = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance1 = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "executor1", "1.1.1.1", 10000, jobHandlerRegistrationBean);
-		ExecutorRegisteredInstance executorRegisteredInstance2 = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance2 = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "executor2", "1.1.1.2", 10000, jobHandlerRegistrationBean);
 		List<ExecutorRegisteredInstance> instances = Arrays.asList(executorRegisteredInstance1,
 				executorRegisteredInstance2);

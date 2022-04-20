@@ -14,7 +14,7 @@ import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
 
 /**
  * 
@@ -38,7 +38,7 @@ public class ZooKeeperBeeCombClient extends AbstractBeeCombClient {
 		config.setAclAuth(zookeeper.getAclAuth());
 		
 		this.zooKeeperHolder = new ZooKeeperHolder(config);
-		this.instanceDiscovery = new ZooKeeperInstanceDiscovery.Default(zooKeeperHolder, zookeeper.getRoot());
+		this.instanceDiscovery = new ZnodePatternZooKeeperInstanceDiscovery(zooKeeperHolder, zookeeper.getRoot());
 		this.instanceLoadBalance = new RoundRobinInstanceLoadBalance(instanceDiscovery);
 	}
 

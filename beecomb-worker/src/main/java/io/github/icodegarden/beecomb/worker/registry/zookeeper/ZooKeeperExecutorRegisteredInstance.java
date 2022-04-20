@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.worker.registry.zookeeper;
 
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
+import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
 
 /**
@@ -9,7 +9,7 @@ import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInsta
  * @author Fangfang.Xu
  *
  */
-public class ZooKeeperExecutorRegisteredInstance extends ExecutorRegisteredInstance.Default
+public class ZooKeeperExecutorRegisteredInstance extends DefaultExecutorRegisteredInstance
 		implements ZooKeeperRegisteredInstance {
 
 	private String znode;

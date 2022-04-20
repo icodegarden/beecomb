@@ -20,6 +20,7 @@ import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics.Dimension;
 import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
+import io.github.icodegarden.commons.lang.registry.DefaultRegisteredInstance;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.tuple.NullableTuples;
@@ -44,7 +45,7 @@ class JobsMetricsOverloadTests {
 	@BeforeEach
 	void init() {
 		InstanceRegistry instanceRegistry = mock(InstanceRegistry.class);
-		RegisteredInstance registeredInstance = new RegisteredInstance.Default(NodeRole.Executor.getRoleName(),
+		RegisteredInstance registeredInstance = new DefaultRegisteredInstance(NodeRole.Executor.getRoleName(),
 				"executor1", "1.1.1.1", 10001);
 		doReturn(registeredInstance).when(instanceRegistry).getRegistered();
 

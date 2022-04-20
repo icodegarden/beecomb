@@ -21,7 +21,7 @@ import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistr
  * @author Fangfang.Xu
  *
  */
-class ExecutorZooKeeperInstanceDiscoveryTests extends ZookeeperBuilder4Test {
+class ZooKeeperExecutorInstanceDiscoveryTests extends ZookeeperBuilder4Test {
 
 	@Test
 	void listInstances() throws Exception {

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
-import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
+import io.github.icodegarden.commons.exchange.loadbalance.DefaultMetricsInstance;
 
 /**
  * 
@@ -38,7 +38,7 @@ class JobReceiverTests {
 		delayJobDTO.setType(JobType.Delay);
 
 		// 必须mock return
-		doReturn(new MetricsInstance.Default(null, null)).when(jobDispatcher).dispatch(any());
+		doReturn(new DefaultMetricsInstance(null, null)).when(jobDispatcher).dispatch(any());
 
 		jobReceiver.receive(delayJobDTO);
 		verify(jobService, times(1)).create(delayJobDTO);

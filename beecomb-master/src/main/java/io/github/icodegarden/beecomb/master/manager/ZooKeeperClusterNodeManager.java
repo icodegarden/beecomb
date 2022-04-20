@@ -19,8 +19,8 @@ import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.util.CollectionUtils;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
+import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
 
 /**
  * 
@@ -37,10 +37,10 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 		/**
 		 * 实例需要构造而不是注入的原因是：可注入的实例是缓存式的，不用于Master、Executor
 		 */
-		instanceDiscovery = new ZooKeeperInstanceDiscovery.Default(zooKeeperHolder,
+		instanceDiscovery = new ZnodePatternZooKeeperInstanceDiscovery(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot());
 
-		instanceMetrics = new ZooKeeperInstanceMetrics.Default(zooKeeperHolder,
+		instanceMetrics = new ZnodeDataZooKeeperInstanceMetrics(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot());
 	}
 

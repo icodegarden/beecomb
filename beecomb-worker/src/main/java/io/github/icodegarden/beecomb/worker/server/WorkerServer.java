@@ -6,7 +6,7 @@ import java.net.InetSocketAddress;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
-import io.github.icodegarden.commons.exchange.InstanceExchangeResult;
+import io.github.icodegarden.commons.exchange.DefaultInstanceExchangeResult;
 import io.github.icodegarden.commons.exchange.exception.ExchangeFailedReason;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
 import io.github.icodegarden.commons.nio.MessageHandler;
@@ -41,7 +41,7 @@ public class WorkerServer implements GracefullyShutdown {
 			this.jobReceiver = jobReceiver;
 
 			startNioServer();
-			
+
 			GracefullyShutdown.Registry.singleton().register(this);
 		} catch (Throwable e) {
 			throw new WorkerException("ex on start worker", e);
@@ -62,19 +62,19 @@ public class WorkerServer implements GracefullyShutdown {
 				/**
 				 * 适配其他请求
 				 */
-				if(!(obj instanceof ExecutableJobBO)) {
+				if (!(obj instanceof ExecutableJobBO)) {
 					return null;
 				}
-				
+
 				ExecutableJobBO job = (ExecutableJobBO) obj;
 
-				InstanceExchangeResult.Default exchangeResult = new InstanceExchangeResult.Default();
+				DefaultInstanceExchangeResult exchangeResult = new DefaultInstanceExchangeResult();
 				try {
 					jobReceiver.receive(job);
 					exchangeResult.setSuccess(true);
 				} catch (WorkerException e) {
-					if(log.isWarnEnabled()) {
-						log.warn("ex on receive job:{}", job, e);						
+					if (log.isWarnEnabled()) {
+						log.warn("ex on receive job:{}", job, e);
 					}
 					exchangeResult.setSuccess(false);
 
@@ -127,7 +127,7 @@ public class WorkerServer implements GracefullyShutdown {
 			throw new WorkerException(e);
 		}
 	}
-	
+
 	@Override
 	public int shutdownOrder() {
 		return -90;

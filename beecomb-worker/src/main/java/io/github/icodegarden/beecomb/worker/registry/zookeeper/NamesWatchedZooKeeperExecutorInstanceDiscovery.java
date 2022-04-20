@@ -47,6 +47,11 @@ public class NamesWatchedZooKeeperExecutorInstanceDiscovery
 	}
 
 	@Override
+	public ZooKeeperExecutorRegisteredInstance parseInstance(Object data) {
+		return (ZooKeeperExecutorRegisteredInstance) delegator.parseInstance(data);
+	}
+
+	@Override
 	public void close() throws IOException {
 		delegator.close();
 	}

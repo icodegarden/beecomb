@@ -12,6 +12,7 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
+import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class ZooKeeperExecutorInstanceDiscovery
 	 */
 	public ZooKeeperExecutorInstanceDiscovery(ZooKeeperHolder zooKeeperHolder, String root)
 			throws IllegalArgumentException {
-		zooKeeperInstanceDiscovery = new ZooKeeperInstanceDiscovery.Default(zooKeeperHolder, root);
+		zooKeeperInstanceDiscovery = new ZnodePatternZooKeeperInstanceDiscovery(zooKeeperHolder, root);
 		this.zooKeeperHolder = zooKeeperHolder;
 	}
 
@@ -50,6 +51,17 @@ public class ZooKeeperExecutorInstanceDiscovery
 		List<ZooKeeperRegisteredInstance> instances = zooKeeperInstanceDiscovery.listInstances(serviceName);
 
 		List<ZooKeeperExecutorRegisteredInstance> collect = instances.stream().map(zooKeeperRegisteredInstance -> {
+			return parseInstance(zooKeeperRegisteredInstance);
+		}).filter(i -> i != null).collect(Collectors.toList());
+
+		return collect;
+	}
+
+	@Override
+	public ZooKeeperExecutorRegisteredInstance parseInstance(Object zooKeeperRegisteredInstanceObj) {
+		if (zooKeeperRegisteredInstanceObj instanceof ZooKeeperRegisteredInstance) {
+			ZooKeeperRegisteredInstance zooKeeperRegisteredInstance = (ZooKeeperRegisteredInstance) zooKeeperRegisteredInstanceObj;
+
 			String znode = zooKeeperRegisteredInstance.getZnode();
 			try {
 				byte[] data = zooKeeperHolder.getConnectedZK().getData(znode, false, null);
@@ -60,7 +72,7 @@ public class ZooKeeperExecutorInstanceDiscovery
 							JobHandlerRegistrationBean.class);
 				}
 
-				return new ZooKeeperExecutorRegisteredInstance(znode, serviceName,
+				return new ZooKeeperExecutorRegisteredInstance(znode, zooKeeperRegisteredInstance.getServiceName(),
 						zooKeeperRegisteredInstance.getInstanceName(), zooKeeperRegisteredInstance.getIp(),
 						zooKeeperRegisteredInstance.getPort(), jobHandlerRegistrationBean);
 			} catch (KeeperException | InterruptedException | UnsupportedEncodingException e) {
@@ -69,9 +81,8 @@ public class ZooKeeperExecutorInstanceDiscovery
 //				throw new ZooKeeperExceedExpectedException(
 //						String.format("ex on getData for listInstances znode [%s]", znode), e);
 			}
-		}).collect(Collectors.toList());
-
-		return collect;
+		}
+		return null;
 	}
 
 	@Override

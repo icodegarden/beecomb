@@ -10,7 +10,9 @@ import io.github.icodegarden.commons.exchange.CandidatesSwitchableExchanger;
 import io.github.icodegarden.commons.exchange.Exchanger;
 import io.github.icodegarden.commons.exchange.Protocol;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
+import io.github.icodegarden.commons.exchange.loadbalance.DefaultMetricsInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
+import io.github.icodegarden.commons.lang.registry.DefaultRegisteredInstance;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 
 /**
@@ -39,9 +41,9 @@ public class UrlsBeeCombClient extends AbstractBeeCombClient {
 				int port = url.getPort();
 				String path = url.getPath();
 
-				RegisteredInstance registeredInstance = new RegisteredInstance.Default(NodeRole.Master.getRoleName(),
+				RegisteredInstance registeredInstance = new DefaultRegisteredInstance(NodeRole.Master.getRoleName(),
 						"unknown", protocol, host, port);
-				MetricsInstance metricsInstance = new MetricsInstance.Default(registeredInstance, null);
+				MetricsInstance metricsInstance = new DefaultMetricsInstance(registeredInstance, null);
 
 				pathPrefix = path != null ? path : pathPrefix;
 				if (pathPrefix.endsWith("/")) {

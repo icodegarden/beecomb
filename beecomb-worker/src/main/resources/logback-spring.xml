@@ -52,8 +52,7 @@
     </appender>
 
     <logger name="org.springframework" level="INFO"></logger>
-    <logger name="org.apache" level="INFO"></logger>
-    <logger name="com.zaxxer.hikari" level="INFO"></logger>
+    <logger name="io.github.icodegarden" level="INFO"></logger>
 
     <root level="WARN">
         <appender-ref ref="StdoutAppender"/>

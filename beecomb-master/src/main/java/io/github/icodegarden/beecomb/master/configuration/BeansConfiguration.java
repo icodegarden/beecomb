@@ -44,8 +44,10 @@ import io.github.icodegarden.commons.springboot.web.util.MappingJackson2HttpMess
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
 import io.github.icodegarden.commons.zookeeper.concurrent.lock.ZooKeeperLock;
+import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.registry.NamesWatchedZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
@@ -141,7 +143,7 @@ public class BeansConfiguration {
 	 */
 	@Bean
 	public InstanceMetrics<Metrics> zooKeeperInstanceMetrics(ZooKeeperHolder zooKeeperHolder) {
-		ZooKeeperInstanceMetrics<Metrics> delegator = new ZooKeeperInstanceMetrics.Default(zooKeeperHolder,
+		ZooKeeperInstanceMetrics<Metrics> delegator = new ZnodeDataZooKeeperInstanceMetrics(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot());
 
 		NamesCachedInstanceMetrics instanceMetrics = new NamesCachedInstanceMetrics(
@@ -161,7 +163,7 @@ public class BeansConfiguration {
 	 */
 	@Bean
 	public InstanceDiscovery<ZooKeeperRegisteredInstance> zooKeeperInstanceDiscovery(ZooKeeperHolder zooKeeperHolder) {
-		ZooKeeperInstanceDiscovery<ZooKeeperRegisteredInstance> delegator = new ZooKeeperInstanceDiscovery.Default(
+		ZooKeeperInstanceDiscovery<ZooKeeperRegisteredInstance> delegator = new ZnodePatternZooKeeperInstanceDiscovery(
 				zooKeeperHolder, instanceProperties.getZookeeper().getRoot());
 
 		NamesWatchedZooKeeperInstanceDiscovery instanceDiscovery = new NamesWatchedZooKeeperInstanceDiscovery(delegator,

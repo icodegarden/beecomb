@@ -37,6 +37,7 @@ import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceIntercept
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
+import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
@@ -62,12 +63,12 @@ public class BeansConfiguration {
 
 	@Autowired
 	private InstanceProperties instanceProperties;
-	
+
 	@Bean
 	public SpringContext springContext() {
 		return new SpringContext();
 	}
-	
+
 	@Bean
 	public SmartLifecycle gracefullyShutdownLifecycle() {
 		return new GracefullyShutdownLifecycle();
@@ -116,7 +117,7 @@ public class BeansConfiguration {
 	 */
 	@Bean
 	public InstanceMetrics<Metrics> zooKeeperInstanceMetrics(ZooKeeperHolder zooKeeperHolder) {
-		ZooKeeperInstanceMetrics<Metrics> delegator = new ZooKeeperInstanceMetrics.Default(zooKeeperHolder,
+		ZooKeeperInstanceMetrics<Metrics> delegator = new ZnodeDataZooKeeperInstanceMetrics(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot());
 
 		NamesCachedInstanceMetrics instanceMetrics = new NamesCachedInstanceMetrics(

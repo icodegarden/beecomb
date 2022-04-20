@@ -30,6 +30,7 @@ import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
+import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.service.ScheduleJobService;
@@ -183,7 +184,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		jobHandlerRegistration1.setJobHandlerName(JOB_HANDLER_NAME);
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
@@ -255,7 +256,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		jobHandlerRegistration1.setJobHandlerName(JOB_HANDLER_NAME);
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
@@ -320,7 +321,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		jobHandlerRegistration1.setJobHandlerName(JOB_HANDLER_NAME);
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(
 				new HashSet<JobHandlerRegistration>(Arrays.asList(jobHandlerRegistration1)));
-		ExecutorRegisteredInstance executorRegisteredInstance = new ExecutorRegisteredInstance.Default(
+		ExecutorRegisteredInstance executorRegisteredInstance = new DefaultExecutorRegisteredInstance(
 				NodeRole.Executor.getRoleName(), "instance1", "1.1.1.1", 10001, jobHandlerRegistrationBean);
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());

@@ -26,6 +26,7 @@ import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.nio.NioServer;
 import io.github.icodegarden.commons.nio.java.JavaNioServer;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
+import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
 
@@ -68,7 +69,7 @@ public class ExecutorServer implements GracefullyShutdown {
 			ZooKeeperInstanceRegistry zooKeeperInstanceRegistry = prepareZooKeeperInstanceRegistry(instanceProperties,
 					server.getExecutorPort(), zookeeper.getRoot(), zooKeeperHolder);
 
-			ZooKeeperInstanceMetrics<Metrics> zooKeeperInstanceMetrics = new ZooKeeperInstanceMetrics.Default(
+			ZooKeeperInstanceMetrics<Metrics> zooKeeperInstanceMetrics = new ZnodeDataZooKeeperInstanceMetrics(
 					zooKeeperHolder, zookeeper.getRoot());
 
 			this.jobHandlerRegistry = prepareJobHandlerRegistry(executorName, zooKeeperHolder,

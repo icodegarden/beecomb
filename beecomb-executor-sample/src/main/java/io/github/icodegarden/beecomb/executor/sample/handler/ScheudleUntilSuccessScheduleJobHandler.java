@@ -56,7 +56,7 @@ public class ScheudleUntilSuccessScheduleJobHandler implements JobHandler {
 		 */
 		Random random = new Random();
 		if (random.nextInt(5) == 0) {
-			System.out.println("购票成功");
+			System.out.println("抢票成功");
 			ExecuteJobResult executeJobResult = new ExecuteJobResult();
 			/**
 			 * 成功了，结束调度
@@ -69,6 +69,7 @@ public class ScheudleUntilSuccessScheduleJobHandler implements JobHandler {
 		 * 票没买成功，但是整个执行是成功的，因此不抛出异常<br>
 		 * 由于任务没有end，下次依然会进行调度
 		 */
+		System.out.println("抢票失败，等待下次触发");
 		ExecuteJobResult executeJobResult = new ExecuteJobResult();
 		executeJobResult.setExecuteReturns("Ticket Grabbing Failed");
 		return executeJobResult;
