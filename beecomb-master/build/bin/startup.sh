@@ -37,7 +37,7 @@ if [ -z "$JAVA_HOME" ]; then
   fi
 fi
 
-export SERVER="beecomb-master"
+export SERVER_NAME="beecomb-master"
 
 export JAVA_HOME
 export JAVA="$JAVA_HOME/bin/java"
@@ -61,7 +61,7 @@ fi
 
 
 
-JAVA_OPT="${JAVA_OPT} -jar ${BASE_DIR}/target/${SERVER}.jar"
+JAVA_OPT="${JAVA_OPT} -jar ${BASE_DIR}/target/${SERVER_NAME}.jar"
 JAVA_OPT="${JAVA_OPT} --spring.config.additional-location=${CUSTOM_SEARCH_LOCATIONS}"
 JAVA_OPT="${JAVA_OPT} --server.max-http-header-size=524288"
 

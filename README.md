@@ -361,28 +361,28 @@ spring.shardingsphere.datasource.names=ds0,ds1,ds2,ds3  名称可以自定义，
 #以下数据源支持hikari的配置，如有需要可以自行配置
 # 配置第 1 个数据源
 spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds0.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_0?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
 spring.shardingsphere.datasource.ds0.username=root
 spring.shardingsphere.datasource.ds0.password=123456
 
 # 配置第 2 个数据源
 spring.shardingsphere.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds1.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_1?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
 spring.shardingsphere.datasource.ds1.username=root
 spring.shardingsphere.datasource.ds1.password=123456
 
 # 配置第 3 个数据源
 spring.shardingsphere.datasource.ds2.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds2.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds2.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds2.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_2?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
 spring.shardingsphere.datasource.ds2.username=root
 spring.shardingsphere.datasource.ds2.password=123456
 
 # 配置第 4 个数据源
 spring.shardingsphere.datasource.ds3.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds3.driver-class-name=com.mysql.jdbc.Driver
+spring.shardingsphere.datasource.ds3.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.shardingsphere.datasource.ds3.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_3?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
 spring.shardingsphere.datasource.ds3.username=root
 spring.shardingsphere.datasource.ds3.password=123456
