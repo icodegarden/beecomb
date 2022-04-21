@@ -2,7 +2,7 @@
 
 VERSION=$1
 if [ -z "$VERSION" ]; then
-  echo "param version of $1 must not null"
+  echo "param version of '$1' must not null"
   exit 1
 fi
 
