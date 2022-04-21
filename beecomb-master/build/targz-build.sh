@@ -7,4 +7,4 @@ if [ -z "$VERSION" ]; then
 fi
 
 cp ../target/beecomb-master-$VERSION.jar ../target/beecomb-master.jar
-tar -zcvf beecomb-master-$VERSION.tar.gz ./bin ./config ../target/beecomb-master.jar
+tar -zcvf beecomb-master-$VERSION.tar.gz ./bin/* ./config/* ../target/beecomb-master.jar
