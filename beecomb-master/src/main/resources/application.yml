@@ -11,12 +11,13 @@ server:
   port: 9898
   #生产环境只关注大于该值的sql
 #  sqlUnhealthMillis: 150
-zookeeper:
-  connectString: 127.0.0.1:2181
   
 spring:
   application:
     name: beecomb-master
+  profiles:
+    #多个,号间隔
+    include: shardingsphere
   mvc.servlet.load-on-startup: 1  
   #关闭thymeleaf的缓存
   thymeleaf:

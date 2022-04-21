@@ -387,8 +387,8 @@ spring.shardingsphere.datasource.ds3.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecom
 spring.shardingsphere.datasource.ds3.username=root
 spring.shardingsphere.datasource.ds3.password=123456
 
-# 标准分片表配置
-spring.shardingsphere.rules.sharding.tables.job_main.actual-data-nodes=ds$->{0..3}.job_main   这里只可以修改ds名和{}内的值，0..3表示库0，1，2，3
+# 标准分片表配置，这里只可以修改ds名和{}内的值，0..3表示库0，1，2，3
+spring.shardingsphere.rules.sharding.tables.job_main.actual-data-nodes=ds$->{0..3}.job_main
 spring.shardingsphere.rules.sharding.tables.job_detail.actual-data-nodes=ds$->{0..3}.job_detail
 spring.shardingsphere.rules.sharding.tables.delay_job.actual-data-nodes=ds$->{0..3}.delay_job
 spring.shardingsphere.rules.sharding.tables.schedule_job.actual-data-nodes=ds$->{0..3}.schedule_job
