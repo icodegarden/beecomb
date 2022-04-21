@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk
 WORKDIR /opt
 ARG VERSION
-ADD ../target/beecomb-master-${VERSION}.jar app.jar
+ADD target/beecomb-master-${VERSION}.jar app.jar
 ENV JAVA_OPTS "-server -Xmx2048M -Xms2048M -Xmn1024M -Xss256K -XX:MaxMetaspaceSize=256M -XX:MetaspaceSize=256M -XX:-OmitStackTraceInFastThrow"
 ENV JAVA_ARGS "--server.port=9898"
 EXPOSE 9898

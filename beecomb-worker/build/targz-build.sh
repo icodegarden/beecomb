@@ -6,5 +6,5 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
-cp ../target/beecomb-worker-$VERSION.jar ../target/beecomb-worker.jar
-tar -zcvf beecomb-worker-$VERSION.tar.gz ./bin ./config ../target/beecomb-worker.jar
+cp target/beecomb-worker-$VERSION.jar target/beecomb-worker.jar
+tar -zcvf beecomb-worker-$VERSION.tar.gz bin config target/beecomb-worker.jar
