@@ -42,6 +42,7 @@ export SERVER="beecomb-master"
 export JAVA_HOME
 export JAVA="$JAVA_HOME/bin/java"
 export BASE_DIR=`cd $(dirname $0)/..; pwd`
+export CUSTOM_SEARCH_LOCATIONS=file:${BASE_DIR}/config/
 
 #===========================================================================================
 # JVM Configuration
@@ -61,6 +62,7 @@ fi
 
 
 JAVA_OPT="${JAVA_OPT} -jar ${BASE_DIR}/target/${SERVER}.jar"
+JAVA_OPT="${JAVA_OPT} --spring.config.additional-location=${CUSTOM_SEARCH_LOCATIONS}"
 JAVA_OPT="${JAVA_OPT} --server.max-http-header-size=524288"
 
 if [ ! -d "${BASE_DIR}/logs" ]; then
