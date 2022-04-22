@@ -353,72 +353,67 @@ body参数
 ## Zookeeper
 对于Zookeeper的依赖，只需有可用的环境，并没有数据需要初始化
 ## Mysql
-beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysql实例），支持自定义多个库，下面以4个库为例
+beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysql实例），支持自定义多个库，下面先以2个库为例
 ```properties
-# 配置真实数据源
-spring.shardingsphere.datasource.names=ds0,ds1,ds2,ds3  名称可以自定义，但需要跟下面对应，最好按此规则编写
 
-#以下数据源支持hikari的配置，如有需要可以自行配置
+# 配置真实数据源
 # 配置第 1 个数据源
-spring.shardingsphere.datasource.ds0.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds0.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.shardingsphere.datasource.ds0.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_0?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-spring.shardingsphere.datasource.ds0.username=root
-spring.shardingsphere.datasource.ds0.password=123456
+api.shardingsphere.datasources[0].name=ds0
+api.shardingsphere.datasources[0].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_0?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+api.shardingsphere.datasources[0].username=root
+api.shardingsphere.datasources[0].password=123456
+#支持以下参数
+#api.shardingsphere.datasources[0].minimumIdle=
+#api.shardingsphere.datasources[0].idleTimeout=
+#api.shardingsphere.datasources[0].maximumPoolSize=
+#api.shardingsphere.datasources[0].maxLifetime=
+#api.shardingsphere.datasources[0].connectionTimeout=
+#api.shardingsphere.datasources[0].connectionTestQuery=
+#api.shardingsphere.datasources[0].keepaliveTime=
+#api.shardingsphere.datasources[0].validationTimeout=
 
 # 配置第 2 个数据源
-spring.shardingsphere.datasource.ds1.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds1.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.shardingsphere.datasource.ds1.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_1?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-spring.shardingsphere.datasource.ds1.username=root
-spring.shardingsphere.datasource.ds1.password=123456
+api.shardingsphere.datasources[1].name=ds1
+api.shardingsphere.datasources[1].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_1?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+api.shardingsphere.datasources[1].username=root
+api.shardingsphere.datasources[1].password=123456
 
+
+# 分片算法配置，name可以自定义；rangeGte=0表示该组库的id范围支持从0开始；rangeLt=20000000表示该组库的任务id范围支持到2000万结束；mod=2表示该组任务id以2取模，因为2个库平均分摊；modLoadBalance={"ds0":[0],"ds1":[1]}  表示取模结果是多少分别存入哪个库
+api.shardingsphere.jobidrangemod.groups[0].name=group0
+api.shardingsphere.jobidrangemod.groups[0].rangeGte=0
+api.shardingsphere.jobidrangemod.groups[0].rangeLt=20000000
+api.shardingsphere.jobidrangemod.groups[0].mod=2
+api.shardingsphere.jobidrangemod.groups[0].modLoadBalance={"ds0":[0],"ds1":[1]}
+
+```
+通过以上示例可以看出分多少库是可以自定义的，并且分片算法配置可以让数据 避免热点、避免迁移，下面展示当上面的几个库即将不够用时，继续增加2个库如何避免迁移
+
+```properties
+
+#基于上面的配置继续追加下面配置，但省略新增2个库的datasources配置
 # 配置第 3 个数据源
-spring.shardingsphere.datasource.ds2.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds2.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.shardingsphere.datasource.ds2.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_2?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-spring.shardingsphere.datasource.ds2.username=root
-spring.shardingsphere.datasource.ds2.password=123456
+api.shardingsphere.datasources[2].name=ds2
+api.shardingsphere.datasources[2].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_2?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+api.shardingsphere.datasources[2].username=root
+api.shardingsphere.datasources[2].password=123456
 
 # 配置第 4 个数据源
-spring.shardingsphere.datasource.ds3.type=com.zaxxer.hikari.HikariDataSource
-spring.shardingsphere.datasource.ds3.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.shardingsphere.datasource.ds3.jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_3?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-spring.shardingsphere.datasource.ds3.username=root
-spring.shardingsphere.datasource.ds3.password=123456
+api.shardingsphere.datasources[3].name=ds3
+api.shardingsphere.datasources[3].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_3?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+api.shardingsphere.datasources[3].username=root
+api.shardingsphere.datasources[3].password=123456
 
-# 标准分片表配置，这里只可以修改ds名和{}内的值，0..3表示库0，1，2，3
-spring.shardingsphere.rules.sharding.tables.job_main.actual-data-nodes=ds$->{0..3}.job_main
-spring.shardingsphere.rules.sharding.tables.job_detail.actual-data-nodes=ds$->{0..3}.job_detail
-spring.shardingsphere.rules.sharding.tables.delay_job.actual-data-nodes=ds$->{0..3}.delay_job
-spring.shardingsphere.rules.sharding.tables.schedule_job.actual-data-nodes=ds$->{0..3}.schedule_job
-spring.shardingsphere.rules.sharding.tables.job_execute_record.actual-data-nodes=ds$->{0..3}.job_execute_record
-spring.shardingsphere.rules.sharding.tables.job_recovery_record.actual-data-nodes=ds$->{0..3}.job_recovery_record
+# 分片算法配置
+api.shardingsphere.jobidrangemod.groups[1].name=group1 新的组名称
+api.shardingsphere.jobidrangemod.groups[1].rangeGte=20000000 起始值跟跟上面的组衔接
+api.shardingsphere.jobidrangemod.groups[1].rangeLt=50000000 支持到5000万
+api.shardingsphere.jobidrangemod.groups[1].mod=3 该组任务id以3取模，尽管库是2个，但这里假设的是2个库的硬件不一样，其中1个的硬件是2倍能力，因此2倍的库可以承担2倍的数据
+api.shardingsphere.jobidrangemod.groups[1].modLoadBalance={"ds2":[0,1],"ds3":[2]} 取模结果是0和1的存到高性能的库
 
-# 分片算法配置    
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].name=group0
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].rangeGte=0
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].rangeLt=40000000
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].mod=4
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].modLoadBalance={"ds0":[0],"ds1":[1],"ds2":[2],"ds3":[3]}
-```
-通过以上示例可以看出分多少库是可以自定义的，并且分片算法配置可以让数据 避免热点、避免迁移，下面展示当上面的几个库即将不够用时，继续增加库如何避免迁移
-```properties
-# 分片算法配置    这是原来那些库的配置，不用变
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].name=group0  组名称可以自定义
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].rangeGte=0   表示该组的库的任务id范围支持从0开始
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].rangeLt=40000000  表示该组的库的任务id范围支持到4000万结束
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].mod=4   该组任务id以4取模，因为4个库平均分摊
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[0].modLoadBalance={"ds0":[0],"ds1":[1],"ds2":[2],"ds3":[3]}  取模结果是多少分别存入哪个库
-
-# 分片算法配置    这是新增的2个库
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[1].name=group1  组名称可以自定义
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[1].rangeGte=40000000  表示该组的库的任务id范围支持从4000万开始，跟上面的组衔接
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[1].rangeLt=70000000  表示该组的库的任务id范围支持到7000万结束
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[1].mod=3  该组任务id以2取模，尽管库是2个，但这里假设的是2个库的硬件不一样，其中1个的硬件是2倍能力，因此2倍的库可以承担2倍的数据
-spring.shardingsphere.rules.sharding.sharding-algorithms.idrangemod.props.groups[1].modLoadBalance={"ds4":[0,1],"ds5":[2]}  取模结果是0和1的存到高性能的库，这里上面省略了新增库的配置
 ```
 通过以上示例可以看出数据库可以随着业务发展逐渐的增加，实现水平扩容
+
 ## Master
 TODO
 
