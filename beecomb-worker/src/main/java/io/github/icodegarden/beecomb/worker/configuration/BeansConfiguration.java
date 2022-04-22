@@ -1,6 +1,9 @@
 package io.github.icodegarden.beecomb.worker.configuration;
 
+import java.sql.SQLException;
 import java.util.Arrays;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -8,6 +11,8 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
+import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload.Config;
@@ -34,6 +39,7 @@ import io.github.icodegarden.commons.lang.tuple.NullableTuples;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
+import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
@@ -83,6 +89,18 @@ public class BeansConfiguration {
 			log.warn("unhealth sql : {}", sql);
 		});
 		return sqlPerformanceInterceptor;
+	}
+	
+	/**
+	 * sharding DataSource
+	 */
+	@Bean
+	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
+		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
+		
+		MysqlKeyGenerateAlgorithm.registerDataSource(dataSource);
+		
+		return dataSource;
 	}
 
 	@Bean

@@ -1,8 +1,10 @@
 package io.github.icodegarden.beecomb.master.configuration;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.servlet.Filter;
+import javax.sql.DataSource;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -17,6 +19,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
+import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
+import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
@@ -35,6 +39,7 @@ import io.github.icodegarden.commons.lang.metrics.NamesCachedInstanceMetrics;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
+import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.springboot.aop.NativeRestApiTransferAspect;
@@ -109,6 +114,18 @@ public class BeansConfiguration {
 			log.warn("unhealth sql : {}", sql);
 		});
 		return sqlPerformanceInterceptor;
+	}
+	
+	/**
+	 * sharding DataSource
+	 */
+	@Bean
+	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
+		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
+		
+		MysqlKeyGenerateAlgorithm.registerDataSource(dataSource);
+		
+		return dataSource;
 	}
 
 	@Bean

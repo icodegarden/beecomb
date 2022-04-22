@@ -14,8 +14,7 @@ import io.github.icodegarden.commons.lang.spec.response.ServerErrorCodeException
  *
  */
 @SpringBootApplication(scanBasePackages = { "io.github.icodegarden.beecomb.worker",
-		"io.github.icodegarden.beecomb.common.backend.manager",
-		"io.github.icodegarden.commons.shardingsphere.springboot.properties" })
+		"io.github.icodegarden.beecomb.common.backend" })
 public class WorkerApplication {
 
 	public static void main(String[] args) throws IOException, InterruptedException {

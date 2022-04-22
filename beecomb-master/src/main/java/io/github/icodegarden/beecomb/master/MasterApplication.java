@@ -15,8 +15,7 @@ import io.github.icodegarden.commons.springboot.SpringContext;
  */
 @EnableScheduling
 @SpringBootApplication(scanBasePackages = { "io.github.icodegarden.beecomb.master",
-		"io.github.icodegarden.beecomb.common.backend.manager",
-		"io.github.icodegarden.commons.shardingsphere.springboot.properties" })
+		"io.github.icodegarden.beecomb.common.backend"})
 public class MasterApplication {
 
 	public static void main(String[] args) {
