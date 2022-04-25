@@ -149,6 +149,7 @@ public class ApiShardingSphereBuilder {
 				"job_id", "jobidrangemod");
 		result.setDatabaseShardingStrategy(databaseShardingStrategy);
 
+		result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "mysqljobexecuterrecord"));
 		return result;
 	}
 
