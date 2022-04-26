@@ -423,7 +423,7 @@ master是springboot项目，支持springboot方式参数配置
 ### 压缩包方式
 该方式参考[启动master](#启动master)，日志默认位于目录的logs/下
 ### Docker方式
-docker镜像可以在 https://hub.docker.com 查看
+docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
 
 启动命令例如  docker run --name beecomb-master -d -p 9898:9898 -e JAVA_OPTS="默认-Xms2048M -Xmx2048M..." -e JAVA_ARGS="--zookeeper.connectString=..." icodegarden/beecomb-master:{version} ， JAVA_OPTS可以把需要的JVM参数都给上去，JAVA_ARGS可以把zookeeper、mysql等配置给上去
 
@@ -432,7 +432,7 @@ worker是springboot项目，支持springboot方式参数配置
 ### 压缩包方式
 该方式参考[启动worker](#启动worker)，日志默认位于目录的logs/下
 ### Docker方式
-docker镜像可以在 https://hub.docker.com 查看
+docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
 
 启动命令例如  docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_ARGS="..." icodegarden/beecomb-worker:{version} 
 
