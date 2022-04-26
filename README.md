@@ -31,6 +31,8 @@ beecomb也能作为传统定时任务调度系统
 * Zookeeper（不低于3.6.0，推荐3.7.0及以上）
 * Mysql 5.7（推荐8.0及以上）
 
+# 下载
+下载压缩包 https://gitee.com/icodegarden/beecomb/releases
 
 # 快速开始
 下面展示如何快速开始使用
@@ -46,15 +48,15 @@ create DATABASE `beecomb_1`;
 下载 [scripts/mysql文件夹](./scripts/mysql) ，在2个database中都执行初始化脚本 init.sql、mysql_sequence.sql
 
 ## 启动master
-master是springboot项目
+[下载](#下载) beecomb-master-{version}.tar.gz 并解压，修改config/下的配置（zookeeper地址，mysql地址等），使用bin/startup.sh启动（windows用bin/startup.cmd）
 ```bash
-java -jar beecomb-master.jar --zookeeper.connectString={假设已部署好zookeeper，例如127.0.0.1:2181} --spring.shardingsphere.datasource.ds0.jdbc-url=jdbc:mysql://{ip:port}/beecomb_0 --spring.shardingsphere.datasource.ds0.username={beecomb_0的用户名} --spring.shardingsphere.datasource.ds0.password={beecomb_0的密码} --spring.shardingsphere.datasource.ds1.jdbc-url=jdbc:mysql://{ip:port}/beecomb_1 --spring.shardingsphere.datasource.ds1.username={beecomb_1的用户名} --spring.shardingsphere.datasource.ds1.password={beecomb_1的密码} 
+bin/startup.sh
 ```
 
 ## 启动worker
-worker是springboot项目
+[下载](#下载) beecomb-worker-{version}.tar.gz 并解压，修改config/下的配置（zookeeper地址，mysql地址等），使用bin/startup.sh启动（windows用bin/startup.cmd）
 ```bash
-java -jar beecomb-worker.jar ...参数与master一样
+bin/startup.sh
 ```
 
 ## 编写JobHandler
