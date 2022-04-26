@@ -191,4 +191,27 @@ GROUP BY
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
+	
+	/**
+	    EXPLAIN 
+-- 已结束未成功
+SELECT
+	created_by,
+	type,
+	count( 0 ) AS count 
+FROM
+	job_main 
+WHERE
+	is_end = 1 
+	AND is_last_execute_success = 1 
+GROUP BY
+	created_by,
+	type
+	 * @return
+	 */
+	public List<JobMainCountVO> countEndLastExecuteFailedGroupByTypeAndCreateBy() {
+		JobMainCountQuery query = JobMainCountQuery.builder().end(true).lastExecuteSuccess(false)
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
 }

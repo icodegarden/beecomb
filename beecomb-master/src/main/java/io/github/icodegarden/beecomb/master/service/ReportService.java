@@ -61,6 +61,11 @@ public class ReportService {
 				updateReportLine(ReportLinePO.Type.JobEndLastExecuteSuccessDayN,
 						countEndLastExecuteSuccessGroupByTypeAndCreateBy);
 
+				List<JobMainCountVO> countEndLastExecuteFailedGroupByTypeAndCreateBy = jobMainManager
+						.countEndLastExecuteFailedGroupByTypeAndCreateBy();
+				updateReportLine(ReportLinePO.Type.JobEndLastExecuteFailedDayN,
+						countEndLastExecuteFailedGroupByTypeAndCreateBy);
+
 				List<JobExecuteRecordCountVO> countTotalGroupByTypeAndCreateByAndSuccess = jobExecuteRecordManager
 						.countTotalGroupByTypeAndCreateByAndSuccess();
 				updateReportLine(ReportLinePO.Type.JobExecuteRecordTotalDayN,

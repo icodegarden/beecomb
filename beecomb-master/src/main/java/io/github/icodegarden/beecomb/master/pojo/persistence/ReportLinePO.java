@@ -42,6 +42,7 @@ public class ReportLinePO {
 		JobQueuedDayN, //
 		JobNoQueuedNoEndDayN, //
 		JobEndLastExecuteSuccessDayN, //
+		JobEndLastExecuteFailedDayN, //
 		JobExecuteRecordTotalDayN
 	}
 
