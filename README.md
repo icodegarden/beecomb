@@ -425,7 +425,7 @@ master是springboot项目，支持springboot方式参数配置
 ### Docker方式
 docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
 ```bash
-docker pull docker pull icodegarden/beecomb-master:{version}
+docker pull icodegarden/beecomb-master:{version}
 ```
 
 启动命令例如  
@@ -441,7 +441,7 @@ worker是springboot项目，支持springboot方式参数配置
 ### Docker方式
 docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
 ```bash
-docker pull docker pull icodegarden/beecomb-worker:{version}
+docker pull icodegarden/beecomb-worker:{version}
 ```
 
 启动命令例如  
