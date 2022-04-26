@@ -424,8 +424,15 @@ master是springboot项目，支持springboot方式参数配置
 该方式参考[启动master](#启动master)，日志默认位于目录的logs/下
 ### Docker方式
 docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
+```bash
+docker pull docker pull icodegarden/beecomb-master:{version}
+```
 
-启动命令例如  docker run --name beecomb-master -d -p 9898:9898 -e JAVA_OPTS="默认-Xms2048M -Xmx2048M..." -e JAVA_ARGS="--zookeeper.connectString=..." icodegarden/beecomb-master:{version} ， JAVA_OPTS可以把需要的JVM参数都给上去，JAVA_ARGS可以把zookeeper、mysql等配置给上去
+启动命令例如  
+```bash
+docker run --name beecomb-master -d -p 9898:9898 -e JAVA_OPTS="默认-Xms2048M -Xmx2048M..." -e JAVA_ARGS="--zookeeper.connectString=..." icodegarden/beecomb-master:{version} 
+```
+JAVA_OPTS可以把需要的JVM参数都给上去，JAVA_ARGS可以把zookeeper、mysql等配置给上去
 
 ## Worker
 worker是springboot项目，支持springboot方式参数配置
@@ -433,10 +440,15 @@ worker是springboot项目，支持springboot方式参数配置
 该方式参考[启动worker](#启动worker)，日志默认位于目录的logs/下
 ### Docker方式
 docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
+```bash
+docker pull docker pull icodegarden/beecomb-worker:{version}
+```
 
-启动命令例如  docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_ARGS="..." icodegarden/beecomb-worker:{version} 
-
-提示：如有需要 server.bindIp=xxx 可以帮助解决容器间的网络
+启动命令例如  
+```bash
+docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_ARGS="..." icodegarden/beecomb-worker:{version} 
+```
+提示：如有网络需要，server.bindIp=xxx 可以帮助解决容器间的网络
 
 # 配置参数
 除了 [部署](#部署) 中已涉及的参数，还支持更多参数，用于高级配置
