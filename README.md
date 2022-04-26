@@ -355,6 +355,8 @@ body参数
 ## Zookeeper
 对于Zookeeper的依赖，只需有可用的环境，并没有数据需要初始化
 ## Mysql
+对Mysql需要进行数据初始化，见 快速开始 的 初始化数据库 介绍，除此还需要配置config/下的application-shardingsphere.properties，master和worker保持一致，详细说明如下
+
 beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysql实例），支持自定义多个库，下面先以2个库为例
 ```properties
 
@@ -417,10 +419,24 @@ api.shardingsphere.jobidrangemod.groups[1].modLoadBalance={"ds2":[0,1],"ds3":[2]
 通过以上示例可以看出数据库可以随着业务发展逐渐的增加，实现水平扩容
 
 ## Master
-TODO
+master是springboot项目，支持springboot方式参数配置
+### 压缩包方式
+该方式参考[启动master](#启动master)，日志默认位于目录的logs/下
+### Docker方式
+docker镜像可以在 https://hub.docker.com 查看
+
+启动命令例如  docker run --name beecomb-master -d -p 9898:9898 -e JAVA_OPTS="默认-Xms2048M -Xmx2048M..." -e JAVA_ARGS="--zookeeper.connectString=..." icodegarden/beecomb-master:{version} ， JAVA_OPTS可以把需要的JVM参数都给上去，JAVA_ARGS可以把zookeeper、mysql等配置给上去
 
 ## Worker
-TODO
+worker是springboot项目，支持springboot方式参数配置
+### 压缩包方式
+该方式参考[启动worker](#启动worker)，日志默认位于目录的logs/下
+### Docker方式
+docker镜像可以在 https://hub.docker.com 查看
+
+启动命令例如  docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_ARGS="..." icodegarden/beecomb-worker:{version} 
+
+提示：如有需要 server.bindIp=xxx 可以帮助解决容器间的网络
 
 # 配置参数
 除了 [部署](#部署) 中已涉及的参数，还支持更多参数，用于高级配置
