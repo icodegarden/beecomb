@@ -24,6 +24,7 @@ beecomb也能作为传统定时任务调度系统
 * 智能压力负载均衡，任务在集群中将根据调度引擎、执行器的cpu、内存、已分配的任务数量进行负载均衡
 * 分片并行执行任务
 * 集群内NIO通讯
+* 多系统支持
 * 可视化Web
 
 # 环境要求
@@ -120,7 +121,6 @@ CreateJobResponse response = beeCombClient.createJob(job);
 
 ## 打开Web
 访问 {master地址}:9898 默认用户密码beecomb/beecomb
-TODO
 
 # 开发者
 ## Executor
@@ -500,4 +500,10 @@ docker镜像可以在 https://hub.docker.com 查看
 |overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/4资源用于Executor   |1-N   |
 
 
+# 多系统
+beecomb的初始用户只有beecomb，他是管理员身份
 
+在web 用户管理模块可以新增用户，以支持不同的系统接入，不同系统用户对应各自的数据权限、Client（或restapi）的身份认证
+
+# FAQ
+...
