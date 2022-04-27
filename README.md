@@ -427,10 +427,11 @@ docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull�
 ```bash
 docker pull icodegarden/beecomb-master:{version}
 ```
+(./imgs/docker-search.png)
 
 启动命令例如  
 ```bash
-docker run --name beecomb-master -d -p 9898:9898 -e JAVA_OPTS="默认-Xms2048M -Xmx2048M..." -e JAVA_ARGS="--zookeeper.connectString=..." icodegarden/beecomb-master:{version} 
+docker run --name beecomb-master -d -p 9898:9898 -e JAVA_OPTS="..." -e JAVA_ARGS="..." icodegarden/beecomb-master:{version} 
 ```
 JAVA_OPTS可以把需要的JVM参数都给上去，JAVA_ARGS可以把zookeeper、mysql等配置给上去
 
