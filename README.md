@@ -423,11 +423,11 @@ master是springboot项目，支持springboot方式参数配置
 ### 压缩包方式
 该方式参考[启动master](#启动master)，日志默认位于目录的logs/下
 ### Docker方式
+![](./imgs/docker-search.png)
 docker镜像可以在 https://hub.docker.com 搜索 beecomb 即可找到，pull镜像需指定version
 ```bash
 docker pull icodegarden/beecomb-master:{version}
 ```
-(./imgs/docker-search.png)
 
 启动命令例如  
 ```bash
