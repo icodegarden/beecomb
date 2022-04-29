@@ -50,6 +50,10 @@ public class InstanceProperties {
 		 */
 		private long nioServerShutdownBlockingTimeoutMillis = 60000;
 
+		private int minWorkerThreads = 20;
+
+		private int maxWorkerThreads = 200;
+
 		public String getExecutorIp() {
 			return executorIp;
 		}
@@ -74,10 +78,27 @@ public class InstanceProperties {
 			this.nioServerShutdownBlockingTimeoutMillis = nioServerShutdownBlockingTimeoutMillis;
 		}
 
+		public int getMinWorkerThreads() {
+			return minWorkerThreads;
+		}
+
+		public void setMinWorkerThreads(int minWorkerThreads) {
+			this.minWorkerThreads = minWorkerThreads;
+		}
+
+		public int getMaxWorkerThreads() {
+			return maxWorkerThreads;
+		}
+
+		public void setMaxWorkerThreads(int maxWorkerThreads) {
+			this.maxWorkerThreads = maxWorkerThreads;
+		}
+
 		@Override
 		public String toString() {
 			return "Server [executorIp=" + executorIp + ", executorPort=" + executorPort
-					+ ", nioServerShutdownBlockingTimeoutMillis=" + nioServerShutdownBlockingTimeoutMillis + "]";
+					+ ", nioServerShutdownBlockingTimeoutMillis=" + nioServerShutdownBlockingTimeoutMillis
+					+ ", minWorkerThreads=" + minWorkerThreads + ", maxWorkerThreads=" + maxWorkerThreads + "]";
 		}
 
 	}

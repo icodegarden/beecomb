@@ -2,6 +2,9 @@ package io.github.icodegarden.beecomb.executor.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
@@ -13,6 +16,7 @@ import io.github.icodegarden.beecomb.executor.InstanceProperties.Server;
 import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.registry.zookeeper.ZooKeeperJobHandlerRegistry;
+import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
 import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
@@ -148,9 +152,16 @@ public class ExecutorServer implements GracefullyShutdown {
 	private void startNioServer(ZooKeeperSupportInstanceProperties config) throws IOException {
 		Server server = config.getServer();
 
-		nioServer = new JavaNioServer("Executor-NioServer",
+		JavaNioServer javaNioServer = new JavaNioServer("Executor-NioServer",
 				new InetSocketAddress(server.getExecutorIp(), server.getExecutorPort()),
 				new EntryMessageHandler(jobReceiver));
+
+		ThreadPoolExecutor workerThreadPool = new ThreadPoolExecutor(server.getMinWorkerThreads(),
+				server.getMaxWorkerThreads(), 120, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(100),
+				new NamedThreadFactory("Nio-ExecutorServer"), new ThreadPoolExecutor.CallerRunsPolicy());
+		javaNioServer.setWorkerThreadPool(workerThreadPool);
+
+		nioServer = javaNioServer;
 
 		nioServer.start();
 	}
