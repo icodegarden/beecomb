@@ -501,6 +501,8 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |server.executorPort   |tcp端口   |29898   |按端口规则   |
 |server.executorIp   |ip地址   |网络地址   |按ip规则   |
 |server.nioServerShutdownBlockingTimeoutMillis   |影响nioServer关闭时等待已接收处理中的任务完毕   |60000   |0-N   |
+|server.minWorkerThreads   |最小工作线程数   |20   |1-N   |
+|server.maxWorkerThreads   |最大工作线程数   |200   |1-N   |
 |zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
 |zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
 |zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
