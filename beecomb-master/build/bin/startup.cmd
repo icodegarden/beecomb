@@ -1,1 +1,1 @@
-java -jar ../target/beecomb-master.jar
+java -jar ../target/beecomb-master.jar --spring.config.additional-location=../config/
