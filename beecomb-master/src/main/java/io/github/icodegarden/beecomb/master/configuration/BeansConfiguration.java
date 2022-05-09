@@ -97,7 +97,7 @@ public class BeansConfiguration {
 
 	@Bean
 	public NativeRestApiTransferAspect nativeRestApiTransferAspect() {
-		return new NativeRestApiTransferAspect().setPrintErrorStackOnWarn(true);
+		return new NativeRestApiTransferAspect();
 	}
 
 	@Bean

@@ -12,7 +12,7 @@
 	<name>${project.artifactId}</name>
 	
 	<properties>
-        <commons-version>0.1.6</commons-version>
+        <commons-version>0.2.0</commons-version>
     </properties>
 	
 	<modules>
@@ -21,7 +21,7 @@
         <module>beecomb-master</module>
         <module>beecomb-worker</module>
 		<module>beecomb-executor</module>
-<!-- 		<module>beecomb-executor-sample</module> -->
+		<module>beecomb-executor-sample</module>
 		<module>beecomb-client-java</module>
 		<module>beecomb-test</module>
     </modules>
@@ -103,20 +103,20 @@
                     </execution>
                 </executions>
             </plugin>
-<!--             <plugin> -->
-<!--                 <groupId>org.apache.maven.plugins</groupId> -->
-<!--                 <artifactId>maven-gpg-plugin</artifactId> -->
-<!--                 <version>1.6</version> -->
-<!--                 <executions> -->
-<!--                     <execution> -->
-<!--                         <id>sign-artifacts</id> -->
-<!--                         <phase>verify</phase> -->
-<!--                         <goals> -->
-<!--                             <goal>sign</goal> -->
-<!--                         </goals> -->
-<!--                     </execution> -->
-<!--                 </executions> -->
-<!--             </plugin> -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
 		</plugins>
 	</build>

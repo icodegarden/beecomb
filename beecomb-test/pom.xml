@@ -16,6 +16,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<maven.package.skip>true</maven.package.skip> 
+		<maven.install.skip>true</maven.install.skip>
+		<maven.deploy.skip>true</maven.deploy.skip> 
 	</properties>
 
 	<dependencies>
