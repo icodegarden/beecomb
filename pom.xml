@@ -11,6 +11,32 @@
 	
 	<name>${project.artifactId}</name>
 	
+	<description>beecomb is a large reliable job system</description>
+	<url>https://github.com/icodegarden/beecomb</url>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <scm>
+        <url>https://github.com/icodegarden/beecomb</url>
+        <connection>https://github.com/icodegarden/beecomb.git</connection>
+    </scm>
+	<developers>
+        <developer>
+            <id>xff</id>
+            <name>Fangfang.Xu</name>
+            <email>46557783@qq.com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+	
 	<properties>
         <commons-version>0.2.0</commons-version>
     </properties>
