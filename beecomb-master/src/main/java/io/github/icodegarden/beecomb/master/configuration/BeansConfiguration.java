@@ -42,7 +42,6 @@ import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceIntercept
 import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
-import io.github.icodegarden.commons.springboot.aop.NativeRestApiTransferAspect;
 import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
 import io.github.icodegarden.commons.springboot.web.handler.NativeRestApiExceptionHandler;
 import io.github.icodegarden.commons.springboot.web.util.MappingJackson2HttpMessageConverters;
@@ -93,11 +92,6 @@ public class BeansConfiguration {
 	@Bean
 	public NativeRestApiExceptionHandler nativeRestApiParameterInvalidExceptionHandler() {
 		return new NativeRestApiExceptionHandler();
-	}
-
-	@Bean
-	public NativeRestApiTransferAspect nativeRestApiTransferAspect() {
-		return new NativeRestApiTransferAspect();
 	}
 
 	@Bean

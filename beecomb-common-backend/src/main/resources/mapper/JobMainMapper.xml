@@ -165,9 +165,7 @@
 		</if>
 	</sql>
 	
-	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery" resultMap="DOMap">
-		<include refid="findPrefix"/>
-		
+	<sql id="whereSql">
 		<trim prefix="WHERE" prefixOverrides="AND">
 			<if test="id != null">
 				and a.id = #{id}
@@ -213,12 +211,26 @@
 				and a.next_trig_at &lt; #{nextTrigAtLt}
 			</if>
 		</trim>
+	</sql>
+	
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery" resultMap="DOMap">
+		<include refid="findPrefix"/>
+		<include refid="whereSql"/>
+		
 		<if test="sort != null">
 			${sort}
 		</if>
 		<if test="limit != null">
 			${limit}
 		</if>
+	</select>
+	
+	<select id="findAll_COUNT" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery" resultType="Long">
+		select 
+			count(0) 
+		from 
+		`job_main` a
+		<include refid="whereSql"/>
 	</select>
 	
 	<select id="findOne" resultMap="DOMap">

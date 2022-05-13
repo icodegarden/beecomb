@@ -34,6 +34,7 @@ import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
@@ -156,7 +157,7 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 				 * ok
 				 */
 				Authentication authentication = buildAuthentication(user.getId(), user.getUsername());
-				SecurityUtils.setAuthentication(authentication);
+				SecurityUtils.setAuthentication(new SpringAuthentication(authentication));
 			}
 
 			filterChain.doFilter(request, response);

@@ -5,4 +5,4 @@ ADD target/beecomb-master-${VERSION}.jar app.jar
 ENV JAVA_OPTS "-server -Xmx1024M -Xms1024M -Xmn512M -Xss256K -XX:MaxMetaspaceSize=256M -XX:MetaspaceSize=256M -XX:-OmitStackTraceInFastThrow"
 ENV JAVA_ARGS "--server.port=9898"
 EXPOSE 9898
-ENTRYPOINT exec java $JAVA_OPTS -jar app.jar $JAVA_ARGS
+ENTRYPOINT exec java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED $JAVA_OPTS -jar app.jar $JAVA_ARGS

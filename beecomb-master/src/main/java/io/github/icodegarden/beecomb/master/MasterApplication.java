@@ -18,7 +18,7 @@ import io.github.icodegarden.commons.springboot.SpringContext;
 		"io.github.icodegarden.beecomb.common.backend"})
 public class MasterApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {// TODO 优化索引
 		SpringApplication.run(MasterApplication.class, args);
 
 		Environment env = SpringContext.getApplicationContext().getBean(Environment.class);

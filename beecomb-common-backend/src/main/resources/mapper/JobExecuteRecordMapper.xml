@@ -96,8 +96,9 @@
 				</trim>
 			</if>
 		from 
-		`job_execute_record` a join job_main b on a.job_id = b.id
+		`job_execute_record` a 
 		<if test="groupBy != null">
+			join job_main b on a.job_id = b.id
 			<trim prefix="group by" prefixOverrides=",">
 				<if test="groupBy.createdBy == true">
 					,created_by

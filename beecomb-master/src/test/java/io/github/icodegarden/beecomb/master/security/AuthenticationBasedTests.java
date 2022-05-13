@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
 
 /**
  * 
@@ -17,7 +18,7 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 public abstract class AuthenticationBasedTests {
 
 	static {
-		SecurityUtils.setAuthentication(new Authentication() {
+		Authentication authentication = new Authentication() {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -57,6 +58,8 @@ public abstract class AuthenticationBasedTests {
 			public Collection<? extends GrantedAuthority> getAuthorities() {
 				return null;
 			}
-		});
+		};
+
+		SecurityUtils.setAuthentication(new SpringAuthentication(authentication));
 	}
 }

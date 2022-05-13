@@ -19,6 +19,7 @@ import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
 import io.github.icodegarden.beecomb.master.pojo.view.UserVO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class AuthenticationController {
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
 					pwd);
 			Authentication authentication = this.authenticationManager.authenticate(authenticationToken);
-			SecurityUtils.setAuthentication(authentication);
+			SecurityUtils.setAuthentication(new SpringAuthentication(authentication));
 
 			Jwt jwtConfig = instanceProperties.getSecurity().getJwt();
 

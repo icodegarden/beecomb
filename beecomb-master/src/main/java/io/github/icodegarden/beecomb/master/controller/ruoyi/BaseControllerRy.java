@@ -17,7 +17,7 @@ import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
  * 
  * @author ruoyi
  */
-public class BaseControllerRy {
+public abstract class BaseControllerRy {
 
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {

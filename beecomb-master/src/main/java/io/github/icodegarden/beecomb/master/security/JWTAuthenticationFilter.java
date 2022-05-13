@@ -24,6 +24,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
@@ -74,7 +75,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 				try {
 					JWTResolver jwtResolver = new JWTResolver(jwtProperties, jwt);
 					Authentication authentication = jwtResolver.getAuthentication();
-					SecurityUtils.setAuthentication(authentication);
+					SecurityUtils.setAuthentication(new SpringAuthentication(authentication));
 
 					/**
 					 * only create and resposne newjwt request by outer<br>
