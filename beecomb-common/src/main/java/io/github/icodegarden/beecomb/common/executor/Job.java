@@ -32,7 +32,6 @@ public abstract class Job implements OverloadCalc, Serializable {
 	@NotNull
 	private String queuedAtInstance;
 	private LocalDateTime lastTrigAt;
-	private String lastTrigResult;
 	private String lastExecuteExecutor;
 	private String lastExecuteReturns;
 	private boolean lastExecuteSuccess;
@@ -60,8 +59,8 @@ public abstract class Job implements OverloadCalc, Serializable {
 
 	public Job(long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
 			int priority, int weight, LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt,
-			String lastTrigResult, String lastExecuteExecutor, String lastExecuteReturns, boolean lastExecuteSuccess,
-			int executeTimeout, LocalDateTime createdAt, String params, boolean parallel, int shard, int shardTotal) {
+			String lastExecuteExecutor, String lastExecuteReturns, boolean lastExecuteSuccess, int executeTimeout,
+			LocalDateTime createdAt, String params, boolean parallel, int shard, int shardTotal) {
 		this.id = id;
 		this.uuid = uuid;
 		this.name = name;
@@ -73,7 +72,6 @@ public abstract class Job implements OverloadCalc, Serializable {
 		this.queuedAt = queuedAt;
 		this.queuedAtInstance = queuedAtInstance;
 		this.lastTrigAt = lastTrigAt;
-		this.lastTrigResult = lastTrigResult;
 		this.lastExecuteExecutor = lastExecuteExecutor;
 		this.lastExecuteReturns = lastExecuteReturns;
 		this.lastExecuteSuccess = lastExecuteSuccess;
@@ -129,10 +127,6 @@ public abstract class Job implements OverloadCalc, Serializable {
 		return lastTrigAt;
 	}
 
-	public String getLastTrigResult() {
-		return lastTrigResult;
-	}
-
 	public String getLastExecuteExecutor() {
 		return lastExecuteExecutor;
 	}
@@ -172,20 +166,20 @@ public abstract class Job implements OverloadCalc, Serializable {
 	public int getShardTotal() {
 		return shardTotal;
 	}
-	
+
 	public void setShardTotal(int shardTotal) {
 		this.shardTotal = shardTotal;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Job [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
 				+ executorName + ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight
 				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt
-				+ ", lastTrigResult=" + lastTrigResult + ", lastExecuteExecutor=" + lastExecuteExecutor
-				+ ", lastExecuteReturns=" + lastExecuteReturns + ", lastExecuteSuccess=" + lastExecuteSuccess
-				+ ", executeTimeout=" + executeTimeout + ", createdAt=" + createdAt + ", params=" + params
-				+ ", parallel=" + parallel + ", shard=" + shard + ", shardTotal=" + shardTotal + "]";
+				+ ", lastExecuteExecutor=" + lastExecuteExecutor + ", lastExecuteReturns=" + lastExecuteReturns
+				+ ", lastExecuteSuccess=" + lastExecuteSuccess + ", executeTimeout=" + executeTimeout + ", createdAt="
+				+ createdAt + ", params=" + params + ", parallel=" + parallel + ", shard=" + shard + ", shardTotal="
+				+ shardTotal + "]";
 	}
-	
+
 }

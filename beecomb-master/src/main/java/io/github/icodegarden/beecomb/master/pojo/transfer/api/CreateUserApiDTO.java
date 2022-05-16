@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.pojo.transfer;
+package io.github.icodegarden.beecomb.master.pojo.transfer.api;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ import lombok.Data;
  *
  */
 @Data
-public class CreateUserDTO {
+public class CreateUserApiDTO {
 
 	@Size(max = 24)
 	@NotEmpty

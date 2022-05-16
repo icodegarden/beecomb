@@ -2,11 +2,16 @@ package io.github.icodegarden.beecomb.worker.service;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExecutedDTO;
 import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
@@ -19,7 +24,7 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
  *
  */
 public abstract class BaseJobService extends AbstractBackendJobService implements JobService {
-	
+
 	protected static final RetryTemplate RETRY_TEMPLATE = RetryTemplate.builder().fixedBackoff(1000).maxAttempts(3)
 			.retryOn(Exception.class).build();
 
@@ -44,6 +49,26 @@ public abstract class BaseJobService extends AbstractBackendJobService implement
 				.nextTrigAt(nextTrigAt).build();
 
 		jobMainManager.updateEnQueue(update);
+	}
+
+	@Transactional
+	public boolean update(UpdateJobOnExecutedDTO dto) {
+		boolean update = false;
+
+		UpdateJobMainOnExecutedDTO updateJobMainDTO = new UpdateJobMainOnExecutedDTO();
+		BeanUtils.copyProperties(dto, updateJobMainDTO);
+		if (updateJobMainDTO.shouldUpdate()) {
+			update = jobMainManager.updateOnExecuted(updateJobMainDTO);
+		}
+
+		UpdateJobDetailDTO updateJobDetailDTO = new UpdateJobDetailDTO();
+		BeanUtils.copyProperties(dto, updateJobDetailDTO);
+		updateJobDetailDTO.setJobId(dto.getId());
+		if (updateJobDetailDTO.shouldUpdate()) {
+			update = jobDetailManager.update(updateJobDetailDTO);
+		}
+
+		return update;
 	}
 
 	protected String buildLastTrigResult(ExchangeException e) {

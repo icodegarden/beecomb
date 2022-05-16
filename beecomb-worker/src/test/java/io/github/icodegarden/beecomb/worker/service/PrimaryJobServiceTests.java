@@ -40,11 +40,9 @@ class PrimaryJobServiceTests {
 		jobPO.setEnd(false);
 		jobPO.setExecuteTimeout(1234);
 		jobPO.setLastExecuteExecutor("1.1.1.1:8080");
-		jobPO.setLastExecuteReturns("[{}]");
 		jobPO.setLastExecuteSuccess(true);
 		LocalDateTime lastTrigAt = LocalDateTime.now().minusHours(1);
 		jobPO.setLastTrigAt(lastTrigAt);
-		jobPO.setLastTrigResult("a.b.c");
 		jobPO.setName("myjob");
 		jobPO.setExecutorName("n");
 		jobPO.setJobHandlerName("j");

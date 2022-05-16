@@ -1,11 +1,14 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
+import java.util.Arrays;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
+import io.github.icodegarden.beecomb.common.util.ClassUtils;
 import lombok.Data;
 
 /**
@@ -23,10 +26,18 @@ public class UpdateJobDetailDTO implements Validateable {
 	private String params;// TEXT comment '任务参数',
 	@Max(200)
 	private String desc;// varchar(200) comment '任务描述',
-
+	@Max(65535)
+	private String lastTrigResult;
+	@Max(65535)
+	private String lastExecuteReturns;
+	
 	@Override
 	public void validate() throws IllegalArgumentException {
 		Assert.notNull(jobId, "Missing:jobId");
 	}
 
+	@Override
+	public boolean shouldUpdate() {
+		return ClassUtils.anyFieldHasValue(this, Arrays.asList("jobId"));
+	}
 }

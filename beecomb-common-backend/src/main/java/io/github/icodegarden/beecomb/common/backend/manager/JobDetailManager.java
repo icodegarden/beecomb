@@ -28,7 +28,7 @@ public class JobDetailManager {
 
 	public void create(CreateJobDetailDTO dto) {
 		dto.validate();
-		
+
 		JobDetailPO po = new JobDetailPO();
 		BeanUtils.copyProperties(dto, po);
 
@@ -43,11 +43,12 @@ public class JobDetailManager {
 		JobDetailDO one = jobDetailMapper.findOne(jobId, with);
 		return JobDetailVO.of(one);
 	}
-	
+
 	public boolean update(UpdateJobDetailDTO dto) {
 		JobDetailPO.Update update = new JobDetailPO.Update();
 		BeanUtils.copyProperties(dto, update);
 
 		return jobDetailMapper.update(update) == 1;
 	}
+
 }

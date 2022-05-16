@@ -20,9 +20,7 @@ CREATE TABLE `job_main` (
   `queued_at` timestamp,
   `queued_at_instance` varchar(21) comment 'ip:port,所在的worker实例',
   `last_trig_at` timestamp comment '任务调度触发时间',
-  `last_trig_result` text comment '触发结果,例如没有可选的executor实例64K',
   `last_execute_executor` varchar(21) comment 'ip:port',
-  `last_execute_returns` varchar(200),
   `is_last_execute_success` bit NOT NULL default 0,
   `execute_timeout` int NOT NULL default 10000 comment 'ms',
   `next_trig_at` timestamp comment '下次触发时间,初始是null',
@@ -43,6 +41,8 @@ CREATE TABLE `job_detail` (
   `job_id` bigint unsigned NOT NULL,
   `params` text comment '任务参数65535',
   `desc` varchar(200) comment '任务描述',
+  `last_trig_result` text comment '触发结果,例如没有可选的executor实例64K',
+  `last_execute_returns` text,
   PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

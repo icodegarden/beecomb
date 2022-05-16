@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.github.icodegarden.beecomb.common.backend.manager.JobDetailManager;
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.manager.ScheduleJobManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
@@ -40,6 +42,8 @@ class ScheduleJobServiceTests {
 	@Autowired
 	private JobMainManager jobMainManager;
 	@Autowired
+	private JobDetailManager jobDetailManager;
+	@Autowired
 	private ScheduleJobManager scheduleJobManager;
 	@Autowired
 	private ScheduleJobService scheduleJobService;
@@ -64,6 +68,12 @@ class ScheduleJobServiceTests {
 				.nextTrigAt(LocalDateTime.now()).queuedAtInstance("1.1.1.1").build();
 		jobMainManager.updateEnQueue(updateJobMainEnQueueDTO);
 
+		CreateJobDetailDTO createJobDetailDTO = new CreateJobDetailDTO();
+		createJobDetailDTO.setJobId(dto.getId());
+		createJobDetailDTO.setParams("params");
+		createJobDetailDTO.setDesc("desc");
+		jobDetailManager.create(createJobDetailDTO);
+		
 		createJobMainDTO = dto;
 	}
 
@@ -94,7 +104,7 @@ class ScheduleJobServiceTests {
 
 			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-			assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
+			assertThat(main.getJobDetail().getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 			assertThat(main.getEnd()).isEqualTo(false);// 始终不会结束
 			assertThat(main.getQueued()).isEqualTo(true);// 始终是queued状态
 
@@ -117,11 +127,11 @@ class ScheduleJobServiceTests {
 
 			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
+			assertThat(main.getJobDetail().getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(false);// 不会结束
 			assertThat(main.getQueued()).isEqualTo(true);// 始终是queued状态
 			assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:" + (10000 + i));//
-			assertThat(main.getLastExecuteReturns()).isEqualTo(i + "");//
+			assertThat(main.getJobDetail().getLastExecuteReturns()).isEqualTo(i + "");//
 			assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 
 			ScheduleJobVO scheduleJob = scheduleJobManager.findOne(createJobMainDTO.getId(), null);
@@ -142,7 +152,7 @@ class ScheduleJobServiceTests {
 
 			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-			assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
+			assertThat(main.getJobDetail().getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 			assertThat(main.getEnd()).isEqualTo(true);// 结束
 			assertThat(main.getQueued()).isEqualTo(false);// 不是queued状态
 		}
@@ -163,7 +173,7 @@ class ScheduleJobServiceTests {
 
 			JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 			assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-			assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+			assertThat(main.getJobDetail().getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																										// Instance
 																										// Failed
 			assertThat(main.getEnd()).isEqualTo(false);// 还没结束

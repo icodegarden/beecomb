@@ -17,7 +17,9 @@ public class JobDetailPO {
 	private Long jobId;// bigint NOT NULL,
 	private String params;// TEXT comment '任务参数',
 	private String desc;// varchar(200) comment '任务描述',
-	
+	private String lastTrigResult;
+	private String lastExecuteReturns;
+
 	@Setter
 	@Getter
 	@ToString
@@ -26,5 +28,7 @@ public class JobDetailPO {
 		private Long jobId;// bigint NOT NULL,
 		private String params;// TEXT comment '任务参数',
 		private String desc;// varchar(200) comment '任务描述',
+		private String lastTrigResult;
+		private String lastExecuteReturns;
 	}
 }

@@ -8,4 +8,8 @@ package io.github.icodegarden.beecomb.common;
 public interface Validateable {
 
 	void validate() throws IllegalArgumentException;
+
+	default boolean shouldUpdate() {
+		return true;
+	}
 }

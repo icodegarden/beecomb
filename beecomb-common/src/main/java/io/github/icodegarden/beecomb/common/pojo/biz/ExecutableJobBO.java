@@ -34,7 +34,6 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	private LocalDateTime queuedAt;
 	private String queuedAtInstance;
 	private LocalDateTime lastTrigAt;
-	private String lastTrigResult;
 	private String lastExecuteExecutor;
 	private String lastExecuteReturns;
 	private Boolean lastExecuteSuccess;
@@ -53,10 +52,9 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 
 	public ExecutableJobBO(Long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
 			Integer priority, Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued,
-			LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastTrigResult,
-			String lastExecuteExecutor, String lastExecuteReturns, Boolean lastExecuteSuccess, Integer executeTimeout,
-			LocalDateTime nextTrigAt, Boolean end, LocalDateTime createdAt, String params, DelayBO delay,
-			ScheduleBO schedule) {
+			LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
+			String lastExecuteReturns, Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt,
+			Boolean end, LocalDateTime createdAt, String params, DelayBO delay, ScheduleBO schedule) {
 		this.id = id;
 		this.uuid = uuid;
 		this.name = name;
@@ -71,7 +69,6 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.queuedAt = queuedAt;
 		this.queuedAtInstance = queuedAtInstance;
 		this.lastTrigAt = lastTrigAt;
-		this.lastTrigResult = lastTrigResult;
 		this.lastExecuteExecutor = lastExecuteExecutor;
 		this.lastExecuteReturns = lastExecuteReturns;
 		this.lastExecuteSuccess = lastExecuteSuccess;
@@ -291,14 +288,6 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.lastTrigAt = lastTrigAt;
 	}
 
-	public String getLastTrigResult() {
-		return lastTrigResult;
-	}
-
-	public void setLastTrigResult(String lastTrigResult) {
-		this.lastTrigResult = lastTrigResult;
-	}
-
 	public String getLastExecuteExecutor() {
 		return lastExecuteExecutor;
 	}
@@ -385,10 +374,10 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 				+ executorName + ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight
 				+ ", parallel=" + parallel + ", maxParallelShards=" + maxParallelShards + ", queued=" + queued
 				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt
-				+ ", lastTrigResult=" + lastTrigResult + ", lastExecuteExecutor=" + lastExecuteExecutor
-				+ ", lastExecuteReturns=" + lastExecuteReturns + ", lastExecuteSuccess=" + lastExecuteSuccess
-				+ ", executeTimeout=" + executeTimeout + ", nextTrigAt=" + nextTrigAt + ", end=" + end + ", createdAt="
-				+ createdAt + ", params=" + params + ", delay=" + delay + ", schedule=" + schedule + "]";
+				+ ", lastExecuteExecutor=" + lastExecuteExecutor + ", lastExecuteReturns=" + lastExecuteReturns
+				+ ", lastExecuteSuccess=" + lastExecuteSuccess + ", executeTimeout=" + executeTimeout + ", nextTrigAt="
+				+ nextTrigAt + ", end=" + end + ", createdAt=" + createdAt + ", params=" + params + ", delay=" + delay
+				+ ", schedule=" + schedule + "]";
 	}
-	
+
 }

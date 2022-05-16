@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateUserApiDTO;
 import io.github.icodegarden.beecomb.master.security.AuthenticationBasedTests;
 
 /**
@@ -29,7 +29,7 @@ class UserManagerTests extends AuthenticationBasedTests {
 	UserManager userService;
 
 	UserPO create(String username) {
-		CreateUserDTO dto = new CreateUserDTO();
+		CreateUserApiDTO dto = new CreateUserApiDTO();
 		dto.setEmail("email");
 		dto.setName("xff");
 		dto.setPassword("password");

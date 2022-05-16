@@ -11,10 +11,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.backend.manager.DelayJobManager;
+import io.github.icodegarden.beecomb.common.backend.manager.JobDetailManager;
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
@@ -39,6 +41,8 @@ class DelayJobServiceTests {
 	@Autowired
 	private JobMainManager jobMainManager;
 	@Autowired
+	private JobDetailManager jobDetailManager;
+	@Autowired
 	private DelayJobManager delayJobManager;
 	@Autowired
 	private DelayJobService delayJobService;
@@ -56,6 +60,12 @@ class DelayJobServiceTests {
 		dto.setCreatedBy("beecomb");
 
 		jobMainManager.create(dto);
+		
+		CreateJobDetailDTO createJobDetailDTO = new CreateJobDetailDTO();
+		createJobDetailDTO.setJobId(dto.getId());
+		createJobDetailDTO.setParams("params");
+		createJobDetailDTO.setDesc("desc");
+		jobDetailManager.create(createJobDetailDTO);
 		
 		createJobMainDTO = dto;
 	}
@@ -86,7 +96,7 @@ class DelayJobServiceTests {
 
 		JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 
 		DelayJobVO delayJob = delayJobManager.findOne(createJobMainDTO.getId(), null);
@@ -101,7 +111,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 
 		delayJob = delayJobManager.findOne(createJobMainDTO.getId(), null);
@@ -116,7 +126,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
 
@@ -132,7 +142,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(NoQualifiedInstanceExchangeException.MESSAGE);// 最近触发的结果描述是由于NoQualified
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 
 		delayJob = delayJobManager.findOne(createJobMainDTO.getId(), null);
@@ -151,10 +161,10 @@ class DelayJobServiceTests {
 		JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
+		assertThat(main.getJobDetail().getLastTrigResult()).isEqualTo("Success");// 最近触发的结果描述是Success
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 		assertThat(main.getLastExecuteExecutor()).isEqualTo("1.1.1.1:10001");//
-		assertThat(main.getLastExecuteReturns()).isEqualTo("[{}]");//
+		assertThat(main.getJobDetail().getLastExecuteReturns()).isEqualTo("[{}]");//
 		assertThat(main.getLastExecuteSuccess()).isEqualTo(true);//
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
 
@@ -173,7 +183,7 @@ class DelayJobServiceTests {
 
 		JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 
@@ -189,7 +199,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(false);// 还没结束
 
@@ -205,7 +215,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
@@ -222,7 +232,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
+		assertThat(main.getJobDetail().getLastTrigResult()).contains(AllInstanceFailedExchangeException.MESSAGE);// 最近触发的结果描述是由于All
 																									// Instance Failed
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 
@@ -243,7 +253,7 @@ class DelayJobServiceTests {
 
 		JobMainVO main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).isEqualTo("ex");// 最近触发的结果描述是对应的异常
+		assertThat(main.getJobDetail().getLastTrigResult()).isEqualTo("ex");// 最近触发的结果描述是对应的异常
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 		assertThat(main.getQueued()).isEqualTo(false);// 结束后的不是Queued状态
 
@@ -259,7 +269,7 @@ class DelayJobServiceTests {
 
 		main = jobMainManager.findOne(createJobMainDTO.getId(), JobMainQuery.With.WITH_MOST);
 		assertThat(main.getLastTrigAt()).isEqualTo(now);// 最近触发的时间
-		assertThat(main.getLastTrigResult()).isEqualTo("ex");// 最近触发的结果描述是对应的异常
+		assertThat(main.getJobDetail().getLastTrigResult()).isEqualTo("ex");// 最近触发的结果描述是对应的异常
 		assertThat(main.getEnd()).isEqualTo(true);// 结束
 
 		delayJob = delayJobManager.findOne(createJobMainDTO.getId(), null);

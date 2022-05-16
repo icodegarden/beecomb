@@ -19,10 +19,10 @@ import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordNonOldDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateUserDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateUserApiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdatePasswordApiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdatePasswordNonOldApiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateUserApiDTO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
@@ -69,7 +69,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = "api/user/create")
-	public ResponseEntity<AjaxResult> createUser(@Validated CreateUserDTO dto) {
+	public ResponseEntity<AjaxResult> createUser(@Validated CreateUserApiDTO dto) {
 		try {
 			userService.create(dto);
 			return ResponseEntity.ok(success());
@@ -94,7 +94,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = "api/user/update")
-	public ResponseEntity<AjaxResult> updateUser(@Validated UpdateUserDTO dto) {
+	public ResponseEntity<AjaxResult> updateUser(@Validated UpdateUserApiDTO dto) {
 		try {
 			userService.update(dto);
 			return ResponseEntity.ok(success());
@@ -119,7 +119,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping("api/user/password")
-	public ResponseEntity<AjaxResult> updatePassword(@Validated UpdatePasswordNonOldDTO dto) {
+	public ResponseEntity<AjaxResult> updatePassword(@Validated UpdatePasswordNonOldApiDTO dto) {
 		try {
 			userService.updatePassword(dto);
 			return ResponseEntity.ok(success());
@@ -184,7 +184,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping("api/user/password/profile")
-	public ResponseEntity<AjaxResult> updatePasswordProfile(@Validated UpdatePasswordDTO dto) {
+	public ResponseEntity<AjaxResult> updatePasswordProfile(@Validated UpdatePasswordApiDTO dto) {
 		try {
 			userService.updatePassword(dto);
 			return ResponseEntity.ok(success());

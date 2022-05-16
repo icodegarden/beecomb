@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.pojo.transfer;
+package io.github.icodegarden.beecomb.master.pojo.transfer.api;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,7 +11,7 @@ import lombok.Data;
  *
  */
 @Data
-public class UpdateUserDTO {
+public class UpdateUserApiDTO {
 
 	@NotNull
 	private Long id;// bigint unsigned NOT NULL AUTO_INCREMENT,

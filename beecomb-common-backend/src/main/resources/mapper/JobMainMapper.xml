@@ -17,9 +17,7 @@
 		<result property="queuedAt" column="queued_at" />
 		<result property="queuedAtInstance" column="queued_at_instance" />
 		<result property="lastTrigAt" column="last_trig_at" />
-		<result property="lastTrigResult" column="last_trig_result" />
 		<result property="lastExecuteExecutor" column="last_execute_executor" />
-		<result property="lastExecuteReturns" column="last_execute_returns" />
 		<result property="lastExecuteSuccess" column="is_last_execute_success" />
 		<result property="executeTimeout" column="execute_timeout" />
 		<result property="nextTrigAt" column="next_trig_at" />
@@ -59,9 +57,7 @@
 		<if test="queuedAt != null">`queued_at`,</if>
 		<if test="queuedAtInstance != null">`queued_at_instance`,</if>
 		<if test="lastTrigAt != null">`last_trig_at`,</if>
-		<if test="lastTrigResult != null">`last_trig_result`,</if>
 		<if test="lastExecuteExecutor != null">`last_execute_executor`,</if>
-		<if test="lastExecuteReturns != null">`last_execute_returns`,</if>
 		<if test="lastExecuteSuccess != null">`is_last_execute_success`,</if>
 		<if test="executeTimeout != null">`execute_timeout`,</if>
 		<if test="nextTrigAt != null">`next_trig_at`,</if>
@@ -84,9 +80,7 @@
 		<if test="queuedAt != null">#{queuedAt},</if>
 		<if test="queuedAtInstance != null">#{queuedAtInstance},</if>
 		<if test="lastTrigAt != null">#{lastTrigAt},</if>
-		<if test="lastTrigResult != null">#{lastTrigResult},</if>
 		<if test="lastExecuteExecutor != null">#{lastExecuteExecutor},</if>
-		<if test="lastExecuteReturns != null">#{lastExecuteReturns},</if>
 		<if test="lastExecuteSuccess != null">#{lastExecuteSuccess},</if>
 		<if test="executeTimeout != null">#{executeTimeout},</if>
 		<if test="nextTrigAt != null">#{nextTrigAt},</if>
@@ -118,9 +112,7 @@
 				<trim prefix="," suffixOverrides=",">
 					<if test="with.queuedAt == true">a.`queued_at` as queued_at,</if>
 					<if test="with.queuedAtInstance == true">a.`queued_at_instance` as queued_at_instance,</if>
-					<if test="with.lastTrigResult == true">a.`last_trig_result` as last_trig_result,</if>
 					<if test="with.lastExecuteExecutor == true">a.`last_execute_executor` as last_execute_executor,</if>
-					<if test="with.lastExecuteReturns == true">a.`last_execute_returns` as last_execute_returns,</if>
 					<if test="with.createdBy == true">a.`created_by` as created_by,</if>
 					<if test="with.createdAt == true">a.`created_at` as created_at,</if>
 				</trim>
@@ -128,6 +120,8 @@
 					<trim prefix="," suffixOverrides=",">
 						<if test="with.jobDetail.params == true">b.`params` as jd_params,</if>
 						<if test="with.jobDetail.desc == true">b.`desc` as jd_desc,</if>
+						<if test="with.jobDetail.lastTrigResult == true">b.`last_trig_result` as jd_last_trig_result,</if>
+						<if test="with.jobDetail.lastExecuteReturns == true">b.`last_execute_returns` as jd_last_execute_returns,</if>
 					</trim>
 				</if>
 				<if test="with.delayJob != null">
@@ -257,9 +251,7 @@
 			<if test="queuedAt != null">queued_at = #{queuedAt},</if>
 			<if test="queuedAtInstance != null">queued_at_instance = #{queuedAtInstance},</if>
 			<if test="lastTrigAt != null">last_trig_at = #{lastTrigAt},</if>
-			<if test="lastTrigResult != null">last_trig_result = #{lastTrigResult},</if>
 			<if test="lastExecuteExecutor != null">last_execute_executor = #{lastExecuteExecutor},</if>
-			<if test="lastExecuteReturns != null">last_execute_returns = #{lastExecuteReturns},</if>
 			<if test="lastExecuteSuccess != null">is_last_execute_success = #{lastExecuteSuccess},</if>
 			<if test="executeTimeout != null">execute_timeout = #{executeTimeout},</if>
 			<if test="nextTrigAt != null">next_trig_at = #{nextTrigAt},</if>

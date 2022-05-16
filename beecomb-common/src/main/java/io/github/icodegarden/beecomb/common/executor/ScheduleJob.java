@@ -24,15 +24,15 @@ public class ScheduleJob extends Job {
 	 */
 	ScheduleJob() {
 	}
-	
+
 	public ScheduleJob(long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
 			int priority, int weight, LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt,
-			String lastTrigResult, String lastExecuteExecutor, String lastExecuteReturns, boolean lastExecuteSuccess,
-			int executeTimeout, LocalDateTime createdAt, String params, boolean parallel, int shard,
-			Integer scheduleFixRate, Integer scheduleFixDelay, String sheduleCron, long scheduledTimes) {
+			String lastExecuteExecutor, String lastExecuteReturns, boolean lastExecuteSuccess, int executeTimeout,
+			LocalDateTime createdAt, String params, boolean parallel, int shard, Integer scheduleFixRate,
+			Integer scheduleFixDelay, String sheduleCron, long scheduledTimes) {
 		super(id, uuid, name, type, executorName, jobHandlerName, priority, weight, queuedAt, queuedAtInstance,
-				lastTrigAt, lastTrigResult, lastExecuteExecutor, lastExecuteReturns, lastExecuteSuccess, executeTimeout,
-				createdAt, params, parallel, 0, 1);
+				lastTrigAt, lastExecuteExecutor, lastExecuteReturns, lastExecuteSuccess, executeTimeout, createdAt,
+				params, parallel, 0, 1);
 		this.scheduleFixRate = scheduleFixRate;
 		this.scheduleFixDelay = scheduleFixDelay;
 		this.sheduleCron = sheduleCron;
@@ -45,11 +45,10 @@ public class ScheduleJob extends Job {
 				executableJobBO.getType(), executableJobBO.getExecutorName(), executableJobBO.getJobHandlerName(),
 				executableJobBO.getPriority(), executableJobBO.getWeight(), executableJobBO.getQueuedAt(),
 				executableJobBO.getQueuedAtInstance(), executableJobBO.getLastTrigAt(),
-				executableJobBO.getLastTrigResult(), executableJobBO.getLastExecuteExecutor(),
-				executableJobBO.getLastExecuteReturns(), executableJobBO.getLastExecuteSuccess(),
-				executableJobBO.getExecuteTimeout(), executableJobBO.getCreatedAt(), executableJobBO.getParams(),
-				executableJobBO.getParallel(), 0, schedule.getScheduleFixRate(), schedule.getScheduleFixDelay(),
-				schedule.getSheduleCron(), 0);
+				executableJobBO.getLastExecuteExecutor(), executableJobBO.getLastExecuteReturns(),
+				executableJobBO.getLastExecuteSuccess(), executableJobBO.getExecuteTimeout(),
+				executableJobBO.getCreatedAt(), executableJobBO.getParams(), executableJobBO.getParallel(), 0,
+				schedule.getScheduleFixRate(), schedule.getScheduleFixDelay(), schedule.getSheduleCron(), 0);
 	}
 
 	public Integer getScheduleFixRate() {
@@ -80,5 +79,5 @@ public class ScheduleJob extends Job {
 				+ ", sheduleCron=" + sheduleCron + ", scheduledTimes=" + scheduledTimes + ", toString()="
 				+ super.toString() + "]";
 	}
-	
+
 }

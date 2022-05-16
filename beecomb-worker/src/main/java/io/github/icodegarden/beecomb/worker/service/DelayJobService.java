@@ -10,7 +10,7 @@ import io.github.icodegarden.beecomb.common.backend.manager.DelayJobManager;
 import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordManager;
 import io.github.icodegarden.beecomb.common.backend.mapper.DelayJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO;
-import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExecutedDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
@@ -79,7 +79,7 @@ public class DelayJobService extends BaseJobService {
 					thresholdReached = true;
 				}
 
-				UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+				UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 						.lastTrigAt(update.getLastTrigAt())
 						.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
 						.nextTrigAt(nextTrigAt).lastExecuteSuccess(false).end(end).build();
@@ -92,7 +92,7 @@ public class DelayJobService extends BaseJobService {
 
 				RETRY_TEMPLATE.execute(ctx -> {
 					jobExecuteRecordManager.createOnExecuted(mainUpdate);
-					jobMainManager.updateOnExecuted(mainUpdate);
+					update(mainUpdate);
 					return null;
 				});
 
@@ -108,7 +108,7 @@ public class DelayJobService extends BaseJobService {
 	@Override
 	public Result1<RuntimeException> updateOnExecuteSuccess(UpdateOnExecuteSuccessDTO update) {
 		try {
-			UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+			UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 					.lastTrigAt(update.getLastTrigAt()).lastTrigResult("Success").end(true)
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
@@ -123,7 +123,7 @@ public class DelayJobService extends BaseJobService {
 
 			RETRY_TEMPLATE.execute(ctx -> {
 				jobExecuteRecordManager.createOnExecuted(mainUpdate);
-				jobMainManager.updateOnExecuted(mainUpdate);
+				update(mainUpdate);
 				return null;
 			});
 
@@ -171,7 +171,7 @@ public class DelayJobService extends BaseJobService {
 						thresholdReached = true;
 					}
 
-					UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+					UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
 							.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(nextTrigAt).end(end)
 							.build();
@@ -184,7 +184,7 @@ public class DelayJobService extends BaseJobService {
 
 					RETRY_TEMPLATE.execute(ctx -> {
 						jobExecuteRecordManager.createOnExecuted(mainUpdate);
-						jobMainManager.updateOnExecuted(mainUpdate);
+						update(mainUpdate);
 						return null;
 					});
 
@@ -197,7 +197,7 @@ public class DelayJobService extends BaseJobService {
 							.retriedTimesOnExecuteFailed(delayJob.getRetryOnExecuteFailed()).build();
 					RETRY_TEMPLATE.execute(ctx -> delayJobMapper.update(delayUpdate));
 
-					UpdateJobMainOnExecutedDTO mainUpdate = UpdateJobMainOnExecutedDTO.builder().id(update.getJobId())
+					UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
 							.lastTrigResult(buildLastTrigResult(update.getException())).end(true)
 							/* .queued(false) */.build();
@@ -210,7 +210,7 @@ public class DelayJobService extends BaseJobService {
 
 					RETRY_TEMPLATE.execute(ctx -> {
 						jobExecuteRecordManager.createOnExecuted(mainUpdate);
-						jobMainManager.updateOnExecuted(mainUpdate);
+						update(mainUpdate);
 						return null;
 					});
 

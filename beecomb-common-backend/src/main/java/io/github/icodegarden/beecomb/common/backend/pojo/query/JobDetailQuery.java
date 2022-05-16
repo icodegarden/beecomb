@@ -26,5 +26,7 @@ public class JobDetailQuery {
 	public static class With {
 		private boolean params;
 		private boolean desc;
+		private boolean lastTrigResult;
+		private boolean lastExecuteReturns;
 	}
 }

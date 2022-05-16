@@ -1,13 +1,10 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 
-import io.github.icodegarden.beecomb.common.Validateable;
-import io.github.icodegarden.beecomb.common.util.ClassUtils;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -15,10 +12,10 @@ import lombok.ToString;
  * @author Fangfang.Xu
  *
  */
-@Setter
+@Builder
 @Getter
 @ToString
-public class UpdateJobMainOnExecutedDTO implements Validateable {
+public class UpdateJobOnExecutedDTO {
 
 	@NonNull
 	private Long id;
@@ -45,12 +42,4 @@ public class UpdateJobMainOnExecutedDTO implements Validateable {
 	 */
 	private Boolean end;
 
-	@Override
-	public void validate() throws IllegalArgumentException {
-	}
-
-	@Override
-	public boolean shouldUpdate() {
-		return ClassUtils.anyFieldHasValue(this, Arrays.asList("id"));
-	}
 }

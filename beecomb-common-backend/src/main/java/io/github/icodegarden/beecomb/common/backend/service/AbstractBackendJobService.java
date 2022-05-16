@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.common.backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import io.github.icodegarden.beecomb.common.backend.manager.JobDetailManager;
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
@@ -16,6 +17,8 @@ public abstract class AbstractBackendJobService implements BackendJobService {
 
 	@Autowired
 	protected JobMainManager jobMainManager;
+	@Autowired
+	protected JobDetailManager jobDetailManager;
 
 	@Override
 	public ExecutableJobBO findOneExecutableJob(Long id) {
@@ -25,5 +28,4 @@ public abstract class AbstractBackendJobService implements BackendJobService {
 		}
 		return vo.toExecutableJob();
 	}
-
 }

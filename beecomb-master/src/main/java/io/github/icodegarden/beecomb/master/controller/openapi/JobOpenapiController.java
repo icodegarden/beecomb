@@ -118,9 +118,10 @@ public class JobOpenapiController {
 		 * 只查询对应用户的
 		 */
 		JobMainQuery.With with = JobMainQuery.With.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
-				.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
-				.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt).queuedAtInstance(withQueuedAtInstance)
-				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams).build())
+				.lastExecuteExecutor(withLastExecuteExecutor).queuedAt(withQueuedAt)
+				.queuedAtInstance(withQueuedAtInstance)
+				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams)
+						.lastExecuteReturns(withLastExecuteReturns).lastTrigResult(withLastTrigResult).build())
 				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
 				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 

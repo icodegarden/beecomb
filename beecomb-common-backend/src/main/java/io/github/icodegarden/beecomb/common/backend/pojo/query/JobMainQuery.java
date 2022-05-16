@@ -67,23 +67,21 @@ public class JobMainQuery extends BaseQuery {
 	public static class With {
 		public static final With WITH_LEAST = With.builder().build();
 
-		public static final With WITH_MOST = With.builder().queuedAt(true).queuedAtInstance(true).lastTrigResult(true)
-				.lastExecuteExecutor(true).lastExecuteReturns(true).createdBy(true).createdAt(true)
-				.jobDetail(JobDetailQuery.With.builder().params(true).desc(true).build())
+		public static final With WITH_MOST = With.builder().queuedAt(true).queuedAtInstance(true)
+				.lastExecuteExecutor(true).createdBy(true).createdAt(true)
+				.jobDetail(JobDetailQuery.With.builder().params(true).desc(true).lastTrigResult(true)
+						.lastExecuteReturns(true).build())
 				.delayJob(DelayJobQuery.With.builder().build()).scheduleJob(ScheduleJobQuery.With.builder().build())
 				.build();
 
 		public static final With WITH_EXECUTABLE = With.builder().createdAt(true).lastExecuteExecutor(true)
-				.lastExecuteReturns(true).lastTrigResult(true)
-				.jobDetail(JobDetailQuery.With.builder().params(true).build())
+				.jobDetail(JobDetailQuery.With.builder().params(true).lastExecuteReturns(true).build())
 				.delayJob(DelayJobQuery.With.builder().build()).scheduleJob(ScheduleJobQuery.With.builder().build())
 				.build();
 
 		private boolean queuedAt;
 		private boolean queuedAtInstance;
-		private boolean lastTrigResult;
 		private boolean lastExecuteExecutor;
-		private boolean lastExecuteReturns;
 		private boolean createdBy;
 		private boolean createdAt;
 

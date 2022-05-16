@@ -15,7 +15,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteR
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordCountQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobExecuteRecordDTO;
-import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExecutedDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordCountVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordVO;
 import io.github.icodegarden.beecomb.common.backend.util.PageHelperUtils;
@@ -38,7 +38,7 @@ public class JobExecuteRecordManager {
 		jobExecuteRecordMapper.add(po);
 	}
 
-	public void createOnExecuted(UpdateJobMainOnExecutedDTO update) {
+	public void createOnExecuted(UpdateJobOnExecutedDTO update) {
 		CreateJobExecuteRecordDTO createJobExecuteRecordDTO = new CreateJobExecuteRecordDTO();
 		createJobExecuteRecordDTO.setExecuteExecutor(update.getLastExecuteExecutor());
 		createJobExecuteRecordDTO.setExecuteReturns(update.getLastExecuteReturns());

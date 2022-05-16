@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.master.pojo.transfer;
+package io.github.icodegarden.beecomb.master.pojo.transfer.api;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -17,7 +17,7 @@ import lombok.Data;
  *
  */
 @Data
-public class UpdateJobDTO implements Validateable {
+public class UpdateJobApiDTO implements Validateable {
 
 	@NotNull
 	private Long id;

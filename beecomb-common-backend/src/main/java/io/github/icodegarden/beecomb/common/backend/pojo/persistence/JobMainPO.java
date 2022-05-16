@@ -9,7 +9,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
-
 /**
  * 
  * @author Fangfang.Xu
@@ -34,20 +33,18 @@ public class JobMainPO {
 	private LocalDateTime queuedAt;// timestamp,
 	private String queuedAtInstance;// varchar(21) comment 'ip:port',
 	private LocalDateTime lastTrigAt;// timestamp,
-	private String lastTrigResult;// varchar(200),
 	private String lastExecuteExecutor;// varchar(21) comment 'ip:port',
-	private String lastExecuteReturns;// varchar(200),
 	private Boolean lastExecuteSuccess;// bit NOT NULL default 0,
 	private Integer executeTimeout;// int comment 'ms',
 	private LocalDateTime nextTrigAt;// timestamp comment '下次触发时间,初始是null',
 	private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
 	private String createdBy;// varchar(30) comment '租户名',
 	private LocalDateTime createdAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	
+
 	@Setter
 	@Getter
 	@ToString
-	public static class Update{
+	public static class Update {
 
 		private Long id;// bigint NOT NULL AUTO_INCREMENT,
 		private String name;// varchar(30) NOT NULL,
@@ -59,26 +56,25 @@ public class JobMainPO {
 		private LocalDateTime queuedAt;// timestamp,
 		private String queuedAtInstance;// varchar(21) comment 'ip:port',
 		private LocalDateTime lastTrigAt;// timestamp,
-		private String lastTrigResult;// varchar(200),
 		private String lastExecuteExecutor;// varchar(21) comment 'ip:port',
-		private String lastExecuteReturns;// varchar(200),
 		private Boolean lastExecuteSuccess;// bit NOT NULL default 0,
 		private Integer executeTimeout;// int comment 'ms',
 		private LocalDateTime nextTrigAt;// timestamp comment '下次触发时间,初始是null',
 		private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
-		
+
 		/**
 		 * -----------------------------------------------------
 		 */
 		private boolean nextTrigAtNull;
-		
-		public Update() {}
-		
+
+		public Update() {
+		}
+
 		@Builder
 		private Update(@NonNull Long id, String name, Integer priority, Integer weight, Boolean queued,
-				LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastTrigResult,
-				String lastExecuteExecutor, String lastExecuteReturns, Boolean lastExecuteSuccess,
-				Integer executeTimeout, LocalDateTime nextTrigAt, Boolean end, boolean nextTrigAtNull) {
+				LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
+				Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt, Boolean end,
+				boolean nextTrigAtNull) {
 			this.id = id;
 			this.name = name;
 			this.priority = priority;
@@ -87,9 +83,7 @@ public class JobMainPO {
 			this.queuedAt = queuedAt;
 			this.queuedAtInstance = queuedAtInstance;
 			this.lastTrigAt = lastTrigAt;
-			this.lastTrigResult = lastTrigResult;
 			this.lastExecuteExecutor = lastExecuteExecutor;
-			this.lastExecuteReturns = lastExecuteReturns;
 			this.lastExecuteSuccess = lastExecuteSuccess;
 			this.executeTimeout = executeTimeout;
 			this.nextTrigAt = nextTrigAt;
@@ -97,15 +91,15 @@ public class JobMainPO {
 
 			setEnd(end);
 		}
-		
+
 		/**
 		 * 
 		 * @param end 当end true时，自动处理与其相关的字段更新
 		 */
 		public void setEnd(Boolean end) {
 			this.end = end;
-			
-			if(Boolean.TRUE.equals(end)) {
+
+			if (Boolean.TRUE.equals(end)) {
 				queued = false;
 				nextTrigAtNull = true;
 			}

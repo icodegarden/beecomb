@@ -1,5 +1,7 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
+import java.util.Arrays;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -9,6 +11,7 @@ import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
 import io.github.icodegarden.beecomb.common.constant.JobConstants;
+import io.github.icodegarden.beecomb.common.util.ClassUtils;
 import lombok.Data;
 
 /**
@@ -40,14 +43,14 @@ public class UpdateJobMainDTO implements Validateable {
 	@Min(JobConstants.MIN_EXECUTE_TIMEOUT)
 	@Max(JobConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
-	@Max(65535)
-	private String params;// TEXT comment '任务参数',
-	@Max(200)
-	private String desc;// varchar(200) comment '任务描述',
 
 	@Override
 	public void validate() throws IllegalArgumentException {
 		Assert.notNull(id, "Missing:id");
 	}
 
+	@Override
+	public boolean shouldUpdate() {
+		return ClassUtils.anyFieldHasValue(this, Arrays.asList("id"));
+	}
 }

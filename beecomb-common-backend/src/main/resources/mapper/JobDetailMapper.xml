@@ -6,6 +6,8 @@
 		<id property="jobId" column="job_id" />
 		<result property="params" column="params" />
 		<result property="desc" column="desc" />
+		<result property="lastTrigResult" column="last_trig_result" />
+		<result property="lastExecuteReturns" column="last_execute_returns" />
 	</resultMap>
 	
 	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobDetailDO" extends="baseMap">
@@ -15,12 +17,16 @@
 		insert into `job_detail` (
 		  `job_id`,
 		  `params`,
-		  `desc`
+		  `desc`,
+		  `last_trig_result`,
+		  `last_execute_returns`
 		)
 		values (
 		#{jobId},
 		#{params},
-		#{desc}
+		#{desc},
+		#{lastTrigResult},
+		#{lastExecuteReturns}
 		)
 	</insert>
 	
@@ -33,6 +39,8 @@
 		<trim prefix="set" suffixOverrides=",">
 			<if test="params != null">`params` = #{params},</if>
 			<if test="desc != null">`desc` = #{desc},</if>
+			<if test="lastTrigResult != null">`last_trig_result` = #{lastTrigResult},</if>
+			<if test="lastExecuteReturns != null">`last_execute_returns` = #{lastExecuteReturns},</if>
 		</trim>
 		where job_id = #{jobId}
 	</update>

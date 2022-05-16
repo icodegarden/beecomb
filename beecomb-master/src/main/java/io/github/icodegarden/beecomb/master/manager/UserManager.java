@@ -14,10 +14,10 @@ import io.github.icodegarden.beecomb.master.mapper.UserMapper;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.Update;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
-import io.github.icodegarden.beecomb.master.pojo.transfer.CreateUserDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdatePasswordNonOldDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateUserDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateUserApiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdatePasswordApiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdatePasswordNonOldApiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateUserApiDTO;
 import io.github.icodegarden.beecomb.master.security.UserUtils;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
@@ -42,7 +42,7 @@ public class UserManager {
 	 * @return
 	 * @throws 参数错误、唯一约束
 	 */
-	public UserPO create(CreateUserDTO dto) throws IllegalArgumentException {
+	public UserPO create(CreateUserApiDTO dto) throws IllegalArgumentException {
 		UserPO po = new UserPO();
 		BeanUtils.copyProperties(dto, po);
 
@@ -82,14 +82,14 @@ public class UserManager {
 	 * @return
 	 * @throws 参数错误、唯一约束
 	 */
-	public void update(UpdateUserDTO dto) throws IllegalArgumentException {
+	public void update(UpdateUserApiDTO dto) throws IllegalArgumentException {
 		Update update = new UserPO.Update(dto.getId());
 		BeanUtils.copyProperties(dto, update);
 
 		doUpdate(update);
 	}
 
-	public void updatePassword(UpdatePasswordNonOldDTO dto) throws IllegalArgumentException {
+	public void updatePassword(UpdatePasswordNonOldApiDTO dto) throws IllegalArgumentException {
 		UserPO user = findOne(dto.getId(), UserQuery.With.WITH_LEAST);
 		Assert.notNull(user, "user not found");
 
@@ -99,7 +99,7 @@ public class UserManager {
 		doUpdate(update);
 	}
 
-	public void updatePassword(UpdatePasswordDTO dto) throws IllegalArgumentException {
+	public void updatePassword(UpdatePasswordApiDTO dto) throws IllegalArgumentException {
 		UserPO user = findOne(dto.getId(), UserQuery.With.WITH_LEAST);
 		Assert.notNull(user, "user not found");
 

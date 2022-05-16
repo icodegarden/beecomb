@@ -26,7 +26,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.ScheduleJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
@@ -84,9 +84,10 @@ public class JobControllerRy extends BaseControllerRy {
 		 * 只查询对应用户的
 		 */
 		JobMainQuery.With with = JobMainQuery.With.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
-				.lastExecuteExecutor(withLastExecuteExecutor).lastExecuteReturns(withLastExecuteReturns)
-				.lastTrigResult(withLastTrigResult).queuedAt(withQueuedAt).queuedAtInstance(withQueuedAtInstance)
-				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams).build())
+				.lastExecuteExecutor(withLastExecuteExecutor).queuedAt(withQueuedAt)
+				.queuedAtInstance(withQueuedAtInstance)
+				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams)
+						.lastExecuteReturns(withLastExecuteReturns).lastTrigResult(withLastTrigResult).build())
 				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
 				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 
@@ -115,14 +116,12 @@ public class JobControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = "api/job/update")
-	public ResponseEntity<AjaxResult> updateJob(@Validated UpdateJobDTO dto) {
+	public ResponseEntity<AjaxResult> updateJob(@Validated UpdateJobApiDTO dto) {
 		try {
-			dto.validate();
+			UpdateJobOpenapiDTO updateJobDTO = new UpdateJobOpenapiDTO();
+			BeanUtils.copyProperties(dto, updateJobDTO);
 
-			UpdateJobOpenapiDTO updateJobOpenapiDTO = new UpdateJobOpenapiDTO();
-			BeanUtils.copyProperties(dto, updateJobOpenapiDTO);
-
-			jobService.update(updateJobOpenapiDTO);
+			jobService.update(updateJobDTO);
 			return ResponseEntity.ok(success());
 		} catch (IllegalArgumentException e) {
 			/**
