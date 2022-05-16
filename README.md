@@ -197,7 +197,7 @@ body参数
 |weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务   |e1   |
 |parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
 |maxParallelShards   |int   |N   2-64   |最大并行分片数，默认8，当合格的Executor数大于等于该值时，按该值分片，小于时按实际Executor数分片   |8   |
-|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
+|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认10000   |10000   |
 |params   |string   |N   |65535   |任务执行的参数   |id=100   |
 |desc   |string   |N   |200   |任务描述   |我的任务   |
 |delay   |Delay   |当type是Delay时必须   |1   |delay参数   |   |
@@ -262,13 +262,12 @@ path参数
 |queued   |boolean   |Y   |1   |任务是否已队列   |true   |
 |queuedAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |进队列时间   |2021-05-01 12:12:12   |
 |queuedAtInstance   |string   |N   |1-N   |任务已队列时对应的地址   |145.23.12.3:19898   |
-
 |lastTrigAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |上次触发时间   |2021-05-02 12:01:02   |
 |lastTrigResult   |string   |N   |0-200   |上次触发结果   |   |
 |lastExecuteExecutor   |string   |N   |0-N   |上次有哪个执行器执行   |145.23.12.3:19898   |
 |lastExecuteReturns   |string   |N   |0-200   |上次执行任务返回结果，这是你自己写的返回参数   |id=200   |
 |lastExecuteSuccess   |boolean   |Y   |1   |上次执行是否成功   |true   |
-|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒   |1000   |
+|executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒   |10000   |
 |nextTrigAt   |string   |N   |yyyy-MM-dd HH:mm:ss格式   |下次触发时间   |2021-05-02 12:01:30   |
 |end   |boolean   |Y   |1   |任务是否结束   |false   |
 |createdBy   |string   |Y   |1-30   |任务创建者   |beecomb   |
