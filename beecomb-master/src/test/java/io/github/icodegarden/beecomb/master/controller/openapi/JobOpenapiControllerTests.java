@@ -1,8 +1,9 @@
 package io.github.icodegarden.beecomb.master.controller.openapi;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +35,9 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpena
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
@@ -202,14 +206,17 @@ public class JobOpenapiControllerTests {
 		}
 	}
 
-	@Data
-	public static class Test_PageJobsOpenapiVO {
+	@Setter
+	@Getter
+	@ToString
+	public static class Test_GetJobOpenapiVO {
 
+		/**
+		 * main
+		 */
 		private Long id;// bigint NOT NULL AUTO_INCREMENT,
 		private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
-
 		private String name;// varchar(30) NOT NULL,
-
 		private JobType type;// tinyint NOT NULL comment '任务类型 0延时 1调度',
 
 		private String executorName;// varchar(30) NOT NULL,
@@ -236,9 +243,7 @@ public class JobOpenapiControllerTests {
 		private LocalDateTime nextTrigAt;// timestamp comment '下次触发时间,初始是null',
 
 		private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
-
 		private String createdBy;// varchar(30) comment '租户名',
-
 		private LocalDateTime createdAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 		/**
@@ -247,28 +252,34 @@ public class JobOpenapiControllerTests {
 		private String params;// TEXT comment '任务参数',
 		private String desc;// varchar(200) comment '任务描述',
 
-		/**
-		 * delay
-		 */
-		private Integer delay;// int comment 'ms',
-		private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
-		private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
-		private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
-		private Integer retryOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时重试次数，包括不在线、超载时',
-		private Integer retryBackoffOnNoQualified;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
-		private Integer retriedTimesOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时已重试次数',
+		private Delay delay;
+		private Schedule schedule;
 
-		/**
-		 * schedule
-		 */
-		private Integer scheduleFixRate;// int comment 'ms',
-		private Integer scheduleFixDelay;// int comment 'ms',
-		private String sheduleCron;// varchar(20),
-		private Long scheduledTimes;// bigint,
+		@Setter
+		@Getter
+		@ToString
+		public static class Delay {
+			private Integer delay;// int comment 'ms',
+			private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
+			private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
+			private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
+			private Integer retryOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时重试次数，包括不在线、超载时',
+			private Integer retryBackoffOnNoQualified;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
+			private Integer retriedTimesOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时已重试次数',
+		}
 
+		@Setter
+		@Getter
+		@ToString
+		public static class Schedule {
+			private Integer scheduleFixRate;// int comment 'ms',
+			private Integer scheduleFixDelay;// int comment 'ms',
+			private String sheduleCron;// varchar(20),
+			private Long scheduledTimes;// bigint,
+		}
 	}
 	
 	@Data
-	public static class Test_GetJobOpenapiVO extends Test_PageJobsOpenapiVO {
+	public static class Test_PageJobsOpenapiVO extends Test_GetJobOpenapiVO {
 	}
 }

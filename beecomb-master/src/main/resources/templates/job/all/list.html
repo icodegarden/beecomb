@@ -16,7 +16,7 @@
 						<div class="select-list">
 							<ul>
 								<li>
-									任务编号：<input type="text" name="id"/>
+									编号：<input type="text" name="id"/>
 								</li>
 								<li>
 									uuid：<input type="text" name="uuid"/>
@@ -38,13 +38,13 @@
 										<option th:text="否" th:value="false"></option>
 									</select>
 								</li>
-								<li>
-									最后一次执行成功：<select name="lastExecuteSuccess">
-										<option value="">所有</option>
-										<option th:text="是" th:value="true"></option>
-										<option th:text="否" th:value="false"></option>
-									</select>
-								</li>
+<!-- 								<li> -->
+<!-- 									最后一次执行成功：<select name="lastExecuteSuccess"> -->
+<!-- 										<option value="">所有</option> -->
+<!-- 										<option th:text="是" th:value="true"></option> -->
+<!-- 										<option th:text="否" th:value="false"></option> -->
+<!-- 									</select> -->
+<!-- 								</li> -->
 								<li>
 									队列中：<select name="queued">
 										<option value="">所有</option>
@@ -65,12 +65,12 @@
 									<span>-</span>
 									<input type="text" class="form-control" id="laydate-demo-3-2" name="createdAtLte" placeholder="结束时间">
 								</li>
-								<li class="select-time">
-									<label>最后触发时间： </label>
-									<input type="text" class="form-control" id="laydate-demo-3-3" name="lastTrigAtGte" placeholder="开始时间">
-									<span>-</span>
-									<input type="text" class="form-control" id="laydate-demo-3-4" name="lastTrigAtLte" placeholder="结束时间">
-								</li>
+<!-- 								<li class="select-time"> -->
+<!-- 									<label>最后触发时间： </label> -->
+<!-- 									<input type="text" class="form-control" id="laydate-demo-3-3" name="lastTrigAtGte" placeholder="开始时间"> -->
+<!-- 									<span>-</span> -->
+<!-- 									<input type="text" class="form-control" id="laydate-demo-3-4" name="lastTrigAtLte" placeholder="结束时间"> -->
+<!-- 								</li> -->
 								<li>
 									<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
 								    <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
@@ -148,6 +148,10 @@
 		            title: '编号'
 		        },
 		        {
+		            field: 'uuid',
+		            title: 'uuid'		            
+		        },
+		        {
 		            field: 'name',
 		            title: '任务名'
 		        },
@@ -156,17 +160,13 @@
 		            title: '类型'		            
 		        },
 // 		        {
-// 		            field: 'uuid',
-// 		            title: 'uuid'		            
+// 		            field: 'executorName',
+// 		            title: 'Executor'		            
 // 		        },
-		        {
-		            field: 'executorName',
-		            title: 'Executor'		            
-		        },
-		        {
-		            field: 'jobHandlerName',
-		            title: 'Handler'		            
-		        },
+// 		        {
+// 		            field: 'jobHandlerName',
+// 		            title: 'Handler'		            
+// 		        },
 // 		        {
 // 		            field: 'executeTimeout',
 // 		            title: '执行超时时间ms'		            
@@ -205,10 +205,6 @@
 		        	}
 		        },
 		        {
-		            field: 'lastTrigAt',
-		            title: '最后触发时间'		            
-		        },
-		        {
 		        	title: '最后一次执行成功',
 		        	align: 'center',
 		        	formatter: function (value, row, index) {
@@ -217,6 +213,10 @@
 		        		}
 		        		return row.lastExecuteSuccess ? '<span style="color:green;">是</span>':'<span style="color:red;">否</span>';
 		        	}
+		        },
+		        {
+		            field: 'lastTrigAt',
+		            title: '最后触发时间'		            
 		        },
 		        {
 		            field: 'nextTrigAt',

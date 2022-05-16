@@ -97,10 +97,10 @@ public class JobRecoverySchedule implements Closeable {
 		 * 探测，可能节省不必要的开支
 		 */
 		boolean has = jobStorage.hasNoQueuedActually(nextTrigAtLt);
+		if (log.isInfoEnabled()) {
+			log.info("recovery jobs Has No Queued Actually:{}", has);
+		}
 		if (has) {
-			if (log.isInfoEnabled()) {
-				log.info("found has No Queued Actually");
-			}
 			jobStorage.recoveryThatNoQueuedActually(nextTrigAtLt);
 		}
 	}
@@ -123,11 +123,11 @@ public class JobRecoverySchedule implements Closeable {
 				return;
 			}
 			List<ExecutableJobBO> jobs = jobStorage.listJobsShouldRecovery(skip, 10);
-			if (jobs.isEmpty()) {
-				return;
-			}
 			if (log.isInfoEnabled()) {
 				log.info("list Jobs Should Recovery size:{}", jobs.size());
+			}
+			if (jobs.isEmpty()) {
+				return;
 			}
 			for (ExecutableJobBO job : jobs) {
 				CreateOrUpdateJobRecoveryRecordDTO dto = new CreateOrUpdateJobRecoveryRecordDTO();

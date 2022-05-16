@@ -93,9 +93,9 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 		if (query.getEnd() != null) {
 			sb.append("&end=").append(query.getEnd());
 		}
-		if (query.getLastExecuteSuccess() != null) {
-			sb.append("&lastExecuteSuccess=").append(query.getLastExecuteSuccess());
-		}
+//		if (query.getLastExecuteSuccess() != null) {
+//			sb.append("&lastExecuteSuccess=").append(query.getLastExecuteSuccess());
+//		}
 		if (query.getParallel() != null) {
 			sb.append("&parallel=").append(query.getParallel());
 		}
@@ -108,15 +108,12 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 		if (query.getCreatedAtLte() != null) {
 			sb.append("&createdAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtLte()));
 		}
-		if (query.getCreatedBy() != null) {
-			sb.append("&createdBy=").append(query.getCreatedBy());
-		}
-		if (query.getLastTrigAtGte() != null) {
-			sb.append("&lastTrigAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtGte()));
-		}
-		if (query.getLastTrigAtLte() != null) {
-			sb.append("&lastTrigAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtLte()));
-		}
+//		if (query.getLastTrigAtGte() != null) {
+//			sb.append("&lastTrigAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtGte()));
+//		}
+//		if (query.getLastTrigAtLte() != null) {
+//			sb.append("&lastTrigAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtLte()));
+//		}
 		if (query.getNameLike() != null) {
 			sb.append("&nameLike=").append(query.getNameLike());
 		}

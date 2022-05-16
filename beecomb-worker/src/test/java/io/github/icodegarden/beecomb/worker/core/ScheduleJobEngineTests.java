@@ -84,6 +84,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		job.setParallel(new Random().nextBoolean());
 		job.setMaxParallelShards(8);
 		job.setLastExecuteSuccess(true);
+		job.setEnd(false);
 		ScheduleBO schedule = new ScheduleBO();
 		schedule.setScheduledTimes(0L);
 		job.setSchedule(schedule);

@@ -17,7 +17,8 @@ public class UserDetails extends SpringUser {
 	private UserPO user;
 
 	public UserDetails(UserPO user, Collection<? extends GrantedAuthority> authorities) {
-		super(user.getId().toString(), user.getUsername(), user.getPassword(), authorities);
+		super(user.getId() != null ? user.getId().toString() : null, user.getUsername(), user.getPassword(),
+				authorities);
 		this.user = user;
 	}
 

@@ -13,18 +13,17 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 public class JobQuery extends BaseQuery {
 
 	private String uuid;
-	private Boolean queued;
-	private Boolean end;
-	private String createdBy;
 	private String nameLike;
 	private JobType type;
 	private Boolean parallel;
-	private Boolean lastExecuteSuccess;
+	private Boolean queued;
+	private Boolean end;
+//	private Boolean lastExecuteSuccess;
 	private LocalDateTime createdAtGte;
 	private LocalDateTime createdAtLte;
-	private LocalDateTime lastTrigAtGte;
-	private LocalDateTime lastTrigAtLte;
-	
+//	private LocalDateTime lastTrigAtGte;
+//	private LocalDateTime lastTrigAtLte;
+
 	/**
 	 * 扩展查询参数
 	 */
@@ -56,14 +55,6 @@ public class JobQuery extends BaseQuery {
 		this.end = end;
 	}
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
-
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
-
 	public String getNameLike() {
 		return nameLike;
 	}
@@ -88,13 +79,13 @@ public class JobQuery extends BaseQuery {
 		this.parallel = parallel;
 	}
 
-	public Boolean getLastExecuteSuccess() {
-		return lastExecuteSuccess;
-	}
-
-	public void setLastExecuteSuccess(Boolean lastExecuteSuccess) {
-		this.lastExecuteSuccess = lastExecuteSuccess;
-	}
+//	public Boolean getLastExecuteSuccess() {
+//		return lastExecuteSuccess;
+//	}
+//
+//	public void setLastExecuteSuccess(Boolean lastExecuteSuccess) {
+//		this.lastExecuteSuccess = lastExecuteSuccess;
+//	}
 
 	public LocalDateTime getCreatedAtGte() {
 		return createdAtGte;
@@ -112,21 +103,21 @@ public class JobQuery extends BaseQuery {
 		this.createdAtLte = createdAtLte;
 	}
 
-	public LocalDateTime getLastTrigAtGte() {
-		return lastTrigAtGte;
-	}
-
-	public void setLastTrigAtGte(LocalDateTime lastTrigAtGte) {
-		this.lastTrigAtGte = lastTrigAtGte;
-	}
-
-	public LocalDateTime getLastTrigAtLte() {
-		return lastTrigAtLte;
-	}
-
-	public void setLastTrigAtLte(LocalDateTime lastTrigAtLte) {
-		this.lastTrigAtLte = lastTrigAtLte;
-	}
+//	public LocalDateTime getLastTrigAtGte() {
+//		return lastTrigAtGte;
+//	}
+//
+//	public void setLastTrigAtGte(LocalDateTime lastTrigAtGte) {
+//		this.lastTrigAtGte = lastTrigAtGte;
+//	}
+//
+//	public LocalDateTime getLastTrigAtLte() {
+//		return lastTrigAtLte;
+//	}
+//
+//	public void setLastTrigAtLte(LocalDateTime lastTrigAtLte) {
+//		this.lastTrigAtLte = lastTrigAtLte;
+//	}
 
 	public Map<String, String> getExtParams() {
 		return extParams;
@@ -146,11 +137,9 @@ public class JobQuery extends BaseQuery {
 
 	@Override
 	public String toString() {
-		return "JobQuery [uuid=" + uuid + ", queued=" + queued + ", end=" + end + ", createdBy=" + createdBy
-				+ ", nameLike=" + nameLike + ", type=" + type + ", parallel=" + parallel + ", lastExecuteSuccess="
-				+ lastExecuteSuccess + ", createdAtGte=" + createdAtGte + ", createdAtLte=" + createdAtLte
-				+ ", lastTrigAtGte=" + lastTrigAtGte + ", lastTrigAtLte=" + lastTrigAtLte + ", extParams=" + extParams
-				+ ", with=" + with + "]";
+		return "JobQuery [uuid=" + uuid + ", nameLike=" + nameLike + ", type=" + type + ", parallel=" + parallel
+				+ ", queued=" + queued + ", end=" + end + ", createdAtGte=" + createdAtGte + ", createdAtLte="
+				+ createdAtLte + ", extParams=" + extParams + ", with=" + with + "]";
 	}
 
 	public static class JobWith {
@@ -168,7 +157,7 @@ public class JobQuery extends BaseQuery {
 
 		private boolean withDelay;
 		private boolean withSchedule;
-		
+
 		public boolean isWithQueuedAt() {
 			return withQueuedAt;
 		}

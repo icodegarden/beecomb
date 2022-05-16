@@ -85,6 +85,7 @@ class DelayJobEngineTests extends Properties4Test {
 		job.setParallel(new Random().nextBoolean());
 		job.setMaxParallelShards(8);
 		job.setLastExecuteSuccess(true);
+		job.setEnd(false);
 		DelayBO delay = new DelayBO();
 		delay.setDelay(1000);
 		delay.setRetryBackoffOnNoQualified(2000);
