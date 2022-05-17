@@ -60,8 +60,9 @@ public class SampleApp {
 		BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
 
 		/**
-		 * 如果使用nginx等对masters进行了代理，可以直接指定代理的地址 UrlsClientProperties urlsClientProperties
-		 * = new UrlsClientProperties(authentication, Arrays.asList("http://ip:port"));
+		 * 如果使用nginx等对masters进行了代理，可以直接指定代理的地址 <br>
+		 * UrlsClientProperties urlsClientProperties = new
+		 * UrlsClientProperties(authentication, Arrays.asList("http://ip:port"));
 		 * BeeCombClient beeCombClient = new UrlsBeeCombClient(urlsClientProperties);
 		 */
 

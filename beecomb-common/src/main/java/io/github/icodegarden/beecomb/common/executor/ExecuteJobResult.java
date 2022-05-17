@@ -3,6 +3,10 @@ package io.github.icodegarden.beecomb.common.executor;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.springframework.util.Assert;
+
+import io.github.icodegarden.commons.lang.annotation.Length;
+
 /**
  * 
  * @author Fangfang.Xu
@@ -11,6 +15,7 @@ import java.util.Objects;
 public class ExecuteJobResult implements Serializable {
 	private static final long serialVersionUID = -6248807678193840548L;
 
+	@Length(max = 65535) 
 	private String executeReturns;
 	/**
 	 * 任务是否结束
@@ -21,7 +26,10 @@ public class ExecuteJobResult implements Serializable {
 		return executeReturns;
 	}
 
-	public void setExecuteReturns(String executeReturns) {
+	public void setExecuteReturns(@Length(max = 65535) String executeReturns) {
+		if (executeReturns != null) {
+			Assert.isTrue(executeReturns.length() <= 65535, "executeReturns must lte 65535");
+		}
 		this.executeReturns = executeReturns;
 	}
 
