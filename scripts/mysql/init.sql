@@ -31,7 +31,9 @@ CREATE TABLE `job_main` (
   INDEX `idx_uuid`(`uuid`), -- uuid不约束唯一，是否需要唯一由用户自己保障
   INDEX `idx_for_update_to_recovery`(`next_trig_at`),
   INDEX `idx_for_list_recovery`(`is_end`,`is_queued`,`priority`),  
-  INDEX `idx_for_search`(`created_by`,`id`,`uuid`,`name`,`type`,`is_end`,`is_queued`,`is_parallel`,`is_last_execute_success`,`created_at`,`next_trig_at`),
+  INDEX `idx_name`(`name`),
+  INDEX `idx_is_parallel`(`is_parallel`),
+  INDEX `idx_created_at`(`created_at`),
   INDEX `idx_for_count_queued`(`is_queued`, `created_by`, `type`),
   INDEX `idx_for_count_end_success`(`is_end`, `is_last_execute_success`, `created_by`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
