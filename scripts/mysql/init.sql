@@ -17,25 +17,23 @@ CREATE TABLE `job_main` (
   `is_parallel` bit NOT NULL default 0 comment '是否并行任务',
   `max_parallel_shards` smallint NOT NULL default 8 comment '最大并行数，2-64',
   `is_queued` bit NOT NULL default 0,
-  `queued_at` timestamp,
+  `queued_at` timestamp NULL,
   `queued_at_instance` varchar(21) comment 'ip:port,所在的worker实例',
-  `last_trig_at` timestamp comment '任务调度触发时间',
+  `last_trig_at` timestamp NULL comment '任务调度触发时间',
   `last_execute_executor` varchar(21) comment 'ip:port',
   `is_last_execute_success` bit NOT NULL default 0,
   `execute_timeout` int NOT NULL default 10000 comment 'ms',
-  `next_trig_at` timestamp comment '下次触发时间,初始是null',
+  `next_trig_at` timestamp NULL comment '下次触发时间,初始是null',
   `is_end` bit NOT NULL default 0 comment '是否已结束',
   `created_by` varchar(30) comment 'user.username',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  INDEX `idx_uuid`(`uuid`), -- uuid不约束唯一，是否需要唯一由用户自己保障
+  INDEX `idx_uuid`(`uuid`(20)), -- uuid不约束唯一，是否需要唯一由用户自己保障
   INDEX `idx_for_update_to_recovery`(`next_trig_at`),
   INDEX `idx_for_list_recovery`(`is_end`,`is_queued`,`priority`),  
-  INDEX `idx_name`(`name`),
-  INDEX `idx_is_parallel`(`is_parallel`),
-  INDEX `idx_created_at`(`created_at`),
-  INDEX `idx_for_count_queued`(`is_queued`, `created_by`, `type`),
-  INDEX `idx_for_count_end_success`(`is_end`, `is_last_execute_success`, `created_by`, `type`)
+  INDEX `idx_name`(`name`(20))
+--  INDEX `idx_for_count_queued`(`is_queued`, `created_by`, `type`),
+--  INDEX `idx_for_count_end_success`(`is_end`, `is_last_execute_success`, `created_by`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `job_detail`;
@@ -90,9 +88,7 @@ CREATE TABLE `job_recovery_record` (
   `is_success` bit(1) NOT NULL,
   `desc` text comment '恢复结果描述65535',
   `recovery_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`job_id`),
-  INDEX `idx_recovery_at`(`recovery_at`),
-  INDEX `idx_is_success_recovery_at`(`is_success`,`recovery_at`)
+  PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `report_line`;

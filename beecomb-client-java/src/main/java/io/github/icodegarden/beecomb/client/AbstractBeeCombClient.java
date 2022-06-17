@@ -21,7 +21,6 @@ import io.github.icodegarden.commons.exchange.http.HttpHeaders;
 import io.github.icodegarden.commons.exchange.http.HttpMethod;
 import io.github.icodegarden.commons.exchange.http.SimpleRestHttpProtocol;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
-import io.github.icodegarden.commons.lang.util.JsonUtils;
 
 /**
  * 
@@ -96,18 +95,18 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 //		if (query.getLastExecuteSuccess() != null) {
 //			sb.append("&lastExecuteSuccess=").append(query.getLastExecuteSuccess());
 //		}
-		if (query.getParallel() != null) {
-			sb.append("&parallel=").append(query.getParallel());
-		}
-		if (query.getQueued() != null) {
-			sb.append("&queued=").append(query.getQueued());
-		}
-		if (query.getCreatedAtGte() != null) {
-			sb.append("&createdAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtGte()));
-		}
-		if (query.getCreatedAtLte() != null) {
-			sb.append("&createdAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtLte()));
-		}
+//		if (query.getParallel() != null) {
+//			sb.append("&parallel=").append(query.getParallel());
+//		}
+//		if (query.getQueued() != null) {
+//			sb.append("&queued=").append(query.getQueued());
+//		}
+//		if (query.getCreatedAtGte() != null) {
+//			sb.append("&createdAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtGte()));
+//		}
+//		if (query.getCreatedAtLte() != null) {
+//			sb.append("&createdAtLte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getCreatedAtLte()));
+//		}
 //		if (query.getLastTrigAtGte() != null) {
 //			sb.append("&lastTrigAtGte=").append(JsonUtils.STANDARD_DATETIME_FORMATTER.format(query.getLastTrigAtGte()));
 //		}

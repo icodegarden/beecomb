@@ -1,6 +1,5 @@
 package io.github.icodegarden.beecomb.client.pojo.request;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
@@ -15,12 +14,12 @@ public class JobQuery extends BaseQuery {
 	private String uuid;
 	private String nameLike;
 	private JobType type;
-	private Boolean parallel;
+//	private Boolean parallel;
 	private Boolean queued;
 	private Boolean end;
 //	private Boolean lastExecuteSuccess;
-	private LocalDateTime createdAtGte;
-	private LocalDateTime createdAtLte;
+//	private LocalDateTime createdAtGte;
+//	private LocalDateTime createdAtLte;
 //	private LocalDateTime lastTrigAtGte;
 //	private LocalDateTime lastTrigAtLte;
 
@@ -71,13 +70,13 @@ public class JobQuery extends BaseQuery {
 		this.type = type;
 	}
 
-	public Boolean getParallel() {
-		return parallel;
-	}
-
-	public void setParallel(Boolean parallel) {
-		this.parallel = parallel;
-	}
+//	public Boolean getParallel() {
+//		return parallel;
+//	}
+//
+//	public void setParallel(Boolean parallel) {
+//		this.parallel = parallel;
+//	}
 
 //	public Boolean getLastExecuteSuccess() {
 //		return lastExecuteSuccess;
@@ -87,21 +86,21 @@ public class JobQuery extends BaseQuery {
 //		this.lastExecuteSuccess = lastExecuteSuccess;
 //	}
 
-	public LocalDateTime getCreatedAtGte() {
-		return createdAtGte;
-	}
-
-	public void setCreatedAtGte(LocalDateTime createdAtGte) {
-		this.createdAtGte = createdAtGte;
-	}
-
-	public LocalDateTime getCreatedAtLte() {
-		return createdAtLte;
-	}
-
-	public void setCreatedAtLte(LocalDateTime createdAtLte) {
-		this.createdAtLte = createdAtLte;
-	}
+//	public LocalDateTime getCreatedAtGte() {
+//		return createdAtGte;
+//	}
+//
+//	public void setCreatedAtGte(LocalDateTime createdAtGte) {
+//		this.createdAtGte = createdAtGte;
+//	}
+//
+//	public LocalDateTime getCreatedAtLte() {
+//		return createdAtLte;
+//	}
+//
+//	public void setCreatedAtLte(LocalDateTime createdAtLte) {
+//		this.createdAtLte = createdAtLte;
+//	}
 
 //	public LocalDateTime getLastTrigAtGte() {
 //		return lastTrigAtGte;
@@ -137,9 +136,8 @@ public class JobQuery extends BaseQuery {
 
 	@Override
 	public String toString() {
-		return "JobQuery [uuid=" + uuid + ", nameLike=" + nameLike + ", type=" + type + ", parallel=" + parallel
-				+ ", queued=" + queued + ", end=" + end + ", createdAtGte=" + createdAtGte + ", createdAtLte="
-				+ createdAtLte + ", extParams=" + extParams + ", with=" + with + "]";
+		return "JobQuery [uuid=" + uuid + ", nameLike=" + nameLike + ", type=" + type + ", queued=" + queued + ", end="
+				+ end + ", extParams=" + extParams + ", with=" + with + "]";
 	}
 
 	public static class JobWith {
