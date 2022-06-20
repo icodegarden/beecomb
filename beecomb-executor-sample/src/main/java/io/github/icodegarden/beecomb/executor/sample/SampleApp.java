@@ -68,7 +68,7 @@ public class SampleApp {
 
 		for (;;) {
 			try {
-				System.out.println("请输入任务类型：");
+				System.out.println("请输入需要演示的任务，1=红包自动退款场景，2=抢票场景，3=任务分片并行处理场景");
 				int read = System.in.read();
 				if (read == '1') {
 					bizOnExpiredDelayJob(beeCombClient);

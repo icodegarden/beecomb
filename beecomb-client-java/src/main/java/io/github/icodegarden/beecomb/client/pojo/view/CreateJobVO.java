@@ -30,7 +30,7 @@ public class CreateJobVO {
 
 	@Override
 	public String toString() {
-		return "CreateJobResponse [job=" + job + ", dispatchException=" + dispatchException + "]";
+		return "CreateJobVO [job=" + job + ", dispatchException=" + dispatchException + "]";
 	}
 
 	public static class Job {

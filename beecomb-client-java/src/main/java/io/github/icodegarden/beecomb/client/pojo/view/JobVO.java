@@ -400,7 +400,7 @@ public class JobVO {
 
 	@Override
 	public String toString() {
-		return "GetJobResponse [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
+		return "JobVO [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
 				+ executorName + ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight
 				+ ", parallel=" + parallel + ", maxParallelShards=" + maxParallelShards + ", queued=" + queued
 				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt

@@ -71,7 +71,7 @@ public class PageVO<T> {
 
 	@Override
 	public String toString() {
-		return "PageResponse [page=" + page + ", size=" + size + ", totalPages=" + totalPages + ", totalCount="
+		return "PageVO [page=" + page + ", size=" + size + ", totalPages=" + totalPages + ", totalCount="
 				+ totalCount + ", result=" + result + "]";
 	}
 
