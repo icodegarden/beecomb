@@ -26,20 +26,30 @@ import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.ScheduleJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
+import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Delay;
+import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
+import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
+import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
+@Slf4j
 @Controller
 public class JobControllerRy extends BaseControllerRy {
 
@@ -47,6 +57,8 @@ public class JobControllerRy extends BaseControllerRy {
 	private JobMainManager jobMainManager;
 	@Autowired
 	private JobService jobService;
+	@Autowired
+	private JobReceiver jobReceiver;
 
 	@GetMapping("view/job/list")
 	public String jobList() {
@@ -133,6 +145,47 @@ public class JobControllerRy extends BaseControllerRy {
 			 * 参数错误（包括唯一约束）400等
 			 */
 			return (ResponseEntity) ResponseEntity.status(e.httpStatus()).body(e.getMessage());
+		}
+	}
+	
+	@GetMapping("view/job/create")
+	public String userCreate(HttpServletRequest request, ModelMap mmap) {
+		return "job/all/create";
+	}
+	
+	@PostMapping(value = "api/job/create")
+	public ResponseEntity<AjaxResult> createJob(@Validated CreateJobApiDTO createJobApiDTO) {
+		createJobApiDTO.validate();
+
+		CreateJobDTO dto = new CreateJobDTO();
+		BeanUtils.copyProperties(createJobApiDTO, dto);
+		if (createJobApiDTO.getType() == JobType.Delay) {
+			Delay delay = new CreateJobDTO.Delay();
+			BeanUtils.copyProperties(createJobApiDTO, delay);
+			dto.setDelay(delay);
+		} else if (createJobApiDTO.getType() == JobType.Schedule) {
+			Schedule schedule = new CreateJobDTO.Schedule();
+			BeanUtils.copyProperties(createJobApiDTO, schedule);
+			dto.setSchedule(schedule);
+		} else {
+			throw new RuntimeException("NOT IMPL type:" + createJobApiDTO.getType());
+		}
+
+		Result2<ExecutableJobBO, ErrorCodeException> result2 = jobReceiver.receive(dto);
+
+		if (result2.isSuccess()) {
+			ExecutableJobBO bo = result2.getT1();
+			ErrorCodeException errorCodeException = result2.getT2();
+
+			CreateJobOpenapiVO vo = CreateJobOpenapiVO.builder().job(CreateJobOpenapiVO.Job.of(bo))
+					.dispatchException(errorCodeException != null ? errorCodeException.getMessage() : null).build();
+
+			return ResponseEntity.ok(success());
+		} else {
+			ErrorCodeException errorCodeException = result2.getT2();
+			log.error("ex on createjob by web", errorCodeException);
+			return (ResponseEntity) ResponseEntity.status(errorCodeException.httpStatus())
+					.body(errorCodeException.getMessage());
 		}
 	}
 }

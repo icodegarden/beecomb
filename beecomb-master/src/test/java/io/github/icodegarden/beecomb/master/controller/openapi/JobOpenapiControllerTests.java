@@ -30,8 +30,8 @@ import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
+import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO.Delay;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import lombok.Data;
@@ -76,7 +76,7 @@ public class JobOpenapiControllerTests {
 		body.setJobHandlerName("h1");
 		body.setParams("param");
 		body.setDesc("desc");
-		Delay delay = new CreateJobOpenapiDTO.Delay();
+		CreateJobDTO.Delay delay = new CreateJobDTO.Delay();
 		delay.setDelay(3000);
 		body.setDelay(delay);
 

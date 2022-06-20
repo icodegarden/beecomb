@@ -15,7 +15,7 @@ import lombok.ToString;
  */
 @Setter
 @Getter
-@ToString
+@ToString(callSuper = true)
 public class ScheduleJobVO extends ScheduleJobPO {
 
 	public static ScheduleJobVO of(ScheduleJobDO one) {

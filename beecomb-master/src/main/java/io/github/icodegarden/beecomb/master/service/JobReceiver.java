@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
@@ -47,7 +47,7 @@ public class JobReceiver {
 	 * @param dto
 	 * @return 成功时，也可能有ErrorCodeException，此时说明dispatch失败；失败时的ErrorCodeException是整个失败原因
 	 */
-	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobOpenapiDTO dto) {
+	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobDTO dto) {
 		ExecutableJobBO job;
 		try {
 			job = jobService.create(dto);
@@ -79,7 +79,7 @@ public class JobReceiver {
 	 * @param dto
 	 * @return 成功时，也可能有ErrorCodeException，此时说明dispatch失败；失败时的ErrorCodeException是整个失败原因
 	 */
-	public Result2<ExecutableJobBO, ErrorCodeException> receiveAsync(CreateJobOpenapiDTO dto) {
+	public Result2<ExecutableJobBO, ErrorCodeException> receiveAsync(CreateJobDTO dto) {
 		ExecutableJobBO job;
 		try {
 			job = jobService.create(dto);

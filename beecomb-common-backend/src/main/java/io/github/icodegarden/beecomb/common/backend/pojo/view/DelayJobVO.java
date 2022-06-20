@@ -15,7 +15,7 @@ import lombok.ToString;
  */
 @Setter
 @Getter
-@ToString
+@ToString(callSuper = true)
 public class DelayJobVO extends DelayJobPO {
 
 	public static DelayJobVO of(DelayJobDO one) {

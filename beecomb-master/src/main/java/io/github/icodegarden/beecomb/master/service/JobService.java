@@ -26,7 +26,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
@@ -50,7 +50,7 @@ public class JobService extends AbstractBackendJobService {
 	private ScheduleJobManager scheduleJobManager;
 
 	@Transactional
-	public ExecutableJobBO create(CreateJobOpenapiDTO dto) {
+	public ExecutableJobBO create(CreateJobDTO dto) {
 		CreateJobMainDTO createJobMainDTO = new CreateJobMainDTO();
 		BeanUtils.copyProperties(dto, createJobMainDTO);
 		createJobMainDTO.setCreatedBy(SecurityUtils.getUsername());// IMPT

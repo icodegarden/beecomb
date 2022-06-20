@@ -81,9 +81,9 @@
 				</div>
 				
 		        <div class="btn-group-sm" id="toolbar" role="group">
-<!-- 		        	<a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="system:user:add"> -->
-<!-- 		                <i class="fa fa-plus"></i> 新增 -->
-<!-- 		            </a> -->
+		        	<a class="btn btn-success" onclick="$.operate.addTab()" shiro:hasPermission="system:user:add">
+		                <i class="fa fa-plus"></i> 新增
+		            </a>
 <!-- 		             <a class="btn btn-primary single disabled" onclick="$.operate.editTab()" shiro:hasPermission="system:user:edit"> -->
 <!-- 			            <i class="fa fa-edit"></i> 修改 -->
 <!-- 			        </a> -->
@@ -130,7 +130,7 @@
 		    var options = {
 		        url: prefix + "/list",
 		        detailUrl: "/view/job/{id}/detail",
-		        createUrl: "/view/user/create",
+		        createUrl: "/view/job/create",
 		        updateUrl: "/view/job/{id}/update",
 		        removeUrl: prefix + "/remove",
 		        exportUrl: prefix + "/export",

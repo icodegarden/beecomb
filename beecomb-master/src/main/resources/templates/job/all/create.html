@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('新增任务')" />
+	<th:block th:include="include :: select2-css" />
+</head>
+<body>
+    <div class="main-content">
+        <form id="form-user-add" class="form-horizontal">
+            <input name="deptId" type="hidden" id="treeId"/>
+            <h4 class="form-header h4">基本信息</h4>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">任务名：</label>
+                        <div class="col-sm-8">
+                            <input name="name" placeholder="请输入任务名" class="form-control" type="text" maxlength="30" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">uuid：</label>
+                        <div class="col-sm-8">
+                            <input name="uuid" class="form-control" type="text" maxlength="64" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">执行器名称：</label>
+                        <div class="col-sm-8">
+                            <input name="executorName" placeholder="请输入executorName" class="form-control" type="text" maxlength="30" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">任务处理器：</label>
+                        <div class="col-sm-8">
+                            <input name="jobHandlerName" placeholder="请输入jobHandlerName" class="form-control" type="text" maxlength="30" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">优先级：</label>
+                        <div class="col-sm-8">
+                            <input name="priority" placeholder="请输入priority" class="form-control" type="number" min="1" max="10" >
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">重量：</label>
+                        <div class="col-sm-8">
+                            <input name="weight" placeholder="请输入weight" class="form-control" type="text" min="1" max="5" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">并行任务：</label>
+                        <div class="col-sm-8">
+							<select name="parallel" required class="form-control">
+								<option th:text="是" th:value="true"></option>
+								<option th:text="否" th:value="false" th:selected="true"></option>
+							</select>
+						</div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">最大分片数：</label>
+                        <div class="col-sm-8">
+                            <input name="maxParallelShards" placeholder="请输入" class="form-control" type="number" min="2" max="64" value="8">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">执行超时时间ms：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input id="executeTimeout" name="executeTimeout" placeholder="请输入" class="form-control" type="number" min="1000" max="3600000">
+                                <span class="input-group-addon"><i class="fa fa-mobile"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label is-required">任务类型：</label>
+                        <div class="col-sm-8">
+							<select name="type" required class="form-control">
+								<option th:text="delay" th:value="Delay"></option>
+								<option th:text="schedule" th:value="Schedule"></option>
+							</select>
+						</div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <h4 class="form-header h4">delay任务信息</h4>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">任务延迟ms：</label>
+                        <div class="col-sm-8">
+                            <input name="delay" placeholder="请输入delay" class="form-control" type="number" min="1000" >
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">ExecuteFailed重试次数：</label>
+                        <div class="col-sm-8">
+                            <input name="retryOnExecuteFailed" placeholder="请输入retryOnExecuteFailed" class="form-control" type="number" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">ExecuteFailed重试回退ms：</label>
+                        <div class="col-sm-8">
+                            <input name="retryBackoffOnExecuteFailed" placeholder="请输入retryBackoffOnExecuteFailed" class="form-control" type="number" min="1000" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">NoQualified重试次数：</label>
+                        <div class="col-sm-8">
+                            <input name="retryOnNoQualified" placeholder="请输入retryOnNoQualified" class="form-control" type="number" min="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">NoQualified重试回退ms：</label>
+                        <div class="col-sm-8">
+                            <input name="retryBackoffOnNoQualified" placeholder="请输入retryBackoffOnNoQualified" class="form-control" type="number" min="1000" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h4 class="form-header h4">schedule任务信息</h4>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">scheduleFixRate：</label>
+                        <div class="col-sm-8">
+                            <input name="scheduleFixRate" placeholder="请输入scheduleFixRate" class="form-control" type="number" min="1000" >
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">scheduleFixDelay：</label>
+                        <div class="col-sm-8">
+                            <input name="scheduleFixDelay" placeholder="请输入scheduleFixDelay" class="form-control" type="number" min="1000" >
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">sheduleCron：</label>
+                        <div class="col-sm-8">
+                            <input name="sheduleCron" placeholder="请输入sheduleCron" class="form-control" type="text">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+      
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: select2-js" />
+	<script>
+		var prefix = ctx + "api/job";
+	
+        $("#form-user-add").validate({
+        	onkeyup: false,
+        	rules:{
+        		password:{
+        			minlength: 5,
+        			maxlength: 20
+        		}
+        	},
+        	messages: {
+                "loginName": {
+                    remote: "用户已经存在"
+                },
+        		"email": {
+                    remote: "Email已经存在"
+                },
+        		"phonenumber":{
+                	remote: "手机号码已经存在"
+        		}
+            },
+            focusCleanup: true
+        });
+        
+        function submitHandler() {
+			var password = $("#password").val();
+// 	        if ($.validate.form() && checkpwd(chrtype, password)) {
+	        if ($.validate.form()) {
+	        	var data = $("#form-user-add").serializeArray();
+	        	var status = $("input[id='status']").is(':checked') == true ? 0 : 1;
+	        	var roleIds = $.form.selectCheckeds("role");
+	        	var postIds = $.form.selectSelects("post");
+	        	data.push({"name": "status", "value": status});
+	        	data.push({"name": "roleIds", "value": roleIds});
+	        	data.push({"name": "postIds", "value": postIds});
+	        	$.operate.saveTab(prefix + "/create", data);
+	        }
+	    }
+         
+        /* 用户管理-新增-选择部门树 */
+        function selectDeptTree() {
+        	var treeId = $("#treeId").val();
+        	var deptId = $.common.isEmpty(treeId) ? "100" : $("#treeId").val();
+        	var url = ctx + "system/dept/selectDeptTree/" + deptId;
+			var options = {
+				title: '选择部门',
+				width: "380",
+				url: url,
+				callBack: doSubmit
+			};
+			$.modal.openOptions(options);
+		}
+		
+		function doSubmit(index, layero){
+			var tree = layero.find("iframe")[0].contentWindow.$._tree;
+			var body = $.modal.getChildFrame(index);
+   			$("#treeId").val(body.find('#treeId').val());
+   			$("#treeName").val(body.find('#treeName').val());
+   			$.modal.close(index);
+		}
+
+		$(function() {
+            $('#post').select2({
+                placeholder: "请选择岗位",
+                allowClear: true
+            });
+        })
+    </script>
+</body>
+</html>

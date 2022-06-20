@@ -117,6 +117,7 @@
 					<if test="with.createdAt == true">a.`created_at` as created_at,</if>
 				</trim>
 				<if test="with.jobDetail != null">
+					,b.`job_id` as jd_job_id
 					<trim prefix="," suffixOverrides=",">
 						<if test="with.jobDetail.params == true">b.`params` as jd_params,</if>
 						<if test="with.jobDetail.desc == true">b.`desc` as jd_desc,</if>
@@ -125,6 +126,7 @@
 					</trim>
 				</if>
 				<if test="with.delayJob != null">
+					,c.`job_id` as dj_job_id
 					<trim prefix="," suffixOverrides=",">
 						c.`delay` as dj_delay,
 						c.`retry_on_execute_failed` as dj_retry_on_execute_failed,
@@ -136,6 +138,7 @@
 					</trim>
 				</if>
 				<if test="with.scheduleJob != null">
+					,d.`job_id` as sj_job_id
 					<trim prefix="," suffixOverrides=",">
 						d.`schedule_fix_rate` as sj_schedule_fix_rate,
 						d.`schedule_fix_delay` as sj_schedule_fix_delay,
