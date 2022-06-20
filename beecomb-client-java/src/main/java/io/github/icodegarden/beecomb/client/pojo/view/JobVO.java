@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.client.pojo.response;
+package io.github.icodegarden.beecomb.client.pojo.view;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +10,7 @@ import io.github.icodegarden.commons.lang.annotation.NotNull;
  * @author Fangfang.Xu
  *
  */
-public class GetJobResponse {
+public class JobVO {
 
 	/**
 	 * main

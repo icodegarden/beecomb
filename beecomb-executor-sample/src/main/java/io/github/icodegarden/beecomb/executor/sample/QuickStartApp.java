@@ -7,9 +7,9 @@ import java.util.List;
 import io.github.icodegarden.beecomb.client.BeeCombClient;
 import io.github.icodegarden.beecomb.client.ZooKeeperBeeCombClient;
 import io.github.icodegarden.beecomb.client.ZooKeeperClientProperties;
-import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO.Delay;
+import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.client.security.Authentication;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
@@ -62,7 +62,7 @@ public class QuickStartApp {
 			delay.setRetryOnExecuteFailed(3);//当执行失败时重试次数
 			CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAME, QuickStartJobHandler.NAME,
 					delay);
-			CreateJobResponse response = beeCombClient.createJob(job);
+			CreateJobVO response = beeCombClient.createJob(job);
 			if (response.getDispatchException() == null) {
 				System.out.println(
 						"创建示例任务成功，队列所在实例：" + response.getJob().getQueuedAtInstance()/* 若使用async方式，则该字段是null */);

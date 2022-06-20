@@ -16,5 +16,5 @@ class ZooKeeperBeeCombClientTests extends AbstractBeeCombClientTests {
 		ZooKeeperBeeCombClient beeCombClient = new ZooKeeperBeeCombClient(properties);
 		return beeCombClient;
 	}
-
+	
 }

@@ -1,7 +1,8 @@
-package io.github.icodegarden.beecomb.client.pojo.request;
+package io.github.icodegarden.beecomb.client.pojo.transfer;
 
-import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.annotation.NotEmpty;
+import org.springframework.util.Assert;
+
+import io.github.icodegarden.commons.lang.annotation.Length;
 import io.github.icodegarden.commons.lang.annotation.NotNull;
 
 /**
@@ -9,38 +10,29 @@ import io.github.icodegarden.commons.lang.annotation.NotNull;
  * @author Fangfang.Xu
  *
  */
-public abstract class CreateJobRequest {
+public class UpdateJobDTO {
 
-	private String uuid;
-	@NotEmpty
+	@NotNull
+	private final Long id;
+
+	@Length(max = 30)
 	private String name;
-	@NotNull
-	private JobType type;
-	@NotNull
+	@Length(max = 30)
 	private String executorName;
-	@NotNull
+	@Length(max = 30)
 	private String jobHandlerName;
 	private Integer priority;
 	private Integer weight;
-	private Boolean parallel;
 	private Integer maxParallelShards;
 	private Integer executeTimeout;
+	@Length(max = 65535)
 	private String params;
+	@Length(max = 200)
 	private String desc;
 
-	public CreateJobRequest(String name, JobType type, String executorName, String jobHandlerName) {
-		this.name = name;
-		this.type = type;
-		this.executorName = executorName;
-		this.jobHandlerName = jobHandlerName;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
+	public UpdateJobDTO(Long id) {
+		Assert.notNull(id, "id must not null");
+		this.id = id;
 	}
 
 	public String getName() {
@@ -49,14 +41,6 @@ public abstract class CreateJobRequest {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public JobType getType() {
-		return type;
-	}
-
-	public void setType(JobType type) {
-		this.type = type;
 	}
 
 	public String getExecutorName() {
@@ -91,14 +75,6 @@ public abstract class CreateJobRequest {
 		this.weight = weight;
 	}
 
-	public Boolean getParallel() {
-		return parallel;
-	}
-
-	public void setParallel(Boolean parallel) {
-		this.parallel = parallel;
-	}
-
 	public Integer getMaxParallelShards() {
 		return maxParallelShards;
 	}
@@ -131,12 +107,16 @@ public abstract class CreateJobRequest {
 		this.desc = desc;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
 	@Override
 	public String toString() {
-		return "BaseJob [uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName=" + executorName
-				+ ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight + ", parallel="
-				+ parallel + ", maxParallelShards=" + maxParallelShards + ", executeTimeout=" + executeTimeout
-				+ ", params=" + params + ", desc=" + desc + "]";
+		return "UpdateJobDTO [id=" + id + ", name=" + name + ", executorName=" + executorName + ", jobHandlerName="
+				+ jobHandlerName + ", priority=" + priority + ", weight=" + weight + ", maxParallelShards="
+				+ maxParallelShards + ", executeTimeout=" + executeTimeout + ", params=" + params + ", desc=" + desc
+				+ "]";
 	}
 
 }

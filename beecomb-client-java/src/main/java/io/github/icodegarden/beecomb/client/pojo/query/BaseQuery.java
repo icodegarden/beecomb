@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.client.pojo.request;
+package io.github.icodegarden.beecomb.client.pojo.query;
 
 /**
  *

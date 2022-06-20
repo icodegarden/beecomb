@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
 
-import io.github.icodegarden.beecomb.client.pojo.request.JobQuery;
-import io.github.icodegarden.beecomb.client.pojo.request.JobQuery.JobWith;
-import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
-import io.github.icodegarden.beecomb.client.pojo.response.GetJobResponse;
-import io.github.icodegarden.beecomb.client.pojo.response.PageResponse;
+import io.github.icodegarden.beecomb.client.pojo.query.JobQuery;
+import io.github.icodegarden.beecomb.client.pojo.query.JobQuery.JobWith;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.client.pojo.transfer.UpdateJobDTO;
+import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
+import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
+import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
 import io.github.icodegarden.beecomb.client.util.WebUtils;
 import io.github.icodegarden.commons.exchange.Exchanger;
 import io.github.icodegarden.commons.exchange.Protocol;
@@ -63,29 +64,29 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 	protected abstract Exchanger<ShardExchangeResult> buildExchanger(Protocol protocol);
 
 	@Override
-	public CreateJobResponse createJob(CreateJobDTO job) throws ExchangeException {
+	public CreateJobVO createJob(CreateJobDTO job) throws ExchangeException {
 		return doCreateJob(false, job);
 	}
 
 	@Override
-	public CreateJobResponse createJobAsync(CreateJobDTO job) throws ExchangeException {
+	public CreateJobVO createJobAsync(CreateJobDTO job) throws ExchangeException {
 		return doCreateJob(true, job);
 	}
 
-	private CreateJobResponse doCreateJob(boolean async, CreateJobDTO job) throws ExchangeException {
+	private CreateJobVO doCreateJob(boolean async, CreateJobDTO job) throws ExchangeException {
 		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs?async=" + async, HttpMethod.POST,
-				CreateJobResponse.class);
+				CreateJobVO.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(job, Integer.MAX_VALUE);
 
-		HttpEntity<CreateJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<CreateJobVO> httpEntity = (HttpEntity) shardExchangeResult.response();
 		return httpEntity.getBody();
 	}
 
 	@Override
-	public PageResponse<GetJobResponse> pageJobs(JobQuery query) throws ExchangeException {
+	public PageVO<JobVO> pageJobs(JobQuery query) throws ExchangeException {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append(pathPrefix()).append("/openapi/v1/jobs?page=").append(query.getPage())
 				.append("&size=" + query.getSize());
@@ -170,49 +171,58 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 		}
 
 		Protocol protocol = buildProtocol(sb.toString(), HttpMethod.GET,
-				new ParameterizedTypeReference<List<GetJobResponse>>() {
+				new ParameterizedTypeReference<List<JobVO>>() {
 				});
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(null, Integer.MAX_VALUE);
 
-		HttpEntity<List<GetJobResponse>> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<List<JobVO>> httpEntity = (HttpEntity) shardExchangeResult.response();
 
 		HttpHeaders headers = httpEntity.getHeaders();
-		List<GetJobResponse> list = httpEntity.getBody();
+		List<JobVO> list = httpEntity.getBody();
 
 		String totalPageStr = headers.getFirst(WebUtils.HTTPHEADER_TOTALPAGES);
 		String totalCountStr = headers.getFirst(WebUtils.HTTPHEADER_TOTALCOUNT);
 
-		return new PageResponse<GetJobResponse>(query.getPage(), query.getSize(),
+		return new PageVO<JobVO>(query.getPage(), query.getSize(),
 				totalPageStr != null ? Integer.parseInt(totalPageStr) : 0,
 				totalCountStr != null ? Long.parseLong(totalCountStr) : 0, list);
 	}
 
 	@Override
-	public GetJobResponse getJob(Long jobId) throws ExchangeException {
+	public JobVO getJob(Long jobId) throws ExchangeException {
 		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs/" + jobId, HttpMethod.GET,
-				GetJobResponse.class);
+				JobVO.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(null, Integer.MAX_VALUE);
 
-		HttpEntity<GetJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<JobVO> httpEntity = (HttpEntity) shardExchangeResult.response();
 		return httpEntity.getBody();
 	}
 
 	@Override
-	public GetJobResponse getJobByUUID(String uuid) throws ExchangeException {
+	public JobVO getJobByUUID(String uuid) throws ExchangeException {
 		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs/uuid/" + uuid, HttpMethod.GET,
-				GetJobResponse.class);
+				JobVO.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
 		ShardExchangeResult shardExchangeResult = exchanger.exchange(null, Integer.MAX_VALUE);
 
-		HttpEntity<GetJobResponse> httpEntity = (HttpEntity) shardExchangeResult.response();
+		HttpEntity<JobVO> httpEntity = (HttpEntity) shardExchangeResult.response();
 		return httpEntity.getBody();
+	}
+	
+	@Override
+	public void updateJob(UpdateJobDTO update) throws ExchangeException {
+		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs", HttpMethod.PUT, String.class);
+
+		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
+
+		exchanger.exchange(update, Integer.MAX_VALUE);
 	}
 }

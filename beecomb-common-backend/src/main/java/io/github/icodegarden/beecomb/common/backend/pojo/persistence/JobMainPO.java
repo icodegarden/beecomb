@@ -48,6 +48,8 @@ public class JobMainPO {
 
 		private Long id;// bigint NOT NULL AUTO_INCREMENT,
 		private String name;// varchar(30) NOT NULL,
+		private String executorName;// varchar(30) NOT NULL,
+		private String jobHandlerName;// varchar(30) NOT NULL,
 		private Integer priority;// tinyint NOT NULL default 3 comment '1-5仅当资源不足时起作用',
 		private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级1-5',
 		private Boolean parallel;
@@ -71,14 +73,19 @@ public class JobMainPO {
 		}
 
 		@Builder
-		private Update(@NonNull Long id, String name, Integer priority, Integer weight, Boolean queued,
-				LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
+		public Update(Long id, String name, String executorName, String jobHandlerName, Integer priority,
+				Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued, LocalDateTime queuedAt,
+				String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
 				Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt, Boolean end,
 				boolean nextTrigAtNull) {
 			this.id = id;
 			this.name = name;
+			this.executorName = executorName;
+			this.jobHandlerName = jobHandlerName;
 			this.priority = priority;
 			this.weight = weight;
+			this.parallel = parallel;
+			this.maxParallelShards = maxParallelShards;
 			this.queued = queued;
 			this.queuedAt = queuedAt;
 			this.queuedAtInstance = queuedAtInstance;
@@ -87,8 +94,9 @@ public class JobMainPO {
 			this.lastExecuteSuccess = lastExecuteSuccess;
 			this.executeTimeout = executeTimeout;
 			this.nextTrigAt = nextTrigAt;
+			this.end = end;
 			this.nextTrigAtNull = nextTrigAtNull;
-
+			
 			setEnd(end);
 		}
 
@@ -104,5 +112,6 @@ public class JobMainPO {
 				nextTrigAtNull = true;
 			}
 		}
+
 	}
 }

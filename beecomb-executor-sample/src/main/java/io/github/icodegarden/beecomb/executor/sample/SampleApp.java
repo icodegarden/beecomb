@@ -8,11 +8,11 @@ import java.util.Random;
 import io.github.icodegarden.beecomb.client.BeeCombClient;
 import io.github.icodegarden.beecomb.client.ZooKeeperBeeCombClient;
 import io.github.icodegarden.beecomb.client.ZooKeeperClientProperties;
-import io.github.icodegarden.beecomb.client.pojo.response.CreateJobResponse;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO.Delay;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateScheduleJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateScheduleJobDTO.Schedule;
+import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.client.security.Authentication;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
@@ -107,7 +107,7 @@ public class SampleApp {
 				BizOnExpiredDelayJobHandler.NAME, delay);
 		job.setUuid("biz_packct_" + packetId);
 
-		CreateJobResponse response = beeCombClient.createJob(job);
+		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}
 
@@ -117,7 +117,7 @@ public class SampleApp {
 				ScheudleUntilSuccessScheduleJobHandler.NAME, schedule);
 		job.setParams("{}");// json
 
-		CreateJobResponse response = beeCombClient.createJob(job);
+		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}
 
@@ -128,11 +128,11 @@ public class SampleApp {
 		job.setParallel(true);
 		job.setMaxParallelShards(8);
 
-		CreateJobResponse response = beeCombClient.createJob(job);
+		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}
 
-	private static void pringResponse(CreateJobResponse response) {
+	private static void pringResponse(CreateJobVO response) {
 		if (response.getDispatchException() == null) {
 			System.out.println("创建示例任务成功，队列所在实例：" + response.getJob().getQueuedAtInstance()/* 若使用async方式，则该字段是null */);
 		} else {

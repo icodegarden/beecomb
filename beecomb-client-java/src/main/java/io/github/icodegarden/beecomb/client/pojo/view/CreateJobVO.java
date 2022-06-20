@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.client.pojo.response;
+package io.github.icodegarden.beecomb.client.pojo.view;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 
@@ -7,7 +7,7 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
  * @author Fangfang.Xu
  *
  */
-public class CreateJobResponse {
+public class CreateJobVO {
 
 	private Job job;
 	private String dispatchException;
