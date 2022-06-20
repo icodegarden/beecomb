@@ -114,7 +114,7 @@ BeeCombClient beeCombClient = new ZooKeeperBeeCombClient(clientProperties);
 Delay delay = new CreateDelayJobDTO.Delay(3000);
 CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAME, QuickStartJobHandler.NAME,
     delay);
-CreateJobResponse response = beeCombClient.createJob(job);
+CreateJobVO response = beeCombClient.createJob(job);
 ```
 
 ## 更多示例
