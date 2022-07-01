@@ -44,4 +44,8 @@
 		</trim>
 		where job_id = #{jobId}
 	</update>
+	
+	<delete id="delete">
+		delete from job_detail where job_id = #{jobId}
+	</delete>
 </mapper>

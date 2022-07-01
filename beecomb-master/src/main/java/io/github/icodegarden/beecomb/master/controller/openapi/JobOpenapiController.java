@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -194,6 +195,25 @@ public class JobOpenapiController {
 		}
 
 		jobService.update(dto);
+		return ResponseEntity.ok().build();
+	}
+	
+	@DeleteMapping(value = { "openapi/v1/jobs/{id}" })
+	public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
+		ExecutableJobBO one = jobService.findOneExecutableJob(id);
+
+		if (one == null) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
+		}
+		
+		jobReceiver.delete(one);
+
 		return ResponseEntity.ok().build();
 	}
 }

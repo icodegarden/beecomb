@@ -22,13 +22,13 @@ class JobReceiverTests {
 
 	JobReceiver jobReceiver;
 	JobService jobService;
-	JobDispatcher jobDispatcher;
+	JobRemoteService jobRemoteService;
 
 	@BeforeEach
 	void init() {
 		jobService = mock(JobService.class);
-		jobDispatcher = mock(JobDispatcher.class);
-		jobReceiver = new JobReceiver(jobService, jobDispatcher);
+		jobRemoteService = mock(JobRemoteService.class);
+		jobReceiver = new JobReceiver(jobService, jobRemoteService);
 	}
 
 	@Test
@@ -38,11 +38,11 @@ class JobReceiverTests {
 		delayJobDTO.setType(JobType.Delay);
 
 		// 必须mock return
-		doReturn(new DefaultMetricsInstance(null, null)).when(jobDispatcher).dispatch(any());
+		doReturn(new DefaultMetricsInstance(null, null)).when(jobRemoteService).enQueue(any());
 
 		jobReceiver.receive(delayJobDTO);
 		verify(jobService, times(1)).create(delayJobDTO);
-		verify(jobDispatcher, times(1)).dispatch(any());
+		verify(jobRemoteService, times(1)).enQueue(any());
 	}
 
 	@Test
@@ -54,6 +54,6 @@ class JobReceiverTests {
 		jobReceiver.receiveAsync(delayJobDTO);
 		Thread.sleep(100);
 		verify(jobService, times(1)).create(delayJobDTO);
-		verify(jobDispatcher, times(1)).dispatch(any());
+		verify(jobRemoteService, times(1)).enQueue(any());
 	}
 }

@@ -12,7 +12,7 @@ import io.github.icodegarden.commons.lang.metrics.OverloadCalc;
  * @author Fangfang.Xu
  *
  */
-public abstract class Job implements OverloadCalc, Serializable {
+public abstract class Job implements ShardObject, OverloadCalc, Serializable {
 	private static final long serialVersionUID = -3347178855369519454L;
 
 	private long id;

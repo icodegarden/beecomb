@@ -13,6 +13,7 @@ import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
+import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ClientLimitedErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ClientParameterInvalidErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
@@ -35,11 +36,11 @@ public class JobReceiver {
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1000), new NamedThreadFactory("dispatch-job"));
 
 	private JobService jobService;
-	private JobDispatcher jobDispatcher;
+	private JobRemoteService jobRemoteService;
 
-	public JobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
+	public JobReceiver(JobService jobService, JobRemoteService jobRemoteService) {
 		this.jobService = jobService;
-		this.jobDispatcher = jobDispatcher;
+		this.jobRemoteService = jobRemoteService;
 	}
 
 	/**
@@ -57,7 +58,7 @@ public class JobReceiver {
 		}
 
 		try {
-			MetricsInstance instance = jobDispatcher.dispatch(job);
+			MetricsInstance instance = jobRemoteService.enQueue(job);
 			RegisteredInstance registeredInstance = instance.getAvailable();
 			if (registeredInstance != null) {// 不可能是null
 				/**
@@ -91,7 +92,7 @@ public class JobReceiver {
 		try {
 			FIXED_THREADPOOL.execute(() -> {
 				try {
-					jobDispatcher.dispatch(job);
+					jobRemoteService.enQueue(job);
 				} catch (ExchangeException e) {
 					log.warn("exchange failed on dispatch job after receive", e);
 				}
@@ -100,6 +101,29 @@ public class JobReceiver {
 		} catch (RejectedExecutionException ignore) {
 			return Results.of(true, job,
 					new ClientLimitedErrorCodeException("client.method-call-limited", "Limited:dispatch-job"));
+		}
+	}
+
+	/**
+	 * 删除任务
+	 * 
+	 * @param jobId
+	 */
+	public void delete(ExecutableJobBO job) throws ErrorCodeException {
+		if (job == null) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "job not found");
+		}
+		
+		if(job.getEnd()) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "job was end");
+		}
+
+		boolean remove = jobRemoteService.removeQueue(job);
+		if (remove) {
+			/**
+			 * 处理数据库要在远程执行后，因为任务可能正在执行中需要数据
+			 */
+			jobService.delete(job.getId());
 		}
 	}
 }

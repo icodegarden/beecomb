@@ -20,4 +20,6 @@ public interface ScheduleJobMapper {
 	int update(ScheduleJobPO.Update update);
 
 	int updateAndIncrementScheduledTimes(ScheduleJobPO.Update update);
+	
+	int delete(@Param("jobId") Long jobId);
 }

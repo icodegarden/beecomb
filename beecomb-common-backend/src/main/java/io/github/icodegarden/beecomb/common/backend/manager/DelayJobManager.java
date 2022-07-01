@@ -42,4 +42,8 @@ public class DelayJobManager {
 		DelayJobDO one = delayJobMapper.findOne(jobId, with);
 		return DelayJobVO.of(one);
 	}
+	
+	public boolean delete(Long jobId) {
+		return delayJobMapper.delete(jobId) == 1;
+	}
 }

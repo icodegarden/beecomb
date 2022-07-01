@@ -112,6 +112,10 @@ public class JobMainManager {
 
 		return jobMainMapper.update(update) == 1;
 	}
+	
+	public boolean delete(Long id) {
+		return jobMainMapper.delete(id) == 1;
+	}
 
 	/**
 EXPLAIN -- 总数

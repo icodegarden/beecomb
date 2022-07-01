@@ -48,6 +48,10 @@
 		where job_id = #{jobId}
 	</update>
 	
+	<delete id="delete">
+		delete from schedule_job where job_id = #{jobId}
+	</delete>
+	
 	<update id="updateAndIncrementScheduledTimes" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.ScheduleJobPO$Update">
 		update `schedule_job` 
 		<trim prefix="set" suffixOverrides=",">

@@ -59,4 +59,8 @@
 		</trim>
 		where job_id = #{jobId}
 	</update>
+	
+	<delete id="delete">
+		delete from delay_job where job_id = #{jobId}
+	</delete>
 </mapper>

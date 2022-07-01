@@ -98,6 +98,16 @@ public class JobService extends AbstractBackendJobService {
 
 		return update;
 	}
+	
+	@Transactional
+	public void delete(Long jobId) {
+		boolean delete = jobMainManager.delete(jobId);
+		if(delete) {
+			jobDetailManager.delete(jobId);
+			delayJbManager.delete(jobId);
+			scheduleJobManager.delete(jobId);			
+		}
+	}
 
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
 		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();

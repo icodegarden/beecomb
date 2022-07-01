@@ -18,4 +18,6 @@ public interface DelayJobMapper {
 	DelayJobDO findOne(@Param("jobId") Long jobId, @Param("with") DelayJobQuery.With with);
 
 	int update(DelayJobPO.Update update);
+	
+	int delete(@Param("jobId") Long jobId);
 }

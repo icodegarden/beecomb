@@ -46,7 +46,8 @@ public class ExecutorServer implements GracefullyShutdown {
 	private final JobHandlerRegistry jobHandlerRegistry;
 	private final InstanceRegistry<? extends RegisteredInstance> instanceRegistry;
 	private final InstanceMetrics<? extends Metrics> instanceMetrics;
-	private JobReceiver jobReceiver;
+	private DispatcherHandler dispatcherHandler;
+	private EntryMessageHandler entryMessageHandler;
 	private NioServer nioServer;
 
 	/**
@@ -82,7 +83,8 @@ public class ExecutorServer implements GracefullyShutdown {
 			JobsMetricsOverload jobsMetricsOverload = prepareJobOverload(instanceProperties, zooKeeperInstanceRegistry,
 					zooKeeperInstanceMetrics, zooKeeperHolder);
 
-			this.jobReceiver = new JobReceiver(jobHandlerRegistry, jobsMetricsOverload);
+			JobReceiver jobReceiver = new JobReceiver(jobHandlerRegistry, jobsMetricsOverload);
+			this.dispatcherHandler = new DispatcherHandler(jobReceiver);
 
 			startNioServer(instanceProperties);
 
@@ -152,9 +154,10 @@ public class ExecutorServer implements GracefullyShutdown {
 	private void startNioServer(ZooKeeperSupportInstanceProperties config) throws IOException {
 		Server server = config.getServer();
 
+		this.entryMessageHandler = new EntryMessageHandler(dispatcherHandler);
+
 		JavaNioServer javaNioServer = new JavaNioServer("Executor-NioServer",
-				new InetSocketAddress(server.getExecutorIp(), server.getExecutorPort()),
-				new EntryMessageHandler(jobReceiver));
+				new InetSocketAddress(server.getExecutorIp(), server.getExecutorPort()), entryMessageHandler);
 
 		ThreadPoolExecutor workerThreadPool = new ThreadPoolExecutor(server.getMinWorkerThreads(),
 				server.getMaxWorkerThreads(), 120, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(100),
@@ -184,7 +187,7 @@ public class ExecutorServer implements GracefullyShutdown {
 	 */
 	@Override
 	public void shutdown() {
-		jobReceiver.closeBlocking(instanceProperties.getServer().getNioServerShutdownBlockingTimeoutMillis());
+		entryMessageHandler.closeBlocking(instanceProperties.getServer().getNioServerShutdownBlockingTimeoutMillis());
 
 		try {
 			nioServer.close();

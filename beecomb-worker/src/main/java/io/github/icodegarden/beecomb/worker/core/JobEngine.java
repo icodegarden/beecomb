@@ -28,12 +28,9 @@ public interface JobEngine extends GracefullyShutdown {
 	 * @return enQueue的job，JobTrigger：挂载的对象，JobEngineException:如果有意外发生
 	 */
 	Result3<ExecutableJobBO,JobTrigger,JobEngineException> enQueue(ExecutableJobBO job);
-	/**
-	 * 
-	 * @param enQueueResult 与enQueue结果保持一致
-	 * @return
-	 */
-	boolean removeQueue(Result3<ExecutableJobBO,JobTrigger,JobEngineException> enQueueResult);
+	
+	boolean removeQueue(ExecutableJobBO job);
+	
 	/**
 	 * 
 	 * @return 已进队列的任务数

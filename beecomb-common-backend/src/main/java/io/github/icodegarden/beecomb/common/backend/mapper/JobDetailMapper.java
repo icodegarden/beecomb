@@ -18,4 +18,6 @@ public interface JobDetailMapper {
 	JobDetailDO findOne(@Param("jobId") Long jobId, @Param("with") JobDetailQuery.With with);
 
 	int update(JobDetailPO.Update update);
+	
+	int delete(@Param("jobId") Long jobId);
 }

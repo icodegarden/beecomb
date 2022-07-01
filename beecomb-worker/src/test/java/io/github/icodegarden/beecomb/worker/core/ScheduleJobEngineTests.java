@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
@@ -55,7 +55,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 
 	ExecutorInstanceDiscovery<ExecutorRegisteredInstance> executorInstanceDiscovery;
 	InstanceMetrics instanceMetrics;
-	MetricsOverload jobOverload;
+	MetricsOverload metricsOverload;
 	ScheduleJobService scheduleJobService;
 	ScheduleJobEngine scheduleJobEngine;
 
@@ -63,10 +63,10 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void init() {
 		executorInstanceDiscovery = mock(ExecutorInstanceDiscovery.class);
 		instanceMetrics = mock(InstanceMetrics.class);
-		jobOverload = mock(MetricsOverload.class);
+		metricsOverload = mock(MetricsOverload.class);
 		scheduleJobService = mock(ScheduleJobService.class);
 
-		scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
+		scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, metricsOverload,
 				scheduleJobService, instanceProperties);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(0);
 	}
@@ -141,8 +141,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 		}
 
 		verify(scheduleJobService, times(1)).updateOnNoQualifiedExecutor(any());// 触发数据更新
-		verify(jobOverload, times(0)).decrementOverload(job);// 0次
-		verify(jobOverload, times(0)).flushMetrics();// 0次
+		verify(metricsOverload, times(0)).decrementOverload(job);// 0次
+		verify(metricsOverload, times(0)).flushMetrics();// 0次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 执行失败后队列依然1个
 	}
 
@@ -176,7 +176,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_ok(ExecutableJobBO job) throws Exception {
 		ScheduleJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new",
 				NioClientSuppliers4Test.returnExchangeResultAlwaysSuccess(new ExecuteJobResult())));
-		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
+		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, metricsOverload,
 				scheduleJobService, instanceProperties);
 		
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
@@ -208,8 +208,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 		}
 
 		verify(scheduleJobService, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
-		verify(jobOverload, times(0)).decrementOverload(job);// 0次
-		verify(jobOverload, times(0)).flushMetrics();// 0次
+		verify(metricsOverload, times(0)).decrementOverload(job);// 0次
+		verify(metricsOverload, times(0)).flushMetrics();// 0次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 成功后队列依然1个
 		
 		ScheduleJobEngine.protocol_for_Test = null;
@@ -248,7 +248,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 		
 		ScheduleJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new",
 				NioClientSuppliers4Test.returnExchangeResultAlwaysSuccess(executeJobResult)));
-		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
+		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, metricsOverload,
 				scheduleJobService, instanceProperties);
 		
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
@@ -262,8 +262,9 @@ class ScheduleJobEngineTests extends Properties4Test {
 
 		doReturn(Arrays.asList(executorRegisteredInstance)).when(executorInstanceDiscovery).listInstances(anyString());
 		doReturn(Results.of(true, null)).when(scheduleJobService).updateOnExecuteSuccess(any());
+		doReturn(true).when(metricsOverload).incrementOverload(job);
 
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.doEnQueue(job);
+		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.enQueue(job);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 队列1个
 
 		JobTrigger jobTrigger = result3.getT2();
@@ -277,8 +278,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 		}
 
 		verify(scheduleJobService, times(1)).updateOnExecuteSuccess(any());// 触发数据更新
-		verify(jobOverload, times(1)).decrementOverload(job);// 1次
-		verify(jobOverload, times(1)).flushMetrics();// 1次
+		verify(metricsOverload, times(1)).decrementOverload(job);// 1次
+		verify(metricsOverload, atLeastOnce()).flushMetrics();// 
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(0);// 成功后0个
 		
 		ScheduleJobEngine.protocol_for_Test = null;
@@ -313,7 +314,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 
 	void runJob_nok(ExecutableJobBO job) throws Exception {
 		ScheduleJobEngine.protocol_for_Test = new NioProtocol(NioClientPool.newPool("new", NioClientSuppliers4Test.returnExchangeResultAlwaysFailed()));
-		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
+		ScheduleJobEngine scheduleJobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, metricsOverload,
 				scheduleJobService, instanceProperties);
 		
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
@@ -342,8 +343,8 @@ class ScheduleJobEngineTests extends Properties4Test {
 		}
 
 		verify(scheduleJobService, times(1)).updateOnExecuteFailed(any());// 触发数据更新
-		verify(jobOverload, times(0)).decrementOverload(job);// 0次
-		verify(jobOverload, times(0)).flushMetrics();// 0次
+		verify(metricsOverload, times(0)).decrementOverload(job);// 0次
+		verify(metricsOverload, times(0)).flushMetrics();// 0次
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);// 成功后1个
 		
 		ScheduleJobEngine.protocol_for_Test = null;

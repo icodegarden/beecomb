@@ -74,7 +74,8 @@ public class JobMainQuery extends BaseQuery {
 				.delayJob(DelayJobQuery.With.builder().build()).scheduleJob(ScheduleJobQuery.With.builder().build())
 				.build();
 
-		public static final With WITH_EXECUTABLE = With.builder().createdAt(true).lastExecuteExecutor(true)
+		public static final With WITH_EXECUTABLE = With.builder().createdBy(true).createdAt(true)
+				.lastExecuteExecutor(true).queuedAtInstance(true)
 				.jobDetail(JobDetailQuery.With.builder().params(true).lastExecuteReturns(true).build())
 				.delayJob(DelayJobQuery.With.builder().build()).scheduleJob(ScheduleJobQuery.With.builder().build())
 				.build();

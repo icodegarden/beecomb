@@ -40,6 +40,7 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	private Integer executeTimeout;
 	private LocalDateTime nextTrigAt;
 	private Boolean end;
+	private String createdBy;
 	private LocalDateTime createdAt;
 
 	private String params;
@@ -54,7 +55,7 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 			Integer priority, Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued,
 			LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
 			String lastExecuteReturns, Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt,
-			Boolean end, LocalDateTime createdAt, String params, DelayBO delay, ScheduleBO schedule) {
+			Boolean end, String createdBy, LocalDateTime createdAt, String params, DelayBO delay, ScheduleBO schedule) {
 		this.id = id;
 		this.uuid = uuid;
 		this.name = name;
@@ -75,33 +76,12 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.executeTimeout = executeTimeout;
 		this.nextTrigAt = nextTrigAt;
 		this.end = end;
+		this.createdBy = createdBy;
 		this.createdAt = createdAt;
 		this.params = params;
 		this.delay = delay;
 		this.schedule = schedule;
 	}
-
-//	public ExecutableJobBO(JobDO jobDO) {
-//		JobMainPO jobMain = jobDO.getJobMain();
-//		JobDetailPO jobDetail = jobDO.getJobDetail();
-//		DelayJobPO delayJob = jobDO.getDelayJob();
-//		ScheduleJobPO scheduleJob = jobDO.getScheduleJob();
-//
-//		BeanUtils.copyProperties(jobMain, this);
-//		if (jobDetail != null) {
-//			BeanUtils.copyProperties(jobDetail, this);
-//		}
-//		if (delayJob != null) {
-//			DelayBO d = new DelayBO();
-//			BeanUtils.copyProperties(delayJob, d);
-//			this.delay = d;
-//		}
-//		if (scheduleJob != null) {
-//			ScheduleBO s = new ScheduleBO();
-//			BeanUtils.copyProperties(scheduleJob, s);
-//			this.schedule = s;
-//		}
-//	}
 
 	/**
 	 * 计算一个任务会形成的负载数<br>
@@ -336,6 +316,14 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.end = end;
 	}
 
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
 	public LocalDateTime getCreatedAt() {
 		return createdAt;
 	}
@@ -376,8 +364,8 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt
 				+ ", lastExecuteExecutor=" + lastExecuteExecutor + ", lastExecuteReturns=" + lastExecuteReturns
 				+ ", lastExecuteSuccess=" + lastExecuteSuccess + ", executeTimeout=" + executeTimeout + ", nextTrigAt="
-				+ nextTrigAt + ", end=" + end + ", createdAt=" + createdAt + ", params=" + params + ", delay=" + delay
-				+ ", schedule=" + schedule + "]";
+				+ nextTrigAt + ", end=" + end + ", createdBy=" + createdBy + ", createdAt=" + createdAt + ", params="
+				+ params + ", delay=" + delay + ", schedule=" + schedule + "]";
 	}
 
 }

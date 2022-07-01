@@ -40,7 +40,7 @@ public interface JobMainMapper {
 
 	int update(JobMainPO.Update update);
 
-	void delete(@Param("id") Long id);
+	int delete(@Param("id") Long id);
 
 	int updateToNoQueued(@Param("nextTrigAtLt") LocalDateTime nextTrigAtLt);
 	

@@ -1,7 +1,5 @@
 package io.github.icodegarden.beecomb.worker.server;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
@@ -21,9 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JobReceiver {
 
-	private volatile boolean closed;
-	private AtomicLong processingCount = new AtomicLong(0);
-
 	private JobService jobService;
 	private JobEngine jobEngine;
 
@@ -42,22 +37,14 @@ public class JobReceiver {
 		if (log.isDebugEnabled()) {
 			log.debug("receive job:{}", job);
 		}
-		if (closed) {
-			if (log.isWarnEnabled()) {
-				log.warn("job was rejected on receive, reason:workerClosed");
-			}
-			throw WorkerException.workerClosed();
-		}
 
 		boolean allowEnQueue = jobEngine.allowEnQueue(job);
 		if (!allowEnQueue) {
 			if (log.isWarnEnabled()) {
-				log.warn("job was rejected on receive, reason:Exceed Overload");
+				log.warn("job was rejected on receive, Exceed Overload");
 			}
 			throw new WorkerException("Exceed Overload");
 		}
-
-		processingCount.incrementAndGet();
 
 		try {
 			jobService.updateEnQueue(job);
@@ -71,29 +58,7 @@ public class JobReceiver {
 			}
 		} catch (Exception e) {
 			throw new WorkerException("ex on job en queue", e);
-		} finally {
-			if (processingCount.decrementAndGet() <= 0) {
-				synchronized (this) {
-					this.notify();
-				}
-			}
 		}
 	}
 
-	/**
-	 * 阻塞直到任务处理完毕或超时
-	 * 
-	 * @param blockTimeoutMillis
-	 */
-	public void closeBlocking(long blockTimeoutMillis) {
-		closed = true;
-		if (processingCount.get() > 0) {
-			synchronized (this) {
-				try {
-					this.wait(blockTimeoutMillis);
-				} catch (InterruptedException ignore) {
-				}
-			}
-		}
-	}
 }

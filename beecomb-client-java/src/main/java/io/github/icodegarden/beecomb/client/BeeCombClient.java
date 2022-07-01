@@ -28,5 +28,11 @@ public interface BeeCombClient extends Closeable {
 	JobVO getJobByUUID(String uuid) throws ExchangeException;
 	
 	void updateJob(UpdateJobDTO update) throws ExchangeException;
-
+	
+	/**
+	 * delay任务在已经完成 或 已经取消时会失败<br>
+	 * 
+	 * @throws ExchangeException
+	 */
+	void deleteJob(Long jobId) throws ExchangeException;
 }

@@ -42,4 +42,8 @@ public class ScheduleJobManager {
 		ScheduleJobDO one = scheduleJobMapper.findOne(jobId, with);
 		return ScheduleJobVO.of(one);
 	}
+	
+	public boolean delete(Long jobId) {
+		return scheduleJobMapper.delete(jobId) == 1;
+	}
 }

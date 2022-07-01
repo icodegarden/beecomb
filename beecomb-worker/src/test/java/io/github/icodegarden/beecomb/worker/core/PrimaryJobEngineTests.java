@@ -73,26 +73,6 @@ class PrimaryJobEngineTests {
 	}
 
 	@Test
-	void removeQueue() {
-		ExecutableJobBO delayJob = new ExecutableJobBO();
-		delayJob.setType(JobType.Delay);
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, delayJob, null, null);
-		primaryJobEngine.removeQueue(enQueueResult);
-
-		verify(delayJobEngine, times(1)).removeQueue(enQueueResult);
-		verify(scheduleJobEngine, times(0)).removeQueue(enQueueResult);
-
-		// --------------------------------------------------
-		ExecutableJobBO scheduleJob = new ExecutableJobBO();
-		scheduleJob.setType(JobType.Schedule);
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult2 = Results.of(true, scheduleJob, null, null);
-		primaryJobEngine.removeQueue(enQueueResult2);
-
-		verify(delayJobEngine, times(0)).removeQueue(enQueueResult2);
-		verify(scheduleJobEngine, times(1)).removeQueue(enQueueResult2);
-	}
-
-	@Test
 	void queuedSize() {
 		doReturn(1).when(delayJobEngine).queuedSize();
 		doReturn(2).when(scheduleJobEngine).queuedSize();

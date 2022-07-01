@@ -1,9 +1,11 @@
 package io.github.icodegarden.beecomb.worker.server;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
 
-import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.common.pojo.transfer.RequestWorkerDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 import io.github.icodegarden.commons.exchange.DefaultInstanceExchangeResult;
@@ -23,8 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 public class WorkerServer implements GracefullyShutdown {
 //	private static final Logger log = LoggerFactory.getLogger(ExecutorServer.class);
 
+	private AtomicLong processingCount = new AtomicLong(0);
+	private volatile boolean closed;
+
 	private final InstanceProperties instanceProperties;
-	private final JobReceiver jobReceiver;
+	private final DispatcherHandler dispatcherHandler;
 	private NioServer nioServer;
 
 	/**
@@ -35,10 +40,10 @@ public class WorkerServer implements GracefullyShutdown {
 	 * @return
 	 * @throws WorkerException
 	 */
-	public WorkerServer(InstanceProperties instanceProperties, JobReceiver jobReceiver) {
+	public WorkerServer(InstanceProperties instanceProperties, DispatcherHandler dispatcherHandler) {
 		try {
 			this.instanceProperties = instanceProperties;
-			this.jobReceiver = jobReceiver;
+			this.dispatcherHandler = dispatcherHandler;
 
 			startNioServer();
 
@@ -56,29 +61,41 @@ public class WorkerServer implements GracefullyShutdown {
 
 			@Override
 			public Object reply(Object obj) {
-				if (log.isDebugEnabled()) {
-					log.debug("worker server receive a reply obj:{}", obj);
+				if (log.isInfoEnabled()) {
+					log.info("Worker server receive a reply obj {}", obj);//FIXME 修改为debug
 				}
-				/**
-				 * 适配其他请求
-				 */
-				if (!(obj instanceof ExecutableJobBO)) {
+
+				if (!(obj instanceof RequestWorkerDTO)) {
 					return null;
 				}
 
-				ExecutableJobBO job = (ExecutableJobBO) obj;
+				processingCount.incrementAndGet();
+
+				RequestWorkerDTO dto = (RequestWorkerDTO) obj;
 
 				DefaultInstanceExchangeResult exchangeResult = new DefaultInstanceExchangeResult();
 				try {
-					jobReceiver.receive(job);
+					if (closed) {
+						if (log.isWarnEnabled()) {
+							log.warn("job was rejected on receive, Worker Closed");
+						}
+						throw WorkerException.workerClosed();
+					}
+
+					Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod(),
+							dto.getBody().getClass());
+					Object object = method.invoke(dispatcherHandler, dto.getBody());
+
 					exchangeResult.setSuccess(true);
-				} catch (WorkerException e) {
+					exchangeResult.setResponse(object);
+					return exchangeResult;
+				} catch (Exception e) {
 					if (log.isWarnEnabled()) {
-						log.warn("ex on receive job:{}", job, e);
+						log.warn("ex on receive obj {}", obj, e);
 					}
 					exchangeResult.setSuccess(false);
 
-					if (e.isWorkerClosed()) {
+					if (e instanceof WorkerException && ((WorkerException) e).isWorkerClosed()) {
 						/**
 						 * WorkerClosed时，希望master选择其他worker，因此不能是serverException
 						 */
@@ -89,8 +106,14 @@ public class WorkerServer implements GracefullyShutdown {
 								e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName(), e);
 						exchangeResult.setFailedReason(reason);
 					}
+					return exchangeResult;
+				} finally {
+					if (processingCount.decrementAndGet() <= 0) {
+						synchronized (WorkerServer.this) {
+							WorkerServer.this.notify();
+						}
+					}
 				}
-				return exchangeResult;
 			}
 
 			@Override
@@ -106,9 +129,26 @@ public class WorkerServer implements GracefullyShutdown {
 	 * 正式执行关闭前，不再接收任务，并确保正在执行中的任务执行完毕并且正常响应，最后关闭server
 	 */
 	public void close() throws IOException {
-		jobReceiver.closeBlocking(instanceProperties.getServer().getNioServerShutdownBlockingTimeoutMillis());
+		closeBlocking(instanceProperties.getServer().getNioServerShutdownBlockingTimeoutMillis());
 
 		nioServer.close();
+	}
+
+	/**
+	 * 阻塞直到任务处理完毕或超时
+	 * 
+	 * @param blockTimeoutMillis
+	 */
+	private void closeBlocking(long blockTimeoutMillis) {
+		closed = true;
+		if (processingCount.get() > 0) {
+			synchronized (WorkerServer.this) {
+				try {
+					WorkerServer.this.wait(blockTimeoutMillis);
+				} catch (InterruptedException ignore) {
+				}
+			}
+		}
 	}
 
 	@Override

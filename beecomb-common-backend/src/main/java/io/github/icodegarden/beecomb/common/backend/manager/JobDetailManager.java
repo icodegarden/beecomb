@@ -51,4 +51,7 @@ public class JobDetailManager {
 		return jobDetailMapper.update(update) == 1;
 	}
 
+	public boolean delete(Long jobId) {
+		return jobDetailMapper.delete(jobId) == 1;
+	}
 }

@@ -225,4 +225,13 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 
 		exchanger.exchange(update, Integer.MAX_VALUE);
 	}
+	
+	@Override
+	public void deleteJob(Long jobId) throws ExchangeException {
+		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs/" + jobId, HttpMethod.DELETE, String.class);
+
+		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
+
+		exchanger.exchange(null, Integer.MAX_VALUE);
+	}
 }

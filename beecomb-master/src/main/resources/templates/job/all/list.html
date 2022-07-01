@@ -252,6 +252,7 @@
 		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.modal.openTab(\'任务执行记录列表\',\'/view/jobExecuteRecord/list?jobId=' + row.id + '\')"><i class="fa fa-search"></i>任务执行记录</a> ');
 		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.modal.openTab(\'任务恢复记录列表\',\'/view/jobRecoveryRecord/list?jobId=' + row.id + '\')"><i class="fa fa-search"></i>任务恢复明细</a> ');
 		                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+		                actions.push('<a class="btn btn-success btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
 // 		                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
 // 		                actions.push("<a class='btn btn-default btn-xs " + resetPwdFlag + "' href='javascript:void(0)' onclick='resetPwd(" + row.id + ")'><i class='fa fa-key'></i>修改密码</a> ");
 // 		                var more = [];
@@ -262,6 +263,13 @@
 		        ]
 		    };
 		    $.table.init(options);
+		}
+		
+		function remove(id) {
+			$.modal.confirm("确认要删除吗？", function() {
+// 				$.operate.post(prefix + "/"+id+"/disable", { "userId": userId, "status": 1 });
+				$.operate.post(prefix + "/"+id+"/delete", {});
+		    })
 		}
 		
 		$('#btnExpand').click(function() {

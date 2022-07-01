@@ -50,7 +50,7 @@ public class InstanceProperties {
 		/**
 		 * 不健康的sql执行时间
 		 */
-		private long sqlUnhealthMillis = -1;
+		private long sqlUnhealthMillis = 100;
 		/**
 		 * 影响nioServer关闭时等待已接收处理中的任务完毕
 		 */

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
-import io.github.icodegarden.beecomb.master.service.JobDispatcher;
+import io.github.icodegarden.beecomb.master.service.JobRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
 
@@ -31,7 +31,7 @@ public class JobRecoveryScheduleTests {
 	void start() throws Exception {
 		DistributedLock lock = mock(DistributedLock.class);
 		JobService jobStorage = mock(JobService.class);
-		JobDispatcher jobDispatcher = mock(JobDispatcher.class);
+		JobRemoteService jobRemoteService = mock(JobRemoteService.class);
 		JobRecoveryRecordManager jobRecoveryRecordService = mock(JobRecoveryRecordManager.class);
 
 		// recoveryThatNoQueuedActually部分------------------------------------------
@@ -41,7 +41,7 @@ public class JobRecoveryScheduleTests {
 		doReturn(Arrays.asList(new ExecutableJobBO()), Collections.emptyList()).when(jobStorage)
 				.listJobsShouldRecovery(0, 10);// 第一次获取到有需要恢复的，第二次没有了
 
-		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher, jobRecoveryRecordService);
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobRemoteService, jobRecoveryRecordService);
 		boolean start = jobRecovery.start(1000);
 
 		Assertions.assertThat(start).isTrue();
@@ -53,7 +53,7 @@ public class JobRecoveryScheduleTests {
 
 		// listJobsShouldRecovery部分------------------------------------------
 		verify(jobStorage, atLeast(1)).listJobsShouldRecovery(0, 10);
-		verify(jobDispatcher, times(1)).dispatch(any());
+		verify(jobRemoteService, times(1)).enQueue(any());
 		verify(jobRecoveryRecordService, times(1)).createOrUpdate(any());
 
 		// ------------------------------------------

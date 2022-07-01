@@ -12,6 +12,7 @@ import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.ScheduleJob;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
+import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
@@ -132,6 +133,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		private void removeQueueOnEnd(ExecutableJobBO job) {
 			Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, this, null);
 			removeQueue(enQueueResult);
+			
+			queuedJobs.remove(job.getId());
 
 			metricsOverload.flushMetrics();
 		}
@@ -141,15 +144,22 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		 */
 		private void reEnQueueIfNecessary(ExecutableJobBO job) {
 			if (job.getSchedule().getSheduleCron() != null) {
-				Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 重进队列
-				if (result3.isSuccess()) {
-					this.setFuture(result3.getT2().getFuture());
-				} else {
-					if (log.isWarnEnabled()) {
-						log.warn("schedule job with cron reEnQueue failed after run, job:{}", result3.getT1(),
-								result3.getT3());
+				try {
+					Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 重进队列
+					if (result3.isSuccess()) {
+						this.setFuture(result3.getT2().getFuture());
+					} else {
+						if (log.isWarnEnabled()) {
+							log.warn("schedule job with cron reEnQueue failed after run, job:{}", result3.getT1(),
+									result3.getT3());
+						}
+						// 失败则通过恢复机制
 					}
-					// 失败则通过恢复机制
+				} finally {
+					/**
+					 * 原因同delay
+					 */
+					queuedJobs.remove(job.getId());					
 				}
 			}
 		}
@@ -226,7 +236,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			/**
 			 * schedule类型需要关注并行结果
 			 */
-			ParallelExchangeResult result = parallelLoadBalanceExchanger.exchange(job,
+			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
+			ParallelExchangeResult result = parallelLoadBalanceExchanger.exchange(dto,
 					executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance, config);
 
 			/**
@@ -251,7 +262,9 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					this.protocol, executorInstanceLoadBalance, NodeRole.Executor.getRoleName(),
 					instanceProperties.getLoadBalance().getMaxCandidates());
 
-			ShardExchangeResult result = loadBalanceExchanger.exchange(job, executableJobBO.getExecuteTimeout());
+			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
+			ShardExchangeResult result = loadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout());
+			
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
@@ -292,7 +305,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		ScheduledFuture<?> future = jobTrigger.getFuture();
 		if (!future.isDone() && !future.isCancelled()) {
 			/**
-			 * IMPT 这里不要使用true，一方面没必要，另一方面因为remove
+			 * IMPT 这里cancel(false)不要使用true，一方面没必要，另一方面因为remove
 			 * queue后后续要把度量刷入zk，那时zk会报InterruptedException导致无法刷入
 			 * （因为这里true的话会中断线程，即对应的本线程，而zk的sdk会进行object.wait而报InterruptedException）
 			 */

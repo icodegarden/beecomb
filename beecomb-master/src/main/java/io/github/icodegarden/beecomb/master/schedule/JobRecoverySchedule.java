@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
-import io.github.icodegarden.beecomb.master.service.JobDispatcher;
+import io.github.icodegarden.beecomb.master.service.JobRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoSwitchableExchangeException;
@@ -39,16 +39,16 @@ public class JobRecoverySchedule implements Closeable {
 	private final AtomicBoolean closed = new AtomicBoolean(true);
 	private final DistributedLock lock;
 	private final JobService jobStorage;
-	private final JobDispatcher jobDispatcher;
+	private final JobRemoteService jobRemoteService;
 	private final JobRecoveryRecordManager jobRecoveryRecordService;
 
 	private ScheduledFuture<?> future;
 
-	public JobRecoverySchedule(DistributedLock lock, JobService jobStorage, JobDispatcher jobDispatcher,
+	public JobRecoverySchedule(DistributedLock lock, JobService jobStorage, JobRemoteService jobRemoteService,
 			JobRecoveryRecordManager jobRecoveryRecordService) {
 		this.lock = lock;
 		this.jobStorage = jobStorage;
-		this.jobDispatcher = jobDispatcher;
+		this.jobRemoteService = jobRemoteService;
 		this.jobRecoveryRecordService = jobRecoveryRecordService;
 	}
 
@@ -134,7 +134,7 @@ public class JobRecoverySchedule implements Closeable {
 				dto.setJobId(job.getId());
 				dto.setRecoveryAt(SystemUtils.now());
 				try {
-					jobDispatcher.dispatch(job);
+					jobRemoteService.enQueue(job);
 
 					dto.setSuccess(true);
 					dto.setDesc("");

@@ -15,8 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class MasterApplication {
 
 	public static void main(String[] args) {
-		//TODO 页面创建任务
-		//TODO 手动进入队列按钮（需要枷锁控制并发）		
 		SpringApplication.run(MasterApplication.class, args);
 	}
 

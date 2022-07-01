@@ -22,6 +22,7 @@ import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.core.ScheduleJobEngine;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
+import io.github.icodegarden.beecomb.worker.server.DispatcherHandler;
 import io.github.icodegarden.beecomb.worker.server.JobReceiver;
 import io.github.icodegarden.beecomb.worker.server.WorkerServer;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
@@ -211,14 +212,19 @@ public class BeansConfiguration {
 	public JobReceiver jobReceiver(JobService jobStorage, JobEngine jobEngine) {
 		return new JobReceiver(jobStorage, jobEngine);
 	}
+	
+	@Bean
+	public DispatcherHandler dispatcherHandler(JobReceiver jobReceiver, JobEngine jobEngine) {
+		return new DispatcherHandler(jobReceiver, jobEngine);
+	}
 
 	/**
 	 * 测试时不开启
 	 */
 	@ConditionalOnExpression("'${test.server.enabled:true}'!='false'")
 	@Bean
-	public WorkerServer workerServer(JobReceiver jobReceiver) {
-		return new WorkerServer(instanceProperties, jobReceiver);
+	public WorkerServer workerServer(DispatcherHandler dispatcherHandler) {
+		return new WorkerServer(instanceProperties, dispatcherHandler);
 	}
 
 }

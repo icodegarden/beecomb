@@ -188,4 +188,23 @@ public class JobControllerRy extends BaseControllerRy {
 					.body(errorCodeException.getMessage());
 		}
 	}
+	
+	@PostMapping("api/job/{id}/delete")
+	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
+		ExecutableJobBO one = jobService.findOneExecutableJob(id);
+
+		if (one == null) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
+			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
+		}
+		
+		jobReceiver.delete(one);
+		
+		return ResponseEntity.ok(success());
+	}
 }

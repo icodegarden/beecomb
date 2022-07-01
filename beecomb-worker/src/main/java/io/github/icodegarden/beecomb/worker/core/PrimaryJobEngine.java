@@ -43,10 +43,9 @@ public class PrimaryJobEngine implements JobEngine {
 	}
 
 	@Override
-	public boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult) {
-		ExecutableJobBO job = enQueueResult.getT1();
+	public boolean removeQueue(ExecutableJobBO job) {
 		JobEngine jobEngine = getJobEngine(job);
-		return jobEngine.removeQueue(enQueueResult);
+		return jobEngine.removeQueue(job);
 	}
 
 	@Override

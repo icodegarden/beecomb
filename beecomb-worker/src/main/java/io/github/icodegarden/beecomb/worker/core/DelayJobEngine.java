@@ -12,6 +12,7 @@ import io.github.icodegarden.beecomb.common.executor.DelayJob;
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
@@ -104,7 +105,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
 		}
 	}
-
+	
 	private class DelayJobTrigger extends JobTrigger {
 
 		private final Long jobId;
@@ -121,15 +122,17 @@ public class DelayJobEngine extends AbstractJobEngine {
 				removeQueue(enQueueResult);
 				return;
 			}
-			DelayJobEngine.this.runJob(job);
+			try{
+				DelayJobEngine.this.runJob(job);
+			} finally {
+				/**
+				 * delay任务每次执行后，一定会从scheduledThreadPoolExecutor.queue中移除，而失败的则可能以新的任务对象方式进queue，所以这里每次都执行remove
+				 */
+				queuedJobs.remove(job.getId());				
+			}
 		}
 	}
 
-	/**
-	 * 
-	 * @param job
-	 * @param nioClientProvider Nullable,null时使用默认的
-	 */
 	void runJob(ExecutableJobBO executableJobBO) {
 		LocalDateTime trigAt = SystemUtils.now();
 		if (log.isInfoEnabled()) {
@@ -177,11 +180,11 @@ public class DelayJobEngine extends AbstractJobEngine {
 			onFailed(executableJobBO, trigAt, e);
 		} catch (Exception e) {
 			log.error("ex on delay job run, job:{}", executableJobBO, e);
-			onFailed(executableJobBO, trigAt, e);
+			onFailed(executableJobBO, trigAt, e); 
 		}
 	}
 
-	private UpdateOnExecuteSuccessDTO exchange(ExecutableJobBO executableJobBO) {
+	private UpdateOnExecuteSuccessDTO exchange(ExecutableJobBO executableJobBO) throws ExchangeException {
 		final String executorName = executableJobBO.getExecutorName();
 		final String jobHandlerName = executableJobBO.getJobHandlerName();
 
@@ -197,7 +200,8 @@ public class DelayJobEngine extends AbstractJobEngine {
 			/**
 			 * 并行任务不关注返回体，只关注是否成功，所有分片全部成功才视为成功，否则会收到PartInstanceFailedExchangeException
 			 */
-			parallelLoadBalanceExchanger.exchange(job, executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance,
+			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
+			parallelLoadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance,
 					config);
 
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
@@ -213,7 +217,8 @@ public class DelayJobEngine extends AbstractJobEngine {
 					instanceProperties.getLoadBalance().getMaxCandidates());
 
 			DelayJob job = DelayJob.of(executableJobBO);
-			ShardExchangeResult result = loadBalanceExchanger.exchange(job, executableJobBO.getExecuteTimeout());
+			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
+			ShardExchangeResult result = loadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout());
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
@@ -293,12 +298,16 @@ public class DelayJobEngine extends AbstractJobEngine {
 	public boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult) {
 		metricsOverload.decrementOverload(enQueueResult.getT1());
 
-		JobTrigger jobTrigger = enQueueResult.getT2();
-		ScheduledFuture<?> future = jobTrigger.getFuture();
-		if (!future.isDone() && !future.isCancelled()) {
-			return future.cancel(false);
+		try {
+			JobTrigger jobTrigger = enQueueResult.getT2();
+			ScheduledFuture<?> future = jobTrigger.getFuture();
+			if (!future.isDone() && !future.isCancelled()) {
+				return future.cancel(false);
+			}
+			return true;
+		} finally {
+			queuedJobs.remove(enQueueResult.getT1().getId());
 		}
-		return true;
 	}
 
 	/**

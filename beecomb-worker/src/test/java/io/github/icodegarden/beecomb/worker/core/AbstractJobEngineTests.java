@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.test.Properties4Test;
+import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
@@ -36,6 +40,10 @@ class AbstractJobEngineTests extends Properties4Test {
 	void init() {
 		abstractJobEngine = mock(AbstractJobEngine.class);
 		abstractJobEngine.metricsOverload = metricsOverload;
+		
+		if(InstanceProperties.singleton() == null) {
+			new InstanceProperties().setServer(new InstanceProperties.Server());
+		}
 	}
 	
 	AbstractJobEngine getJobEngine() {
@@ -44,6 +52,7 @@ class AbstractJobEngineTests extends Properties4Test {
 	
 	ExecutableJobBO getJob() {
 		ExecutableJobBO job = new ExecutableJobBO();
+		job.setId(1L);
 		job.setType(JobType.Delay);
 		DelayBO delay = new DelayBO();
 		delay.setDelay(1000);
@@ -107,16 +116,20 @@ class AbstractJobEngineTests extends Properties4Test {
 	}
 
 	@Test
-	void enQueueSuccess() {
+	void enQueueSuccess() throws Exception {
 		ExecutableJobBO job = getJob();
 		job.setWeight(1);
 
 		doReturn(true).when(metricsOverload).incrementOverload(job);
 		when(getJobEngine().enQueue(job)).thenCallRealMethod();
-		doReturn(Results.of(true, job, null, null)).when(getJobEngine()).doEnQueue(any());
+		getJobEngine().queuedJobs = new HashMap<Long, JobEngine.JobTrigger>();
+		doReturn(Results.of(true, job, mock(JobTrigger.class), null)).when(getJobEngine()).doEnQueue(any());
 		
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult1 = getJobEngine().enQueue(job);
+		Optional.ofNullable(enQueueResult1.getT3()).ifPresent(e->e.printStackTrace());
 		assertThat(enQueueResult1.isSuccess()).isTrue();
+		
+		assertThat(getJobEngine().queuedJobs.size()).isEqualTo(1);
 	}
 
 }

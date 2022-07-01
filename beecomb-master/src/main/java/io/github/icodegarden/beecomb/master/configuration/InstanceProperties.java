@@ -33,7 +33,7 @@ public class InstanceProperties {
 		/**
 		 * 不健康的sql执行时间
 		 */
-		private long sqlUnhealthMillis = -1;
+		private long sqlUnhealthMillis = 100;
 		/**
 		 * http接口请求优雅停机最大等待
 		 */

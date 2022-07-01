@@ -1,7 +1,8 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import java.net.InetSocketAddress;
-import java.util.function.Consumer;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
@@ -39,6 +40,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 
 	protected MetricsOverload metricsOverload;
 	protected InstanceProperties instanceProperties;
+	protected Map<Long/* jobId */, JobTrigger> queuedJobs = new HashMap<Long, JobTrigger>();
 
 	protected ParallelLoadBalanceExchanger parallelLoadBalanceExchanger;
 
@@ -79,6 +81,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 				metricsOverload.decrementOverload(job);
 				return enQueueResult;
 			}
+
 			try {
 				metricsOverload.flushMetrics();
 				/**
@@ -88,6 +91,9 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 				InstanceProperties instanceProperties = InstanceProperties.singleton();
 				job.setQueuedAtInstance(SystemUtils.formatIpPort(instanceProperties.getServer().getBindIp(),
 						instanceProperties.getServer().getPort()));
+
+				queuedJobs.put(job.getId(), enQueueResult.getT2());
+
 				return enQueueResult;
 			} catch (Exception e) {
 				// 取消enQueue
@@ -103,9 +109,30 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	 * 不会抛出异常
 	 * 
 	 * @param job
-	 * @return JobVO:enQueue的job，Object：挂载的对象，RuntimeException:如果有意外发生
+	 * @return ExecutableJobBO:enQueue的job，JobTrigger：挂载的对象，JobEngineException:如果有意外发生
 	 */
 	protected abstract Result3<ExecutableJobBO, JobTrigger, JobEngineException> doEnQueue(ExecutableJobBO job);
+
+	@Override
+	public boolean removeQueue(ExecutableJobBO job) {
+		JobTrigger jobTrigger = queuedJobs.get(job.getId());
+		if (jobTrigger == null) {
+			/**
+			 * 已不存在
+			 */
+			return true;
+		}
+		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, jobTrigger,
+				null);
+		return removeQueue(enQueueResult);
+	}
+
+	/**
+	 * 
+	 * @param enQueueResult 与enQueue结果保持一致
+	 * @return
+	 */
+	protected abstract boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult);
 
 //	/**
 //	 * 每次任务的结果更新到 内存job, 以便下次触发时相关字段参数是正确的而不用查库

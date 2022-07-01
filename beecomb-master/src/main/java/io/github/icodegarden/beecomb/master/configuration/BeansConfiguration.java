@@ -25,7 +25,7 @@ import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
-import io.github.icodegarden.beecomb.master.service.JobDispatcher;
+import io.github.icodegarden.beecomb.master.service.JobRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
@@ -212,24 +212,24 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobDispatcher jobDispatcher(InstanceLoadBalance instanceLoadBalance) {
-		JobDispatcher jobDispatcher = new JobDispatcher(instanceLoadBalance,
+	public JobRemoteService jobRemoteService(InstanceLoadBalance instanceLoadBalance) {
+		JobRemoteService jobDispatcher = new JobRemoteService(instanceLoadBalance,
 				instanceProperties.getJob().getDispatchTimeoutMillis(),
 				instanceProperties.getLoadBalance().getMaxCandidates());
 		return jobDispatcher;
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobService jobService, JobDispatcher jobDispatcher) {
-		return new JobReceiver(jobService, jobDispatcher);
+	public JobReceiver jobReceiver(JobService jobService, JobRemoteService jobRemoteService) {
+		return new JobReceiver(jobService, jobRemoteService);
 	}
 
 	@Bean
-	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobService jobStorage, JobDispatcher jobDispatcher,
+	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobService jobStorage, JobRemoteService jobRemoteService,
 			JobRecoveryRecordManager jobRecoveryRecordService) {
 		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
 
-		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobDispatcher,
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobRemoteService,
 				jobRecoveryRecordService);
 		jobRecovery.start(instanceProperties.getJob().getRecoveryScheduleMillis());
 
