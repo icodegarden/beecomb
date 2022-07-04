@@ -6,6 +6,7 @@ import io.github.icodegarden.beecomb.client.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
+import io.github.icodegarden.beecomb.client.pojo.view.DeleteJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -34,5 +35,5 @@ public interface BeeCombClient extends Closeable {
 	 * 
 	 * @throws ExchangeException
 	 */
-	void deleteJob(Long jobId) throws ExchangeException;
+	DeleteJobVO deleteJob(Long jobId) throws ExchangeException;
 }

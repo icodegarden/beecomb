@@ -14,7 +14,7 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
 import io.github.icodegarden.beecomb.master.service.JobRemoteService;
-import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoSwitchableExchangeException;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
@@ -38,16 +38,16 @@ public class JobRecoverySchedule implements Closeable {
 
 	private final AtomicBoolean closed = new AtomicBoolean(true);
 	private final DistributedLock lock;
-	private final JobService jobStorage;
+	private final JobFacadeManager jobFacadeManager;
 	private final JobRemoteService jobRemoteService;
 	private final JobRecoveryRecordManager jobRecoveryRecordService;
 
 	private ScheduledFuture<?> future;
 
-	public JobRecoverySchedule(DistributedLock lock, JobService jobStorage, JobRemoteService jobRemoteService,
+	public JobRecoverySchedule(DistributedLock lock, JobFacadeManager jobFacadeManager, JobRemoteService jobRemoteService,
 			JobRecoveryRecordManager jobRecoveryRecordService) {
 		this.lock = lock;
-		this.jobStorage = jobStorage;
+		this.jobFacadeManager = jobFacadeManager;
 		this.jobRemoteService = jobRemoteService;
 		this.jobRecoveryRecordService = jobRecoveryRecordService;
 	}
@@ -96,12 +96,12 @@ public class JobRecoverySchedule implements Closeable {
 		/**
 		 * 探测，可能节省不必要的开支
 		 */
-		boolean has = jobStorage.hasNoQueuedActually(nextTrigAtLt);
+		boolean has = jobFacadeManager.hasNoQueuedActually(nextTrigAtLt);
 		if (log.isInfoEnabled()) {
 			log.info("recovery jobs Has No Queued Actually:{}", has);
 		}
 		if (has) {
-			jobStorage.recoveryThatNoQueuedActually(nextTrigAtLt);
+			jobFacadeManager.recoveryThatNoQueuedActually(nextTrigAtLt);
 		}
 	}
 
@@ -122,7 +122,7 @@ public class JobRecoverySchedule implements Closeable {
 				 */
 				return;
 			}
-			List<ExecutableJobBO> jobs = jobStorage.listJobsShouldRecovery(skip, 10);
+			List<ExecutableJobBO> jobs = jobFacadeManager.listJobsShouldRecovery(skip, 10);
 			if (log.isInfoEnabled()) {
 				log.info("list Jobs Should Recovery size:{}", jobs.size());
 			}

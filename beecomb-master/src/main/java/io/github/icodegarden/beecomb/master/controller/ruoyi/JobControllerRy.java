@@ -37,8 +37,10 @@ import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
-import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
+import io.github.icodegarden.beecomb.master.service.JobLocalService;
 import io.github.icodegarden.commons.lang.result.Result2;
+import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
@@ -56,9 +58,11 @@ public class JobControllerRy extends BaseControllerRy {
 	@Autowired
 	private JobMainManager jobMainManager;
 	@Autowired
-	private JobService jobService;
+	private JobFacadeManager jobFacadeManager;
 	@Autowired
 	private JobReceiver jobReceiver;
+	@Autowired
+	private JobLocalService jobLocalService;
 
 	@GetMapping("view/job/list")
 	public String jobList() {
@@ -133,7 +137,7 @@ public class JobControllerRy extends BaseControllerRy {
 			UpdateJobOpenapiDTO updateJobDTO = new UpdateJobOpenapiDTO();
 			BeanUtils.copyProperties(dto, updateJobDTO);
 
-			jobService.update(updateJobDTO);
+			jobFacadeManager.update(updateJobDTO);
 			return ResponseEntity.ok(success());
 		} catch (IllegalArgumentException e) {
 			/**
@@ -191,7 +195,7 @@ public class JobControllerRy extends BaseControllerRy {
 	
 	@PostMapping("api/job/{id}/delete")
 	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
-		ExecutableJobBO one = jobService.findOneExecutableJob(id);
+		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(id);
 
 		if (one == null) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
@@ -203,7 +207,10 @@ public class JobControllerRy extends BaseControllerRy {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
 		
-		jobReceiver.delete(one);
+		boolean delete = jobLocalService.delete(one);
+		if (!delete) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "FORBIDDEN");
+		}
 		
 		return ResponseEntity.ok(success());
 	}

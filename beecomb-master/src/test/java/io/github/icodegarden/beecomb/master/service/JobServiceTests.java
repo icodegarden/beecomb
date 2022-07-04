@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 
 /**
  * 
@@ -25,14 +25,14 @@ import io.github.icodegarden.beecomb.master.service.JobService;
 class JobServiceTests {
 
 	@Autowired
-	private JobService jobStorage;
+	private JobFacadeManager jobFacadeManager;
 	@Autowired
 	private JobMainMapper jobMainMapper;
 
 	@Test
 	void hasNoQueuedActually() {
 		LocalDateTime time = LocalDateTime.now().minusSeconds(60);
-		boolean b = jobStorage.hasNoQueuedActually(time);
+		boolean b = jobFacadeManager.hasNoQueuedActually(time);
 		Assertions.assertThat(b).isFalse();
 
 		JobMainPO j1 = new JobMainPO();
@@ -44,14 +44,14 @@ class JobServiceTests {
 		j1.setNextTrigAt(time);
 		jobMainMapper.add(j1);
 
-		b = jobStorage.hasNoQueuedActually(LocalDateTime.now());
+		b = jobFacadeManager.hasNoQueuedActually(LocalDateTime.now());
 		Assertions.assertThat(b).isTrue();
 	}
 
 	@Test
 	void recoveryThatNoQueuedActually() {
 		LocalDateTime time = LocalDateTime.now().minusSeconds(60);
-		jobStorage.recoveryThatNoQueuedActually(time);
+		jobFacadeManager.recoveryThatNoQueuedActually(time);
 	}
 
 	@Test
@@ -104,13 +104,13 @@ class JobServiceTests {
 		j5.setPriority(10);// 高优先与j4相同
 		jobMainMapper.add(j5);
 
-		List<ExecutableJobBO> jobs = jobStorage.listJobsShouldRecovery(0, 10);
+		List<ExecutableJobBO> jobs = jobFacadeManager.listJobsShouldRecovery(0, 10);
 		Assertions.assertThat(jobs).hasSize(3);
 		Assertions.assertThat(jobs.get(0).getPriority()).isEqualTo(10);// 因为priority高
 		Assertions.assertThat(jobs.get(1).getPriority()).isEqualTo(10);// 因为priority高
 		Assertions.assertThat(jobs.get(2).getPriority()).isEqualTo(1);
 
-		jobs = jobStorage.listJobsShouldRecovery(2, 10);
+		jobs = jobFacadeManager.listJobsShouldRecovery(2, 10);
 		Assertions.assertThat(jobs).hasSize(1);
 		Assertions.assertThat(jobs.get(0).getPriority()).isEqualTo(1);
 	}

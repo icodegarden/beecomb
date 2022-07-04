@@ -36,7 +36,7 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
  *
  */
 @Service
-public class JobService extends AbstractBackendJobService {
+public class JobFacadeManager extends AbstractBackendJobService {
 
 	@Autowired
 	private JobMainMapper jobMainMapper;

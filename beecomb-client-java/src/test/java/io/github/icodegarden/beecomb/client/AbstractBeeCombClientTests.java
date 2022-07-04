@@ -12,6 +12,7 @@ import io.github.icodegarden.beecomb.client.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
+import io.github.icodegarden.beecomb.client.pojo.view.DeleteJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
@@ -130,5 +131,18 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 		Assertions.assertThat(findJob.getParams()).isEqualTo("params2");
 		Assertions.assertThat(findJob.getPriority()).isEqualTo(9);
 		Assertions.assertThat(findJob.getWeight()).isEqualTo(4);
+	}
+	
+	@Test
+	void deleteJob() throws Exception {
+		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
+				new CreateDelayJobDTO.Delay(1000));
+		CreateJobVO response = beeCombClient.createJob(dto);
+		
+		Long jobId = response.getJob().getId();
+		DeleteJobVO vo = beeCombClient.deleteJob(jobId);
+		
+		Assertions.assertThat(vo.getJobId()).isEqualTo(jobId);
+		Assertions.assertThat(vo.getSuccess()).isTrue();
 	}
 }

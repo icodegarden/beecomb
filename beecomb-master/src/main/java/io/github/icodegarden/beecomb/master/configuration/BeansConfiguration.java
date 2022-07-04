@@ -27,7 +27,7 @@ import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
 import io.github.icodegarden.beecomb.master.service.JobRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
-import io.github.icodegarden.beecomb.master.service.JobService;
+import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
@@ -63,7 +63,7 @@ import lombok.extern.slf4j.Slf4j;
  * <br>
  * 定时获取worker的度量缓存数据{@link BeansConfiguration#zooKeeperInstanceMetrics(ZooKeeperHolder)}<br>
  * <br>
- * 开启任务恢复{@link BeansConfiguration#jobRecovery(DistributedLock, JobService)},{@link io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule}<br>
+ * 开启任务恢复{@link BeansConfiguration#jobRecovery(DistributedLock, JobFacadeManager)},{@link io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule}<br>
  * 
  * <br>
  * 
@@ -109,16 +109,16 @@ public class BeansConfiguration {
 		});
 		return sqlPerformanceInterceptor;
 	}
-	
+
 	/**
 	 * sharding DataSource
 	 */
 	@Bean
 	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
 		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
-		
+
 		MysqlKeyGenerateAlgorithm.registerDataSource(dataSource);
-		
+
 		return dataSource;
 	}
 
@@ -220,16 +220,16 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobService jobService, JobRemoteService jobRemoteService) {
-		return new JobReceiver(jobService, jobRemoteService);
+	public JobReceiver jobReceiver(JobFacadeManager jobFacadeManager, JobRemoteService jobRemoteService) {
+		return new JobReceiver(jobFacadeManager, jobRemoteService);
 	}
 
 	@Bean
-	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobService jobStorage, JobRemoteService jobRemoteService,
-			JobRecoveryRecordManager jobRecoveryRecordService) {
+	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobFacadeManager jobFacadeManager,
+			JobRemoteService jobRemoteService, JobRecoveryRecordManager jobRecoveryRecordService) {
 		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
 
-		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobStorage, jobRemoteService,
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobFacadeManager, jobRemoteService,
 				jobRecoveryRecordService);
 		jobRecovery.start(instanceProperties.getJob().getRecoveryScheduleMillis());
 

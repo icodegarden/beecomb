@@ -32,10 +32,12 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.DeleteJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.GetJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.PageJobsOpenapiVO;
+import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
+import io.github.icodegarden.beecomb.master.service.JobLocalService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
-import io.github.icodegarden.beecomb.master.service.JobService;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
@@ -57,7 +59,9 @@ public class JobOpenapiController {
 	@Autowired
 	private JobMainManager jobMainManager;
 	@Autowired
-	private JobService jobService;
+	private JobFacadeManager jobFacadeManager;
+	@Autowired
+	private JobLocalService jobLocalService;
 
 	@PostMapping(value = { "openapi/v1/jobs" })
 	public ResponseEntity<CreateJobOpenapiVO> createJob(@RequestParam(defaultValue = "true") boolean async,
@@ -194,13 +198,13 @@ public class JobOpenapiController {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
 
-		jobService.update(dto);
+		jobFacadeManager.update(dto);
 		return ResponseEntity.ok().build();
 	}
 	
 	@DeleteMapping(value = { "openapi/v1/jobs/{id}" })
-	public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
-		ExecutableJobBO one = jobService.findOneExecutableJob(id);
+	public ResponseEntity<DeleteJobOpenapiVO> deleteJob(@PathVariable Long id) {
+		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(id);
 
 		if (one == null) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
@@ -212,8 +216,8 @@ public class JobOpenapiController {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
 		
-		jobReceiver.delete(one);
-
-		return ResponseEntity.ok().build();
+		boolean success = jobLocalService.delete(one);
+		DeleteJobOpenapiVO vo = new DeleteJobOpenapiVO(id, success);
+		return ResponseEntity.ok(vo);
 	}
 }

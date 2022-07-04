@@ -4,6 +4,9 @@ import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestWorkerDTO;
@@ -31,6 +34,8 @@ import io.github.icodegarden.commons.nio.pool.NioClientPool;
  *
  */
 public class JobRemoteService {
+	
+	private static final Logger log = LoggerFactory.getLogger(JobRemoteService.class);
 
 	private NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Master.getRoleName(), (ip, port) -> {
 		return new NettyNioClient(new InetSocketAddress(ip, port));
@@ -69,6 +74,9 @@ public class JobRemoteService {
 	 * @throws ExchangeException
 	 */
 	public boolean removeQueue(ExecutableJobBO job) throws ExchangeException {
+		if(log.isInfoEnabled()) {
+			log.info("removeQueue job.id:{} that queued:{}", job.getId(), job.getQueued());
+		}
 		if (job.getQueued()) {
 			String ipport = job.getQueuedAtInstance();
 			String[] split = ipport.split(":");

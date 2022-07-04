@@ -21,14 +21,14 @@ import io.github.icodegarden.commons.exchange.loadbalance.DefaultMetricsInstance
 class JobReceiverTests {
 
 	JobReceiver jobReceiver;
-	JobService jobService;
+	JobFacadeManager jobFacadeManager;
 	JobRemoteService jobRemoteService;
 
 	@BeforeEach
 	void init() {
-		jobService = mock(JobService.class);
+		jobFacadeManager = mock(JobFacadeManager.class);
 		jobRemoteService = mock(JobRemoteService.class);
-		jobReceiver = new JobReceiver(jobService, jobRemoteService);
+		jobReceiver = new JobReceiver(jobFacadeManager, jobRemoteService);
 	}
 
 	@Test
@@ -41,7 +41,7 @@ class JobReceiverTests {
 		doReturn(new DefaultMetricsInstance(null, null)).when(jobRemoteService).enQueue(any());
 
 		jobReceiver.receive(delayJobDTO);
-		verify(jobService, times(1)).create(delayJobDTO);
+		verify(jobFacadeManager, times(1)).create(delayJobDTO);
 		verify(jobRemoteService, times(1)).enQueue(any());
 	}
 
@@ -53,7 +53,7 @@ class JobReceiverTests {
 
 		jobReceiver.receiveAsync(delayJobDTO);
 		Thread.sleep(100);
-		verify(jobService, times(1)).create(delayJobDTO);
+		verify(jobFacadeManager, times(1)).create(delayJobDTO);
 		verify(jobRemoteService, times(1)).enQueue(any());
 	}
 }

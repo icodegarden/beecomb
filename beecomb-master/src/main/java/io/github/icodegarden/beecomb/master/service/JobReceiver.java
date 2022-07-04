@@ -13,7 +13,6 @@ import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
-import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ClientLimitedErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ClientParameterInvalidErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
@@ -35,11 +34,11 @@ public class JobReceiver {
 	private static final ThreadPoolExecutor FIXED_THREADPOOL = new ThreadPoolExecutor(200, 200, 0,
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1000), new NamedThreadFactory("dispatch-job"));
 
-	private JobService jobService;
+	private JobFacadeManager jobFacadeManager;
 	private JobRemoteService jobRemoteService;
 
-	public JobReceiver(JobService jobService, JobRemoteService jobRemoteService) {
-		this.jobService = jobService;
+	public JobReceiver(JobFacadeManager jobFacadeManager, JobRemoteService jobRemoteService) {
+		this.jobFacadeManager = jobFacadeManager;
 		this.jobRemoteService = jobRemoteService;
 	}
 
@@ -51,7 +50,7 @@ public class JobReceiver {
 	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobDTO dto) {
 		ExecutableJobBO job;
 		try {
-			job = jobService.create(dto);
+			job = jobFacadeManager.create(dto);
 		} catch (IllegalArgumentException e) {
 			return Results.of(false, null,
 					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
@@ -83,7 +82,7 @@ public class JobReceiver {
 	public Result2<ExecutableJobBO, ErrorCodeException> receiveAsync(CreateJobDTO dto) {
 		ExecutableJobBO job;
 		try {
-			job = jobService.create(dto);
+			job = jobFacadeManager.create(dto);
 		} catch (IllegalArgumentException e) {
 			return Results.of(false, null,
 					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
@@ -104,26 +103,4 @@ public class JobReceiver {
 		}
 	}
 
-	/**
-	 * 删除任务
-	 * 
-	 * @param jobId
-	 */
-	public void delete(ExecutableJobBO job) throws ErrorCodeException {
-		if (job == null) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "job not found");
-		}
-		
-		if(job.getEnd()) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "job was end");
-		}
-
-		boolean remove = jobRemoteService.removeQueue(job);
-		if (remove) {
-			/**
-			 * 处理数据库要在远程执行后，因为任务可能正在执行中需要数据
-			 */
-			jobService.delete(job.getId());
-		}
-	}
 }
