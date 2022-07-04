@@ -4,9 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
 import io.github.icodegarden.beecomb.test.NioClientSuppliers4Test;
 import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
-import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
+import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
@@ -354,11 +355,18 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void removeQueue() {
 		ExecutableJobBO job = getJob();
 		job.getSchedule().setSheduleCron("* * * * * *");
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.doEnQueue(job);
+		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
+		doReturn(true).when(metricsOverload).incrementOverload(job);
+		
+		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = scheduleJobEngine.enQueue(job);
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(1);
 
-		boolean b = scheduleJobEngine.removeQueue(result3);
+		
+		boolean b = scheduleJobEngine.removeQueue(job);
 		assertThat(b).isTrue();
 		assertThat(scheduleJobEngine.queuedSize()).isEqualTo(0);
+		
+		b = scheduleJobEngine.removeQueue(job);
+		assertThat(b).isTrue();//已不存在，返回也是true
 	}
 }

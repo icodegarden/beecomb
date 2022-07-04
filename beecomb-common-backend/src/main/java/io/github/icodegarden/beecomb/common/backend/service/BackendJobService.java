@@ -9,9 +9,6 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
  */
 public interface BackendJobService {
 
-	/**
-	 * FIXME 返回体确定要这样吗
-	 */
 	public ExecutableJobBO findOneExecutableJob(Long id);
 
 }

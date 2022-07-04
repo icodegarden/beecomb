@@ -1,7 +1,6 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -15,11 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,14 +28,13 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.test.NioClientSuppliers4Test;
 import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
-import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
+import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
 import io.github.icodegarden.commons.exchange.nio.NioProtocol;
-import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
@@ -278,12 +271,19 @@ class DelayJobEngineTests extends Properties4Test {
 	@Test
 	void removeQueue() {
 		ExecutableJobBO job = getJob();
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = delayJobEngine.doEnQueue(job);
+		doReturn(job).when(delayJobService).findOneExecutableJob(anyLong());
+		doReturn(true).when(metricsOverload).incrementOverload(job);
+		
+		Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = delayJobEngine.enQueue(job);
 		assertThat(delayJobEngine.queuedSize()).isEqualTo(1);
 
-		boolean b = delayJobEngine.removeQueue(result3);
+		
+		boolean b = delayJobEngine.removeQueue(job);
 		assertThat(b).isTrue();
 		assertThat(delayJobEngine.queuedSize()).isEqualTo(0);
+		
+		b = delayJobEngine.removeQueue(job);
+		assertThat(b).isTrue();//已不存在，返回也是true
 	}
 	
 }

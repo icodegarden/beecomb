@@ -4,7 +4,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
-import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 import io.github.icodegarden.beecomb.worker.service.JobService;
@@ -49,7 +48,7 @@ public class JobReceiver {
 		try {
 			jobService.updateEnQueue(job);
 
-			Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = jobEngine.enQueue(job);
+			Result3<ExecutableJobBO, ? extends Object, JobEngineException> enQueueResult = jobEngine.enQueue(job);
 			if (!enQueueResult.isSuccess()) {
 				/**
 				 * 回滚事务

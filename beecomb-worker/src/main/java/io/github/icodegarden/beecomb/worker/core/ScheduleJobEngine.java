@@ -56,7 +56,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 	public ScheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery, InstanceMetrics instanceMetrics,
 			MetricsOverload jobOverload, ScheduleJobService scheduleJobService, InstanceProperties instanceProperties) {
-		super(jobOverload, instanceProperties);
+		super(scheduleJobService, jobOverload, instanceProperties);
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;
 		this.scheduleJobService = scheduleJobService;
@@ -106,46 +106,28 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	}
 
 	private class ScheduleJobTrigger extends JobTrigger {
-		private final Long jobId;
 
 		public ScheduleJobTrigger(Long jobId) {
-			this.jobId = jobId;
+			super(jobId);
 		}
 
 		@Override
-		public void doRun() {
-			ExecutableJobBO job = ScheduleJobEngine.this.scheduleJobService.findOneExecutableJob(jobId);
-			if (job.getEnd()) {
-				removeQueueOnEnd(job);
-				return;
-			}
+		public void doRun(ExecutableJobBO job) {
 			boolean end = ScheduleJobEngine.this.runJob(job);
 			if (end) {
 				removeQueueOnEnd(job);
 			} else {
-				reEnQueueIfNecessary(job);
+				reEnQueueIfCron(job);
 			}
-		}
-
-		/**
-		 * 任务end时从队列移除，并减少度量
-		 */
-		private void removeQueueOnEnd(ExecutableJobBO job) {
-			Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, this, null);
-			removeQueue(enQueueResult);
-			
-			queuedJobs.remove(job.getId());
-
-			metricsOverload.flushMetrics();
 		}
 
 		/**
 		 * 如果是cron的，则需要重进队列
 		 */
-		private void reEnQueueIfNecessary(ExecutableJobBO job) {
+		private void reEnQueueIfCron(ExecutableJobBO job) {
 			if (job.getSchedule().getSheduleCron() != null) {
 				try {
-					Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 重进队列
+					Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 以新的身份重进队列
 					if (result3.isSuccess()) {
 						this.setFuture(result3.getT2().getFuture());
 					} else {
@@ -159,7 +141,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					/**
 					 * 原因同delay
 					 */
-					queuedJobs.remove(job.getId());					
+					queuedJobs.remove(job.getId());
 				}
 			}
 		}
@@ -197,9 +179,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					SystemUtils.now());
 			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
 					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
-					.nextTrigAt(nextTrigAt)
-//					.callback(buildJobFreshParamsCallback(executableJobBO))
-					.build();
+					.nextTrigAt(nextTrigAt).build();
 			Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
@@ -253,9 +233,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					SystemUtils.now());
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */).lastTrigAt(trigAt)
-					.end(end).nextTrigAt(nextTrigAt)
-//					.callback(buildJobFreshParamsCallback(executableJobBO))
-					.build();
+					.end(end).nextTrigAt(nextTrigAt).build();
 			return update;
 		} else {
 			CandidatesSwitchableLoadBalanceExchanger loadBalanceExchanger = new CandidatesSwitchableLoadBalanceExchanger(
@@ -264,7 +242,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
 			ShardExchangeResult result = loadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout());
-			
+
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
@@ -273,9 +251,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp(instance.getIp()).executorPort(instance.getPort())
 					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(trigAt)
-					.end(executeJobResult.isEnd()).nextTrigAt(nextTrigAt)
-//					.callback(buildJobFreshParamsCallback(executableJobBO))
-					.build();
+					.end(executeJobResult.isEnd()).nextTrigAt(nextTrigAt).build();
 			return update;
 		}
 	}
@@ -283,9 +259,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
 		LocalDateTime nextTrigAt = job.getSchedule().calcNextTrigAtOnTriggered(trigAt, SystemUtils.now());
 		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt)
-//				.callback(buildJobFreshParamsCallback(job))
-				.build();
+				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt).build();
 		Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {
@@ -294,14 +268,10 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	}
 
 	/**
-	 * 从队列中移除任务并减少相应的负载<br>
 	 * 进行中的任务也能true（进行中的任务cancel后下次不会再进入队列，当然不会再触发调度）<br>
 	 */
 	@Override
-	public boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult) {
-		metricsOverload.decrementOverload(enQueueResult.getT1());
-
-		JobTrigger jobTrigger = enQueueResult.getT2();
+	protected boolean doRemoveQueue(JobTrigger jobTrigger) {
 		ScheduledFuture<?> future = jobTrigger.getFuture();
 		if (!future.isDone() && !future.isCancelled()) {
 			/**

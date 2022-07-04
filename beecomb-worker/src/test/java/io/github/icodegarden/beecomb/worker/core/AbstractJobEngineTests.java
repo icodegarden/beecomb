@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +20,7 @@ import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
-import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
+import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
 import io.github.icodegarden.commons.lang.result.Result3;
@@ -84,7 +84,7 @@ class AbstractJobEngineTests extends Properties4Test {
 		when(getJobEngine().enQueue(job)).thenCallRealMethod();
 		doReturn(true).when(metricsOverload).willOverload(job);
 		
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = getJobEngine().enQueue(job);
+		Result3<ExecutableJobBO, ? extends Object, JobEngineException> enQueueResult = getJobEngine().enQueue(job);
 		assertThat(enQueueResult.isSuccess()).isFalse();
 
 	}
@@ -97,7 +97,7 @@ class AbstractJobEngineTests extends Properties4Test {
 		when(getJobEngine().enQueue(job)).thenCallRealMethod();
 		doReturn(Results.of(false, job, null, null)).when(getJobEngine()).doEnQueue(any());
 
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = getJobEngine().enQueue(job);
+		Result3<ExecutableJobBO, ? extends Object, JobEngineException> enQueueResult = getJobEngine().enQueue(job);
 		assertThat(enQueueResult.isSuccess()).isFalse();
 
 	}
@@ -110,7 +110,7 @@ class AbstractJobEngineTests extends Properties4Test {
 		doThrow(RuntimeException.class).when(metricsOverload).flushMetrics();
 		when(getJobEngine().enQueue(job)).thenCallRealMethod();
 		
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = getJobEngine().enQueue(job);
+		Result3<ExecutableJobBO, ? extends Object, JobEngineException> enQueueResult = getJobEngine().enQueue(job);
 		assertThat(enQueueResult.isSuccess()).isFalse();
 
 	}
@@ -122,7 +122,7 @@ class AbstractJobEngineTests extends Properties4Test {
 
 		doReturn(true).when(metricsOverload).incrementOverload(job);
 		when(getJobEngine().enQueue(job)).thenCallRealMethod();
-		getJobEngine().queuedJobs = new HashMap<Long, JobEngine.JobTrigger>();
+		getJobEngine().queuedJobs = new HashMap<Long, JobTrigger>();
 		doReturn(Results.of(true, job, mock(JobTrigger.class), null)).when(getJobEngine()).doEnQueue(any());
 		
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult1 = getJobEngine().enQueue(job);

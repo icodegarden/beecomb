@@ -8,7 +8,6 @@ import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordMana
 import io.github.icodegarden.beecomb.common.backend.mapper.ScheduleJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.ScheduleJobPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExecutedDTO;
-import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
@@ -56,12 +55,6 @@ public class ScheduleJobService extends BaseJobService {
 				return null;
 			});
 
-			if (update.getCallback() != null) {
-				JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
-						mainUpdate.getLastTrigResult());
-				update.getCallback().accept(params);
-			}
-
 			return Results.of(true, false, null);
 		} catch (RuntimeException e) {
 			log.error("ex on updateOnNoQualifiedExecutor, update param:{}", update, e);
@@ -94,13 +87,6 @@ public class ScheduleJobService extends BaseJobService {
 				return null;
 			});
 
-			if (update.getCallback() != null) {
-				JobFreshParams params = new JobFreshParams(mainUpdate.getLastExecuteExecutor(),
-						mainUpdate.getLastExecuteReturns(), true, mainUpdate.getLastTrigAt(),
-						mainUpdate.getLastTrigResult());
-				update.getCallback().accept(params);
-			}
-
 			return Results.of(true, null);
 		} catch (RuntimeException e) {
 			log.error("ex on updateOnExecuteSuccess, update param:{}", update, e);
@@ -131,12 +117,6 @@ public class ScheduleJobService extends BaseJobService {
 
 				return null;
 			});
-
-			if (update.getCallback() != null) {
-				JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
-						mainUpdate.getLastTrigResult());
-				update.getCallback().accept(params);
-			}
 
 			return Results.of(true, false, null);
 		} catch (RuntimeException e) {

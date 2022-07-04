@@ -3,6 +3,7 @@ package io.github.icodegarden.beecomb.worker.core;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
@@ -10,6 +11,7 @@ import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.exception.ExceedExpectedJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
+import io.github.icodegarden.beecomb.worker.service.JobService;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
 import io.github.icodegarden.commons.exchange.ParallelLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.loadbalance.EmptyInstanceLoadBalance;
@@ -38,13 +40,16 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 
 	protected NioProtocol protocol;
 
+	private final JobService jobService;
 	protected MetricsOverload metricsOverload;
 	protected InstanceProperties instanceProperties;
 	protected Map<Long/* jobId */, JobTrigger> queuedJobs = new HashMap<Long, JobTrigger>();
 
 	protected ParallelLoadBalanceExchanger parallelLoadBalanceExchanger;
 
-	public AbstractJobEngine(MetricsOverload metricsOverload, InstanceProperties instanceProperties) {
+	public AbstractJobEngine(JobService jobService, MetricsOverload metricsOverload,
+			InstanceProperties instanceProperties) {
+		this.jobService = jobService;
 		this.metricsOverload = metricsOverload;
 		this.instanceProperties = instanceProperties;
 
@@ -97,7 +102,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 				return enQueueResult;
 			} catch (Exception e) {
 				// 取消enQueue
-				removeQueue(enQueueResult);
+				removeQueue(job);
 				return Results.of(false, job, null, new ExceedExpectedJobEngineException(e));
 			}
 		}
@@ -122,33 +127,16 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			 */
 			return true;
 		}
-		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, jobTrigger,
-				null);
-		return removeQueue(enQueueResult);
+
+		boolean b = doRemoveQueue(jobTrigger);
+		if (b) {
+			metricsOverload.decrementOverload(job);
+			queuedJobs.remove(job.getId());
+		}
+		return b;
 	}
 
-	/**
-	 * 
-	 * @param enQueueResult 与enQueue结果保持一致
-	 * @return
-	 */
-	protected abstract boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult);
-
-//	/**
-//	 * 每次任务的结果更新到 内存job, 以便下次触发时相关字段参数是正确的而不用查库
-//	 * 
-//	 * @param job
-//	 * @return
-//	 */
-//	protected Consumer<JobFreshParams> buildJobFreshParamsCallback(ExecutableJobBO job) {
-//		return params -> {
-//			job.setLastExecuteExecutor(params.getLastExecuteExecutor());// 只在成功时有参数
-//			job.setLastExecuteReturns(params.getLastExecuteReturns());// 只在成功时有参数
-//			job.setLastExecuteSuccess(params.isLastExecuteSuccess());
-//			job.setLastTrigAt(params.getLastTrigAt());
-//			job.setLastTrigResult(params.getLastTrigResult());
-//		};
-//	}
+	protected abstract boolean doRemoveQueue(JobTrigger jobTrigger);
 
 	@Override
 	public void shutdown() {
@@ -161,5 +149,69 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	@Override
 	public int shutdownOrder() {
 		return -80;
+	}
+
+	public abstract class JobTrigger implements Runnable {
+
+		protected final Long jobId;
+
+		private long executedTimes;
+		private boolean running = false;
+		private ScheduledFuture<?> future;
+
+		public JobTrigger(Long jobId) {
+			this.jobId = jobId;
+		}
+
+		@Override
+		public void run() {
+			running = true;
+			try {
+				ExecutableJobBO job = jobService.findOneExecutableJob(jobId);
+				if (job.getEnd()) {
+					removeQueueOnEnd(job);
+					return;
+				}
+
+				doRun(job);
+			} catch (Exception e) {
+				// doRun 预期不会抛出异常，担保log
+				log.error("ex on job run, expect no ex throw", e);
+			} finally {
+				running = false;
+				executedTimes++;
+			}
+		}
+
+		/**
+		 * 任务end时从队列移除，并实时刷新度量
+		 */
+		protected void removeQueueOnEnd(ExecutableJobBO job) {
+			if (queuedJobs.containsKey(job.getId())) {// 若本地有记录，走完整流程；否则只需执行真实doRemoveQueue
+				removeQueue(job);
+			} else {
+				doRemoveQueue(this);
+			}
+
+			metricsOverload.flushMetrics();
+		}
+		
+		protected abstract void doRun(ExecutableJobBO job);
+
+		public long getExecutedTimes() {
+			return executedTimes;
+		}
+
+		public boolean isRunning() {
+			return running;
+		}
+
+		public ScheduledFuture<?> getFuture() {
+			return future;
+		}
+
+		public void setFuture(ScheduledFuture<?> future) {
+			this.future = future;
+		}
 	}
 }

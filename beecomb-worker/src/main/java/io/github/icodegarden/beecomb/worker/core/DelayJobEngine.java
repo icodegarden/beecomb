@@ -14,7 +14,6 @@ import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
-import io.github.icodegarden.beecomb.worker.core.JobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
@@ -58,7 +57,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 	public DelayJobEngine(ExecutorInstanceDiscovery<? extends ExecutorRegisteredInstance> executorInstanceDiscovery,
 			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobService,
 			InstanceProperties instanceProperties) {
-		super(jobOverload, instanceProperties);
+		super(delayJobService, jobOverload, instanceProperties);
 
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;
@@ -105,30 +104,22 @@ public class DelayJobEngine extends AbstractJobEngine {
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
 		}
 	}
-	
+
 	private class DelayJobTrigger extends JobTrigger {
 
-		private final Long jobId;
-
 		public DelayJobTrigger(Long jobId) {
-			this.jobId = jobId;
+			super(jobId);
 		}
 
 		@Override
-		public void doRun() {
-			ExecutableJobBO job = DelayJobEngine.this.delayJobService.findOneExecutableJob(jobId);
-			if(job.getEnd()) {
-				Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = Results.of(true, job, this, null);
-				removeQueue(enQueueResult);
-				return;
-			}
-			try{
+		public void doRun(ExecutableJobBO job) {
+			try {
 				DelayJobEngine.this.runJob(job);
 			} finally {
 				/**
 				 * delay任务每次执行后，一定会从scheduledThreadPoolExecutor.queue中移除，而失败的则可能以新的任务对象方式进queue，所以这里每次都执行remove
 				 */
-				queuedJobs.remove(job.getId());				
+				queuedJobs.remove(job.getId());
 			}
 		}
 	}
@@ -160,9 +151,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 			}
 
 			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
-					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
-//					.callback(buildJobFreshParamsCallback(executableJobBO))
-					.build();
+					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e).build();
 			Result2<Boolean, RuntimeException> result2 = delayJobService.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
@@ -180,7 +169,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 			onFailed(executableJobBO, trigAt, e);
 		} catch (Exception e) {
 			log.error("ex on delay job run, job:{}", executableJobBO, e);
-			onFailed(executableJobBO, trigAt, e); 
+			onFailed(executableJobBO, trigAt, e);
 		}
 	}
 
@@ -206,9 +195,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */)
-					.lastTrigAt(SystemUtils.now())
-//					.callback(buildJobFreshParamsCallback(executableJobBO))
-					.build();
+					.lastTrigAt(SystemUtils.now()).build();
 
 			return update;
 		} else {
@@ -217,16 +204,16 @@ public class DelayJobEngine extends AbstractJobEngine {
 					instanceProperties.getLoadBalance().getMaxCandidates());
 
 			DelayJob job = DelayJob.of(executableJobBO);
+
 			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
 			ShardExchangeResult result = loadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout());
+
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp(instance.getIp()).executorPort(instance.getPort())
-					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(SystemUtils.now())
-//					.callback(buildJobFreshParamsCallback(executableJobBO))
-					.build();
+					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(SystemUtils.now()).build();
 
 			return update;
 		}
@@ -234,9 +221,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
 		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt)
-//				.callback(buildJobFreshParamsCallback(job))
-				.build();
+				.lastTrigAt(trigAt).build();
 		Result2<Boolean, RuntimeException> result2 = delayJobService.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {
@@ -289,25 +274,17 @@ public class DelayJobEngine extends AbstractJobEngine {
 	}
 
 	/**
-	 * 从队列中移除任务并减少相应的负载<br>
 	 * ScheduledFuture 的cancel只有在 已经完成 或 已经取消 的状态下才会false，进行中的任务也能true<br>
 	 * 关于 scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
 	 * 默认false，任务只有在完成时才从队列移除，cancel是不会触发移除的（要等到任务触发时间到了才真正从队列remove）<br>
 	 */
 	@Override
-	public boolean removeQueue(Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult) {
-		metricsOverload.decrementOverload(enQueueResult.getT1());
-
-		try {
-			JobTrigger jobTrigger = enQueueResult.getT2();
-			ScheduledFuture<?> future = jobTrigger.getFuture();
-			if (!future.isDone() && !future.isCancelled()) {
-				return future.cancel(false);
-			}
-			return true;
-		} finally {
-			queuedJobs.remove(enQueueResult.getT1().getId());
+	protected boolean doRemoveQueue(JobTrigger jobTrigger) {
+		ScheduledFuture<?> future = jobTrigger.getFuture();
+		if (!future.isDone() && !future.isCancelled()) {
+			return future.cancel(false);
 		}
+		return true;
 	}
 
 	/**

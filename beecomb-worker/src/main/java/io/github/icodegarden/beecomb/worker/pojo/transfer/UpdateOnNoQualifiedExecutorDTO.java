@@ -1,9 +1,7 @@
 package io.github.icodegarden.beecomb.worker.pojo.transfer;
 
 import java.time.LocalDateTime;
-import java.util.function.Consumer;
 
-import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.commons.exchange.exception.NoQualifiedInstanceExchangeException;
 import lombok.Builder;
 import lombok.Data;
@@ -29,5 +27,4 @@ public class UpdateOnNoQualifiedExecutorDTO {
 	 */
 	private LocalDateTime nextTrigAt;
 
-	private Consumer<JobFreshParams> callback;
 }

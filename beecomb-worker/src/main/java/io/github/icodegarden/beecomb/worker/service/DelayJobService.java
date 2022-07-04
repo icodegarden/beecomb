@@ -14,7 +14,6 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExe
 import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
-import io.github.icodegarden.beecomb.worker.core.JobFreshParams;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
@@ -84,12 +83,6 @@ public class DelayJobService extends BaseJobService {
 						.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
 						.nextTrigAt(nextTrigAt).lastExecuteSuccess(false).end(end).build();
 
-				if (update.getCallback() != null) {
-					JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
-							mainUpdate.getLastTrigResult());
-					update.getCallback().accept(params);
-				}
-
 				RETRY_TEMPLATE.execute(ctx -> {
 					jobExecuteRecordManager.createOnExecuted(mainUpdate);
 					update(mainUpdate);
@@ -113,13 +106,6 @@ public class DelayJobService extends BaseJobService {
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
 					/* 不需要指定该参数.queued(false) */.build();
-
-			if (update.getCallback() != null) {
-				JobFreshParams params = new JobFreshParams(mainUpdate.getLastExecuteExecutor(),
-						mainUpdate.getLastExecuteReturns(), true, mainUpdate.getLastTrigAt(),
-						mainUpdate.getLastTrigResult());
-				update.getCallback().accept(params);
-			}
 
 			RETRY_TEMPLATE.execute(ctx -> {
 				jobExecuteRecordManager.createOnExecuted(mainUpdate);
@@ -176,12 +162,6 @@ public class DelayJobService extends BaseJobService {
 							.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(nextTrigAt).end(end)
 							.build();
 
-					if (update.getCallback() != null) {
-						JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
-								mainUpdate.getLastTrigResult());
-						update.getCallback().accept(params);
-					}
-
 					RETRY_TEMPLATE.execute(ctx -> {
 						jobExecuteRecordManager.createOnExecuted(mainUpdate);
 						update(mainUpdate);
@@ -201,12 +181,6 @@ public class DelayJobService extends BaseJobService {
 							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
 							.lastTrigResult(buildLastTrigResult(update.getException())).end(true)
 							/* .queued(false) */.build();
-
-					if (update.getCallback() != null) {
-						JobFreshParams params = new JobFreshParams(null, null, false, mainUpdate.getLastTrigAt(),
-								mainUpdate.getLastTrigResult());
-						update.getCallback().accept(params);
-					}
 
 					RETRY_TEMPLATE.execute(ctx -> {
 						jobExecuteRecordManager.createOnExecuted(mainUpdate);
