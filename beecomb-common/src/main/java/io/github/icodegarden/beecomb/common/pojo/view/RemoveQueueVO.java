@@ -7,7 +7,7 @@ import java.io.Serializable;
  * @author Fangfang.Xu
  *
  */
-public class RemoveJobVO implements Serializable {
+public class RemoveQueueVO implements Serializable {
 	private static final long serialVersionUID = 7987214679035546483L;
 
 	private Long jobId;
@@ -16,10 +16,10 @@ public class RemoveJobVO implements Serializable {
 	 */
 	private Boolean removed;
 
-	public RemoveJobVO() {
+	public RemoveQueueVO() {
 	}
 
-	public RemoveJobVO(Long jobId, Boolean removed) {
+	public RemoveQueueVO(Long jobId, Boolean removed) {
 		this.jobId = jobId;
 		this.removed = removed;
 	}

@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.worker.server;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.common.pojo.view.RemoveJobVO;
+import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +26,10 @@ public class DispatcherHandler {
 		jobReceiver.receive(job);
 	}
 
-	public RemoveJobVO removeJob(ExecutableJobBO job) {
+	public RemoveQueueVO removeJob(ExecutableJobBO job) {
 		boolean remove = jobEngine.removeQueue(job);
 
-		return new RemoveJobVO(job.getId(), remove);
+		return new RemoveQueueVO(job.getId(), remove);
 	}
 
 }

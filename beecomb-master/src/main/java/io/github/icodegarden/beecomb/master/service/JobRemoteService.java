@@ -7,7 +7,7 @@ import java.util.Collections;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestWorkerDTO;
-import io.github.icodegarden.beecomb.common.pojo.view.RemoveJobVO;
+import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableExchanger;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.LoadBalanceExchanger;
@@ -81,7 +81,7 @@ public class JobRemoteService {
 
 			RequestWorkerDTO dto = new RequestWorkerDTO(RequestWorkerDTO.METHOD_REMOVEJOB, job);
 			ShardExchangeResult result = exchanger.exchange(dto, dispatchTimeoutMillis);
-			RemoveJobVO vo = (RemoveJobVO) result.response();
+			RemoveQueueVO vo = (RemoveQueueVO) result.response();
 //			MetricsInstance loadBalancedInstance = result.successResult().instance();
 			return vo.getRemoved();
 		}
