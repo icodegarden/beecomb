@@ -551,7 +551,7 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
 |overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
 |overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |
-|overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/4资源用于Executor   |1-N   |
+|overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/2资源用于Executor   |1-N   |
 
 
 # 多系统
