@@ -32,7 +32,7 @@ import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 class JobReceiverTests extends Properties4Test {
 
 	@Autowired
-	JobReceiver jobReceiver;
+	JobRequestReceiver jobReceiver;
 	@SpyBean
 	JobEngine jobEngine;
 	@Autowired

@@ -23,7 +23,7 @@ import io.github.icodegarden.beecomb.worker.core.ScheduleJobEngine;
 import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.server.DispatcherHandler;
-import io.github.icodegarden.beecomb.worker.server.JobReceiver;
+import io.github.icodegarden.beecomb.worker.server.JobRequestReceiver;
 import io.github.icodegarden.beecomb.worker.server.WorkerServer;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
 import io.github.icodegarden.beecomb.worker.service.JobService;
@@ -209,13 +209,13 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobReceiver jobReceiver(JobService jobStorage, JobEngine jobEngine) {
-		return new JobReceiver(jobStorage, jobEngine);
+	public JobRequestReceiver jobReceiver(JobService jobStorage, JobEngine jobEngine) {
+		return new JobRequestReceiver(jobStorage, jobEngine);
 	}
 	
 	@Bean
-	public DispatcherHandler dispatcherHandler(JobReceiver jobReceiver, JobEngine jobEngine) {
-		return new DispatcherHandler(jobReceiver, jobEngine);
+	public DispatcherHandler dispatcherHandler(JobRequestReceiver jobReceiver, JobEngine jobEngine) {
+		return new DispatcherHandler(jobReceiver);
 	}
 
 	/**

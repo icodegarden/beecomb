@@ -3,6 +3,7 @@ package io.github.icodegarden.beecomb.worker.server;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
@@ -16,12 +17,12 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-public class JobReceiver {
+public class JobRequestReceiver {
 
 	private JobService jobService;
 	private JobEngine jobEngine;
 
-	public JobReceiver(JobService jobService, JobEngine jobEngine) {
+	public JobRequestReceiver(JobService jobService, JobEngine jobEngine) {
 		this.jobService = jobService;
 		this.jobEngine = jobEngine;
 	}
@@ -60,4 +61,15 @@ public class JobReceiver {
 		}
 	}
 
+	public RemoveQueueVO remove(ExecutableJobBO job) {
+		boolean remove = jobEngine.removeQueue(job);
+		if(remove) {
+			/**
+			 * 这个更新放在master处理，这样可以优化性能。因为删除任务和更新任务都需要走这里，而删除任务就不需要执行update
+			 */
+//			jobService.updateRemoveQueue(job);
+		}
+
+		return new RemoveQueueVO(job.getId(), remove);
+	}
 }

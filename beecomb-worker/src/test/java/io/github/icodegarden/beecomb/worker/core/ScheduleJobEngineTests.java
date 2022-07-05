@@ -96,7 +96,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_noQualifiedExecutor_scheduleFixDelay() throws Exception {
 		// --------------------------------没有合格的executor
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixDelay(1000);
+		job.getSchedule().setScheduleFixDelay(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_noQualifiedExecutor(job);
@@ -106,7 +106,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	void runJob_noQualifiedExecutor_scheduleFixRate() throws Exception {
 		// --------------------------------没有合格的executor
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixRate(1000);
+		job.getSchedule().setScheduleFixRate(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_noQualifiedExecutor(job);
@@ -150,7 +150,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	@Test
 	void runJob_ok_scheduleFixDelay() throws Exception {
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixDelay(1000);
+		job.getSchedule().setScheduleFixDelay(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_ok(job);
@@ -159,7 +159,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	@Test
 	void runJob_ok_scheduleFixRate() throws Exception {
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixRate(1000);
+		job.getSchedule().setScheduleFixRate(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_ok(job);
@@ -219,7 +219,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	@Test
 	void runJob_ok_end_scheduleFixDelay() throws Exception {
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixDelay(1000);
+		job.getSchedule().setScheduleFixDelay(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_ok_end(job);
@@ -228,7 +228,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	@Test
 	void runJob_ok_end_scheduleFixRate() throws Exception {
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixRate(1000);
+		job.getSchedule().setScheduleFixRate(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_ok_end(job);
@@ -289,7 +289,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	@Test
 	void runJob_nok_scheduleFixDelay() throws Exception {
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixDelay(1000);
+		job.getSchedule().setScheduleFixDelay(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_nok(job);
@@ -298,7 +298,7 @@ class ScheduleJobEngineTests extends Properties4Test {
 	@Test
 	void runJob_nok_scheduleFixRate() throws Exception {
 		ExecutableJobBO job = getJob();
-		job.getSchedule().setScheduleFixRate(1000);
+		job.getSchedule().setScheduleFixRate(1000L);
 		doReturn(job).when(scheduleJobService).findOneExecutableJob(anyLong());
 		
 		runJob_nok(job);

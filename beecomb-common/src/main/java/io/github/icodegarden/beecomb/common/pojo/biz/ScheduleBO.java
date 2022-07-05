@@ -21,8 +21,8 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
 public class ScheduleBO implements Serializable {
 	private static final long serialVersionUID = 110264587448091798L;
 	
-	private Integer scheduleFixRate;// int comment 'ms',
-	private Integer scheduleFixDelay;// int comment 'ms',
+	private Long scheduleFixRate;// int comment 'ms',
+	private Long scheduleFixDelay;// int comment 'ms',
 	private String sheduleCron;// varchar(20),
 	private Long scheduledTimes;// bigint,
 
@@ -108,7 +108,7 @@ public class ScheduleBO implements Serializable {
 	 * @return
 	 */
 	@JsonIgnore
-	public long calcNextTrigDelayMillis(LocalDateTime start, LocalDateTime end) {
+	public long calcNextTrigDelayMillisOnTriggered(LocalDateTime start, LocalDateTime end) {
 		LocalDateTime next = calcNextTrigAtOnTriggered(start, end);
 		Duration between = Duration.between(SystemUtils.now(), next);
 		return between.toMillis();
@@ -120,19 +120,19 @@ public class ScheduleBO implements Serializable {
 		return schedule;
 	}
 
-	public Integer getScheduleFixRate() {
+	public Long getScheduleFixRate() {
 		return scheduleFixRate;
 	}
 
-	public void setScheduleFixRate(Integer scheduleFixRate) {
+	public void setScheduleFixRate(Long scheduleFixRate) {
 		this.scheduleFixRate = scheduleFixRate;
 	}
 
-	public Integer getScheduleFixDelay() {
+	public Long getScheduleFixDelay() {
 		return scheduleFixDelay;
 	}
 
-	public void setScheduleFixDelay(Integer scheduleFixDelay) {
+	public void setScheduleFixDelay(Long scheduleFixDelay) {
 		this.scheduleFixDelay = scheduleFixDelay;
 	}
 

@@ -50,7 +50,7 @@ public abstract class BaseJobService extends AbstractBackendJobService implement
 
 		jobMainManager.updateEnQueue(update);
 	}
-
+	
 	@Transactional
 	public boolean update(UpdateJobOnExecutedDTO dto) {
 		boolean update = false;

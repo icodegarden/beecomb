@@ -42,6 +42,7 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	private Boolean end;
 	private String createdBy;
 	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 
 	private String params;
 
@@ -51,37 +52,39 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	public ExecutableJobBO() {
 	}
 
-	public ExecutableJobBO(Long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
-			Integer priority, Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued,
-			LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
-			String lastExecuteReturns, Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt,
-			Boolean end, String createdBy, LocalDateTime createdAt, String params, DelayBO delay, ScheduleBO schedule) {
-		this.id = id;
-		this.uuid = uuid;
-		this.name = name;
-		this.type = type;
-		this.executorName = executorName;
-		this.jobHandlerName = jobHandlerName;
-		this.priority = priority;
-		this.weight = weight;
-		this.parallel = parallel;
-		this.maxParallelShards = maxParallelShards;
-		this.queued = queued;
-		this.queuedAt = queuedAt;
-		this.queuedAtInstance = queuedAtInstance;
-		this.lastTrigAt = lastTrigAt;
-		this.lastExecuteExecutor = lastExecuteExecutor;
-		this.lastExecuteReturns = lastExecuteReturns;
-		this.lastExecuteSuccess = lastExecuteSuccess;
-		this.executeTimeout = executeTimeout;
-		this.nextTrigAt = nextTrigAt;
-		this.end = end;
-		this.createdBy = createdBy;
-		this.createdAt = createdAt;
-		this.params = params;
-		this.delay = delay;
-		this.schedule = schedule;
-	}
+//	public ExecutableJobBO(Long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
+//			Integer priority, Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued,
+//			LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
+//			String lastExecuteReturns, Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt,
+//			Boolean end, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, String params,
+//			DelayBO delay, ScheduleBO schedule) {
+//		this.id = id;
+//		this.uuid = uuid;
+//		this.name = name;
+//		this.type = type;
+//		this.executorName = executorName;
+//		this.jobHandlerName = jobHandlerName;
+//		this.priority = priority;
+//		this.weight = weight;
+//		this.parallel = parallel;
+//		this.maxParallelShards = maxParallelShards;
+//		this.queued = queued;
+//		this.queuedAt = queuedAt;
+//		this.queuedAtInstance = queuedAtInstance;
+//		this.lastTrigAt = lastTrigAt;
+//		this.lastExecuteExecutor = lastExecuteExecutor;
+//		this.lastExecuteReturns = lastExecuteReturns;
+//		this.lastExecuteSuccess = lastExecuteSuccess;
+//		this.executeTimeout = executeTimeout;
+//		this.nextTrigAt = nextTrigAt;
+//		this.end = end;
+//		this.createdBy = createdBy;
+//		this.createdAt = createdAt;
+//		this.updatedAt = updatedAt;
+//		this.params = params;
+//		this.delay = delay;
+//		this.schedule = schedule;
+//	}
 
 	/**
 	 * 计算一个任务会形成的负载数<br>
@@ -133,7 +136,7 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	public LocalDateTime calcNextTrigAtOnEnQueue() {
 		if (delay != null) {
 			if (nextTrigAt == null) {
-				return getCreatedAt().plus(delay.getDelay(), ChronoUnit.MILLIS);
+				return getUpdatedAt().plus(delay.getDelay(), ChronoUnit.MILLIS);
 			}
 			return nextTrigAt;
 		}
@@ -332,6 +335,14 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.createdAt = createdAt;
 	}
 
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
 	public String getParams() {
 		return params;
 	}
@@ -364,8 +375,8 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 				+ ", queuedAt=" + queuedAt + ", queuedAtInstance=" + queuedAtInstance + ", lastTrigAt=" + lastTrigAt
 				+ ", lastExecuteExecutor=" + lastExecuteExecutor + ", lastExecuteReturns=" + lastExecuteReturns
 				+ ", lastExecuteSuccess=" + lastExecuteSuccess + ", executeTimeout=" + executeTimeout + ", nextTrigAt="
-				+ nextTrigAt + ", end=" + end + ", createdBy=" + createdBy + ", createdAt=" + createdAt + ", params="
-				+ params + ", delay=" + delay + ", schedule=" + schedule + "]";
+				+ nextTrigAt + ", end=" + end + ", createdBy=" + createdBy + ", createdAt=" + createdAt + ", updatedAt="
+				+ updatedAt + ", params=" + params + ", delay=" + delay + ", schedule=" + schedule + "]";
 	}
 
 }

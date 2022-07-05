@@ -69,7 +69,7 @@ class PrimaryJobServiceTests {
 		JobMainDO jobDO = new JobMainDO();
 		BeanUtils.copyProperties(mainPO, jobDO);
 		DelayJobDO delayJobPO = new DelayJobDO();
-		delayJobPO.setDelay(3000);
+		delayJobPO.setDelay(3000L);
 		jobDO.setDelayJob(delayJobPO);
 		ExecutableJobBO job = jobDO.toExecutableJobBO();
 

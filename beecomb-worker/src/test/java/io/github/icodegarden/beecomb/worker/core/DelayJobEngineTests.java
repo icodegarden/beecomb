@@ -87,7 +87,7 @@ class DelayJobEngineTests extends Properties4Test {
 		job.setLastExecuteSuccess(true);
 		job.setEnd(false);
 		DelayBO delay = new DelayBO();
-		delay.setDelay(1000);
+		delay.setDelay(1000L);
 		delay.setRetryBackoffOnNoQualified(2000);
 		delay.setRetryBackoffOnExecuteFailed(2000);
 		delay.setRetriedTimesOnExecuteFailed(0);

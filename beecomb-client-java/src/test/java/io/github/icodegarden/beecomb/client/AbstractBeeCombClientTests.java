@@ -10,11 +10,15 @@ import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.client.pojo.query.JobQuery;
 import io.github.icodegarden.beecomb.client.pojo.transfer.CreateDelayJobDTO;
+import io.github.icodegarden.beecomb.client.pojo.transfer.CreateScheduleJobDTO;
 import io.github.icodegarden.beecomb.client.pojo.transfer.UpdateJobDTO;
+import io.github.icodegarden.beecomb.client.pojo.transfer.UpdateJobDTO.Delay;
+import io.github.icodegarden.beecomb.client.pojo.transfer.UpdateJobDTO.Schedule;
 import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.DeleteJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
+import io.github.icodegarden.beecomb.client.pojo.view.UpdateJobVO;
 import io.github.icodegarden.beecomb.client.security.BasicAuthentication;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.test.Properties4Test;
@@ -33,6 +37,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 	void init() {
 		beeCombClient = getBeeCombClient();
 	}
+
 	@AfterEach
 	void close() throws IOException {
 		beeCombClient.close();
@@ -43,7 +48,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 	@Test
 	void createJob() throws Exception {
 		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
-				new CreateDelayJobDTO.Delay(1000));
+				new CreateDelayJobDTO.Delay(1000L));
 		dto.setUuid(UUID.randomUUID().toString());
 		CreateJobVO response = beeCombClient.createJob(dto);
 
@@ -60,7 +65,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 	@Test
 	void pageJobs() throws Exception {
 		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
-				new CreateDelayJobDTO.Delay(1000));
+				new CreateDelayJobDTO.Delay(1000L));
 		CreateJobVO response1 = beeCombClient.createJob(dto);
 //		CreateJobResponse response2 = beeCombClient.createJob(dto);
 
@@ -77,7 +82,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 	@Test
 	void findJob() throws Exception {
 		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
-				new CreateDelayJobDTO.Delay(1000));
+				new CreateDelayJobDTO.Delay(1000L));
 		CreateJobVO response = beeCombClient.createJob(dto);
 
 		JobVO findJob = beeCombClient.getJob(response.getJob().getId());
@@ -89,7 +94,7 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 	@Test
 	void findJobByUUID() throws Exception {
 		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
-				new CreateDelayJobDTO.Delay(1000));
+				new CreateDelayJobDTO.Delay(1000L));
 		dto.setUuid(UUID.randomUUID().toString());
 		CreateJobVO response = beeCombClient.createJob(dto);
 
@@ -101,13 +106,14 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 	}
 
 	@Test
-	void updateJob() throws Exception {
+	void updateJob_delay() throws Exception {
 		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
-				new CreateDelayJobDTO.Delay(1000));
+				new CreateDelayJobDTO.Delay(1000L));
 		CreateJobVO response = beeCombClient.createJob(dto);
 
-		JobVO findJob = beeCombClient.getJob(response.getJob().getId());
-		
+		Long jobId = response.getJob().getId();
+		JobVO findJob = beeCombClient.getJob(jobId);
+
 		UpdateJobDTO update = new UpdateJobDTO(findJob.getId());
 		update.setDesc("desc2");
 		update.setExecuteTimeout(1999);
@@ -118,10 +124,16 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 		update.setParams("params2");
 		update.setPriority(9);
 		update.setWeight(4);
-		beeCombClient.updateJob(update);
-		
+		Delay delay = new UpdateJobDTO.Delay();
+		delay.setDelay(15000L);
+		update.setDelay(delay);
+		UpdateJobVO vo = beeCombClient.updateJob(update);
+
+		Assertions.assertThat(vo.getId()).isEqualTo(jobId);
+		Assertions.assertThat(vo.getSuccess()).isTrue();
+
 		findJob = beeCombClient.getJob(response.getJob().getId());
-		
+
 		Assertions.assertThat(findJob.getDesc()).isEqualTo("desc2");
 		Assertions.assertThat(findJob.getExecuteTimeout()).isEqualTo(1999);
 		Assertions.assertThat(findJob.getExecutorName()).isEqualTo("executorName2");
@@ -131,18 +143,43 @@ abstract class AbstractBeeCombClientTests extends Properties4Test {
 		Assertions.assertThat(findJob.getParams()).isEqualTo("params2");
 		Assertions.assertThat(findJob.getPriority()).isEqualTo(9);
 		Assertions.assertThat(findJob.getWeight()).isEqualTo(4);
+		Assertions.assertThat(findJob.getDelay().getDelay()).isEqualTo(15000);
 	}
-	
+
+	@Test
+	void updateJob_schedule() throws Exception {
+		CreateScheduleJobDTO dto = new CreateScheduleJobDTO("job", "executorName", "jobHandlerName",
+				CreateScheduleJobDTO.Schedule.scheduleFixDelay(3000L));
+
+		CreateJobVO response = beeCombClient.createJob(dto);
+
+		Long jobId = response.getJob().getId();
+		JobVO findJob = beeCombClient.getJob(jobId);
+
+		UpdateJobDTO update = new UpdateJobDTO(findJob.getId());
+		Schedule schedule = new UpdateJobDTO.Schedule();
+		schedule.setScheduleFixDelay(15000L);
+		update.setSchedule(schedule);
+		UpdateJobVO vo = beeCombClient.updateJob(update);
+
+		Assertions.assertThat(vo.getId()).isEqualTo(jobId);
+		Assertions.assertThat(vo.getSuccess()).isTrue();
+
+		findJob = beeCombClient.getJob(response.getJob().getId());
+
+		Assertions.assertThat(findJob.getSchedule().getScheduleFixDelay()).isEqualTo(15000);
+	}
+
 	@Test
 	void deleteJob() throws Exception {
 		CreateDelayJobDTO dto = new CreateDelayJobDTO("job", "executorName", "jobHandlerName",
-				new CreateDelayJobDTO.Delay(1000));
+				new CreateDelayJobDTO.Delay(1000L));
 		CreateJobVO response = beeCombClient.createJob(dto);
-		
+
 		Long jobId = response.getJob().getId();
 		DeleteJobVO vo = beeCombClient.deleteJob(jobId);
-		
-		Assertions.assertThat(vo.getJobId()).isEqualTo(jobId);
+
+		Assertions.assertThat(vo.getId()).isEqualTo(jobId);
 		Assertions.assertThat(vo.getSuccess()).isTrue();
 	}
 }

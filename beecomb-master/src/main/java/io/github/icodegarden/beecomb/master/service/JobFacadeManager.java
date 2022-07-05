@@ -20,8 +20,10 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJob
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.enums.JobType;
@@ -45,7 +47,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 	@Autowired
 	private JobDetailManager jobDetailManager;
 	@Autowired
-	private DelayJobManager delayJbManager;
+	private DelayJobManager delayJobManager;
 	@Autowired
 	private ScheduleJobManager scheduleJobManager;
 
@@ -65,7 +67,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 			CreateDelayJobDTO createDelayJobDTO = new CreateDelayJobDTO();
 			BeanUtils.copyProperties(dto.getDelay(), createDelayJobDTO);
 			createDelayJobDTO.setJobId(createJobMainDTO.getId());
-			delayJbManager.create(createDelayJobDTO);
+			delayJobManager.create(createDelayJobDTO);
 		}
 		if (dto.getType() == JobType.Schedule) {
 			CreateScheduleJobDTO createScheduleJobDTO = new CreateScheduleJobDTO();
@@ -79,12 +81,26 @@ public class JobFacadeManager extends AbstractBackendJobService {
 
 	@Transactional
 	public boolean update(UpdateJobOpenapiDTO dto) {
+		return update(dto, false);
+	}
+	
+	/**
+	 * 
+	 * @param dto
+	 * @param removedQueue 是否引起了移除队列，是则会自动更新nextTrigAt为false
+	 * @return
+	 */
+	@Transactional
+	public boolean update(UpdateJobOpenapiDTO dto, boolean removedQueue) {
 		dto.validate();
 
 		boolean update = false;
 
 		UpdateJobMainDTO updateJobMainDTO = new UpdateJobMainDTO();
 		BeanUtils.copyProperties(dto, updateJobMainDTO);
+		if(removedQueue) {
+			updateJobMainDTO.setNextTrigAtNull(true);
+		}
 		if (updateJobMainDTO.shouldUpdate()) {
 			update = jobMainManager.update(updateJobMainDTO);
 		}
@@ -96,16 +112,34 @@ public class JobFacadeManager extends AbstractBackendJobService {
 			update = jobDetailManager.update(updateJobDetailDTO);
 		}
 
+		if (dto.getDelay() != null) {
+			UpdateDelayJobDTO updateDelayJobDTO = new UpdateDelayJobDTO();
+			BeanUtils.copyProperties(dto.getDelay(), updateDelayJobDTO);
+			updateDelayJobDTO.setJobId(dto.getId());
+			if (updateDelayJobDTO.shouldUpdate()) {
+				update = delayJobManager.update(updateDelayJobDTO);
+			}
+		}
+
+		if (dto.getSchedule() != null) {
+			UpdateScheduleJobDTO updateScheduleJobDTO = new UpdateScheduleJobDTO();
+			BeanUtils.copyProperties(dto.getSchedule(), updateScheduleJobDTO);
+			updateScheduleJobDTO.setJobId(dto.getId());
+			if (updateScheduleJobDTO.shouldUpdate()) {
+				update = scheduleJobManager.update(updateScheduleJobDTO);
+			}
+		}
+
 		return update;
 	}
-	
+
 	@Transactional
 	public void delete(Long jobId) {
 		boolean delete = jobMainManager.delete(jobId);
-		if(delete) {
+		if (delete) {
 			jobDetailManager.delete(jobId);
-			delayJbManager.delete(jobId);
-			scheduleJobManager.delete(jobId);			
+			delayJobManager.delete(jobId);
+			scheduleJobManager.delete(jobId);
 		}
 	}
 

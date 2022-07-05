@@ -13,6 +13,7 @@ import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.DeleteJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
+import io.github.icodegarden.beecomb.client.pojo.view.UpdateJobVO;
 import io.github.icodegarden.beecomb.client.util.WebUtils;
 import io.github.icodegarden.commons.exchange.Exchanger;
 import io.github.icodegarden.commons.exchange.Protocol;
@@ -216,12 +217,15 @@ public abstract class AbstractBeeCombClient implements BeeCombClient {
 	}
 
 	@Override
-	public void updateJob(UpdateJobDTO update) throws ExchangeException {
-		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs", HttpMethod.PUT, String.class);
+	public UpdateJobVO updateJob(UpdateJobDTO update) throws ExchangeException {
+		Protocol protocol = buildProtocol(pathPrefix() + "/openapi/v1/jobs", HttpMethod.PUT, UpdateJobVO.class);
 
 		Exchanger<ShardExchangeResult> exchanger = buildExchanger(protocol);
 
-		exchanger.exchange(update, Integer.MAX_VALUE);
+		ShardExchangeResult shardExchangeResult = exchanger.exchange(update, Integer.MAX_VALUE);
+		
+		HttpEntity<UpdateJobVO> httpEntity = (HttpEntity) shardExchangeResult.response();
+		return httpEntity.getBody();
 	}
 
 	@Override

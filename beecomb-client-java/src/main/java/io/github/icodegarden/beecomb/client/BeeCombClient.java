@@ -9,6 +9,7 @@ import io.github.icodegarden.beecomb.client.pojo.view.CreateJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.DeleteJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
+import io.github.icodegarden.beecomb.client.pojo.view.UpdateJobVO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 
 /**
@@ -27,8 +28,13 @@ public interface BeeCombClient extends Closeable {
 	JobVO getJob(Long jobId) throws ExchangeException;
 
 	JobVO getJobByUUID(String uuid) throws ExchangeException;
-	
-	void updateJob(UpdateJobDTO update) throws ExchangeException;
+	/**
+	 * 如果更新任务的执行时间，则从更新时间开始重新计时
+	 * @param update
+	 * @return
+	 * @throws ExchangeException
+	 */
+	UpdateJobVO updateJob(UpdateJobDTO update) throws ExchangeException;
 	
 	/**
 	 * delay任务在已经完成 或 已经取消时会失败<br>

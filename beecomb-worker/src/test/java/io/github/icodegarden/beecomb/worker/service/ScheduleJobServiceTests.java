@@ -82,7 +82,7 @@ class ScheduleJobServiceTests {
 		createJobMain();
 
 		CreateScheduleJobDTO dto = new CreateScheduleJobDTO();
-		dto.setScheduleFixRate(3000);
+		dto.setScheduleFixRate(3000L);
 		dto.setJobId(createJobMainDTO.getId());
 
 		scheduleJobManager.create(dto);

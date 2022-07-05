@@ -33,21 +33,21 @@ public class CreateDelayJobDTO extends CreateJobDTO {
 
 	public static class Delay {
 		@NotNull
-		private Integer delay;
+		private Long delay;
 		private Integer retryOnExecuteFailed;
 		private Integer retryBackoffOnExecuteFailed;
 		private Integer retryOnNoQualified;
 		private Integer retryBackoffOnNoQualified;
 
-		public Delay(Integer delay) {
+		public Delay(Long delay) {
 			this.delay = delay;
 		}
 
-		public Integer getDelay() {
+		public Long getDelay() {
 			return delay;
 		}
 
-		public void setDelay(Integer delay) {
+		public void setDelay(Long delay) {
 			this.delay = delay;
 		}
 

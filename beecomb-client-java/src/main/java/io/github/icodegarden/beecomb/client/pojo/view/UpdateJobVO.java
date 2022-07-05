@@ -5,7 +5,7 @@ package io.github.icodegarden.beecomb.client.pojo.view;
  * @author Fangfang.Xu
  *
  */
-public class DeleteJobVO {
+public class UpdateJobVO {
 
 	private Long id;
 	private Boolean success;
@@ -20,7 +20,7 @@ public class DeleteJobVO {
 
 	@Override
 	public String toString() {
-		return "DeleteJobVO [id=" + id + ", success=" + success + "]";
+		return "UpdateJobVO [id=" + id + ", success=" + success + "]";
 	}
 
 }

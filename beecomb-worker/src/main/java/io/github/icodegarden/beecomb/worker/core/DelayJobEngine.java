@@ -93,12 +93,14 @@ public class DelayJobEngine extends AbstractJobEngine {
 	 */
 	private Result3<ExecutableJobBO, JobTrigger, JobEngineException> doEnQueue(ExecutableJobBO job, long delayMillis) {
 		try {
-			DelayJobTrigger delayJob = new DelayJobTrigger(job.getId());
-			ScheduledFuture<?> future = scheduledThreadPoolExecutor.schedule(delayJob, delayMillis,
+			DelayJobTrigger trigger = new DelayJobTrigger(job.getId());
+			ScheduledFuture<?> future = scheduledThreadPoolExecutor.schedule(trigger, delayMillis,
 					TimeUnit.MILLISECONDS);
-			delayJob.setFuture(future);
+			trigger.setFuture(future);
 
-			return Results.of(true, job, delayJob, null);
+			queuedJobs.put(job.getId(), trigger);
+
+			return Results.of(true, job, trigger, null);
 		} catch (RejectedExecutionException e) {
 			return Results.of(false, job, null,
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
@@ -113,14 +115,12 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 		@Override
 		public void doRun(ExecutableJobBO job) {
-			try {
-				DelayJobEngine.this.runJob(job);
-			} finally {
-				/**
-				 * delay任务每次执行后，一定会从scheduledThreadPoolExecutor.queue中移除，而失败的则可能以新的任务对象方式进queue，所以这里每次都执行remove
-				 */
-				queuedJobs.remove(job.getId());
-			}
+			/**
+			 * delay任务每次执行后，一定会从scheduledThreadPoolExecutor.queue中移除，而失败的则可能以新的任务对象方式进queue，所以这里每次都先执行remove
+			 */
+			queuedJobs.remove(job.getId());
+
+			DelayJobEngine.this.runJob(job);
 		}
 	}
 

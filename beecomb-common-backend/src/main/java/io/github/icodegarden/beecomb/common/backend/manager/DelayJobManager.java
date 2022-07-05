@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service;
 import io.github.icodegarden.beecomb.common.backend.mapper.DelayJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.DelayJobDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO;
+import io.github.icodegarden.beecomb.common.backend.pojo.persistence.DelayJobPO.Update;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.DelayJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJobDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
 import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
 
@@ -42,7 +44,16 @@ public class DelayJobManager {
 		DelayJobDO one = delayJobMapper.findOne(jobId, with);
 		return DelayJobVO.of(one);
 	}
-	
+
+	public boolean update(UpdateDelayJobDTO dto) {
+		dto.validate();
+
+		Update update = new DelayJobPO.Update();
+		BeanUtils.copyProperties(dto, update);
+
+		return delayJobMapper.update(update) == 1;
+	}
+
 	public boolean delete(Long jobId) {
 		return delayJobMapper.delete(jobId) == 1;
 	}

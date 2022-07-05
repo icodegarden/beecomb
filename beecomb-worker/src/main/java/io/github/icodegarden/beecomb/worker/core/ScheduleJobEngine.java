@@ -78,7 +78,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			return Results.of(false, job, null, new InvalidParamJobEngineException("param schedule must not null"));
 		}
 		try {
-			ScheduleJobTrigger scheduleJob = new ScheduleJobTrigger(job.getId());
+			ScheduleJobTrigger trigger = new ScheduleJobTrigger(job.getId());
 
 			/**
 			 * 任务的首次执行延迟
@@ -87,18 +87,21 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 			ScheduledFuture<?> future = null;
 			if (schedule.getScheduleFixDelay() != null) {
-				future = scheduledThreadPoolExecutor.scheduleWithFixedDelay(scheduleJob, nextDelayMillis,
+				future = scheduledThreadPoolExecutor.scheduleWithFixedDelay(trigger, nextDelayMillis,
 						schedule.getScheduleFixDelay(), TimeUnit.MILLISECONDS);
 			} else if (schedule.getScheduleFixRate() != null) {
-				future = scheduledThreadPoolExecutor.scheduleAtFixedRate(scheduleJob, nextDelayMillis,
+				future = scheduledThreadPoolExecutor.scheduleAtFixedRate(trigger, nextDelayMillis,
 						schedule.getScheduleFixRate(), TimeUnit.MILLISECONDS);
 			} else {
 				// 计算出下次执行时间
-				future = scheduledThreadPoolExecutor.schedule(scheduleJob, nextDelayMillis, TimeUnit.MILLISECONDS);
+				future = scheduledThreadPoolExecutor.schedule(trigger, nextDelayMillis, TimeUnit.MILLISECONDS);
 			}
 
-			scheduleJob.setFuture(future);
-			return Results.of(true, job, scheduleJob, null);
+			trigger.setFuture(future);
+			
+			queuedJobs.put(job.getId(), trigger);
+			
+			return Results.of(true, job, trigger, null);
 		} catch (RejectedExecutionException e) {
 			return Results.of(false, job, null,
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
@@ -126,22 +129,20 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		 */
 		private void reEnQueueIfCron(ExecutableJobBO job) {
 			if (job.getSchedule().getSheduleCron() != null) {
-				try {
-					Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 以新的身份重进队列
-					if (result3.isSuccess()) {
-						this.setFuture(result3.getT2().getFuture());
-					} else {
-						if (log.isWarnEnabled()) {
-							log.warn("schedule job with cron reEnQueue failed after run, job:{}", result3.getT1(),
-									result3.getT3());
-						}
-						// 失败则通过恢复机制
+				/**
+				 * 原因同delay
+				 */
+				queuedJobs.remove(job.getId());
+				
+				Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 以新的身份重进队列
+				if (result3.isSuccess()) {
+					this.setFuture(result3.getT2().getFuture());
+				} else {
+					if (log.isWarnEnabled()) {
+						log.warn("schedule job with cron reEnQueue failed after run, job:{}", result3.getT1(),
+								result3.getT3());
 					}
-				} finally {
-					/**
-					 * 原因同delay
-					 */
-					queuedJobs.remove(job.getId());
+					// 失败则通过恢复机制
 				}
 			}
 		}

@@ -17,7 +17,7 @@ public class DelayJob extends Job {
 	/**
 	 * millis
 	 */
-	private int delay;
+	private long delay;
 	private int retryOnExecuteFailed;
 	private int retryBackoffOnExecuteFailed;
 	private int retriedTimesOnExecuteFailed;
@@ -34,7 +34,7 @@ public class DelayJob extends Job {
 	public DelayJob(long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
 			int priority, int weight, LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt,
 			String lastExecuteExecutor, String lastExecuteReturns, boolean lastExecuteSuccess, int executeTimeout,
-			LocalDateTime createdAt, String params, boolean parallel, int shard, int delay, int retryOnExecuteFailed,
+			LocalDateTime createdAt, String params, boolean parallel, int shard, long delay, int retryOnExecuteFailed,
 			int retryBackoffOnExecuteFailed, int retriedTimesOnExecuteFailed, int retryOnNoQualified,
 			int retryBackoffOnNoQualified, int retriedTimesOnNoQualified) {
 		super(id, uuid, name, type, executorName, jobHandlerName, priority, weight, queuedAt, queuedAtInstance,
@@ -64,7 +64,7 @@ public class DelayJob extends Job {
 				delay.getRetryBackoffOnNoQualified(), delay.getRetriedTimesOnNoQualified());
 	}
 
-	public int getDelay() {
+	public long getDelay() {
 		return delay;
 	}
 

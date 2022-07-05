@@ -34,6 +34,7 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.UpdateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
@@ -134,11 +135,21 @@ public class JobControllerRy extends BaseControllerRy {
 	@PostMapping(value = "api/job/update")
 	public ResponseEntity<AjaxResult> updateJob(@Validated UpdateJobApiDTO dto) {
 		try {
-			UpdateJobOpenapiDTO updateJobDTO = new UpdateJobOpenapiDTO();
-			BeanUtils.copyProperties(dto, updateJobDTO);
+			ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(dto.getId());
 
-			jobFacadeManager.update(updateJobDTO);
-			return ResponseEntity.ok(success());
+			UpdateJobOpenapiDTO updateJobOpenapiDTO = new UpdateJobOpenapiDTO();
+			BeanUtils.copyProperties(dto, updateJobOpenapiDTO);
+
+			UpdateJobOpenapiDTO.Delay delay = new UpdateJobOpenapiDTO.Delay();
+			BeanUtils.copyProperties(dto, delay);
+			updateJobOpenapiDTO.setDelay(delay);
+
+			UpdateJobOpenapiDTO.Schedule schedule = new UpdateJobOpenapiDTO.Schedule();
+			BeanUtils.copyProperties(dto, schedule);
+			updateJobOpenapiDTO.setSchedule(schedule);
+
+			boolean success = jobLocalService.update(updateJobOpenapiDTO, one);
+			return ResponseEntity.ok(success ? success() : error());
 		} catch (IllegalArgumentException e) {
 			/**
 			 * 参数错误（包括唯一约束）400等
@@ -151,12 +162,12 @@ public class JobControllerRy extends BaseControllerRy {
 			return (ResponseEntity) ResponseEntity.status(e.httpStatus()).body(e.getMessage());
 		}
 	}
-	
+
 	@GetMapping("view/job/create")
 	public String userCreate(HttpServletRequest request, ModelMap mmap) {
 		return "job/all/create";
 	}
-	
+
 	@PostMapping(value = "api/job/create")
 	public ResponseEntity<AjaxResult> createJob(@Validated CreateJobApiDTO createJobApiDTO) {
 		createJobApiDTO.validate();
@@ -192,7 +203,7 @@ public class JobControllerRy extends BaseControllerRy {
 					.body(errorCodeException.getMessage());
 		}
 	}
-	
+
 	@PostMapping("api/job/{id}/delete")
 	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
 		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(id);
@@ -206,12 +217,12 @@ public class JobControllerRy extends BaseControllerRy {
 		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
-		
+
 		boolean delete = jobLocalService.delete(one);
 		if (!delete) {
 			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "FORBIDDEN");
 		}
-		
+
 		return ResponseEntity.ok(success());
 	}
 }

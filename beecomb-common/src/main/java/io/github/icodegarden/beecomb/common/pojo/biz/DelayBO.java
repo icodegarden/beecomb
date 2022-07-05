@@ -18,7 +18,7 @@ import io.github.icodegarden.commons.lang.util.SystemUtils;
 public class DelayBO implements Serializable {
 	private static final long serialVersionUID = -7494615898068876183L;
 
-	private Integer delay;
+	private Long delay;
 	private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
 	private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
 	private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
@@ -87,11 +87,11 @@ public class DelayBO implements Serializable {
 		return delay;
 	}
 
-	public Integer getDelay() {
+	public Long getDelay() {
 		return delay;
 	}
 
-	public void setDelay(Integer delay) {
+	public void setDelay(Long delay) {
 		this.delay = delay;
 	}
 

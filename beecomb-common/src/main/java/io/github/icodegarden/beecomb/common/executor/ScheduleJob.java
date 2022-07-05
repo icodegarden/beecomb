@@ -14,8 +14,8 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
 public class ScheduleJob extends Job {
 	private static final long serialVersionUID = -8461519222526601868L;
 
-	private Integer scheduleFixRate;
-	private Integer scheduleFixDelay;
+	private Long scheduleFixRate;
+	private Long scheduleFixDelay;
 	private String sheduleCron;
 	private long scheduledTimes;
 
@@ -28,8 +28,8 @@ public class ScheduleJob extends Job {
 	public ScheduleJob(long id, String uuid, String name, JobType type, String executorName, String jobHandlerName,
 			int priority, int weight, LocalDateTime queuedAt, String queuedAtInstance, LocalDateTime lastTrigAt,
 			String lastExecuteExecutor, String lastExecuteReturns, boolean lastExecuteSuccess, int executeTimeout,
-			LocalDateTime createdAt, String params, boolean parallel, int shard, Integer scheduleFixRate,
-			Integer scheduleFixDelay, String sheduleCron, long scheduledTimes) {
+			LocalDateTime createdAt, String params, boolean parallel, int shard, Long scheduleFixRate,
+			Long scheduleFixDelay, String sheduleCron, long scheduledTimes) {
 		super(id, uuid, name, type, executorName, jobHandlerName, priority, weight, queuedAt, queuedAtInstance,
 				lastTrigAt, lastExecuteExecutor, lastExecuteReturns, lastExecuteSuccess, executeTimeout, createdAt,
 				params, parallel, 0, 1);
@@ -51,11 +51,11 @@ public class ScheduleJob extends Job {
 				schedule.getScheduleFixRate(), schedule.getScheduleFixDelay(), schedule.getSheduleCron(), 0);
 	}
 
-	public Integer getScheduleFixRate() {
+	public Long getScheduleFixRate() {
 		return scheduleFixRate;
 	}
 
-	public Integer getScheduleFixDelay() {
+	public Long getScheduleFixDelay() {
 		return scheduleFixDelay;
 	}
 

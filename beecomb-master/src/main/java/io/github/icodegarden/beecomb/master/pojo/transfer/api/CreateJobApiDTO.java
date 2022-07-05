@@ -51,14 +51,14 @@ public class CreateJobApiDTO implements Validateable {
 	@Length(max = 200)
 	private String desc;// varchar(200) comment '任务描述',
 
-	private Integer delay;// int comment 'ms',
+	private Long delay;
 	private Integer retryOnExecuteFailed = 0;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
 	private Integer retryBackoffOnExecuteFailed = 3000;// int NOT NULL DEFAULT 3000 comment 'ms要求 gte 1000',
 	private Integer retryOnNoQualified = 0;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时重试次数，包括不在线、超载时',
 	private Integer retryBackoffOnNoQualified = 30000;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
 
-	private Integer scheduleFixRate;// int comment 'ms',
-	private Integer scheduleFixDelay;// int comment 'ms',
+	private Long scheduleFixRate;// int comment 'ms',
+	private Long scheduleFixDelay;// int comment 'ms',
 	private String sheduleCron;// varchar(20),
 
 	@Override

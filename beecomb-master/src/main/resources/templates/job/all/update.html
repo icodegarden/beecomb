@@ -106,6 +106,90 @@
                     </div>
                 </div>
             </div>
+            
+            <span th:if="${job.type.toString() == 'Delay'}">
+            <h4 class="form-header h4">delay任务信息</h4>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">任务延迟ms：</label>
+                        <div class="col-sm-8">
+                            <input name="delay" placeholder="请输入delay" class="form-control" type="number" min="1000" max="315360000000" th:value="${job.delayJob.delay}">
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">ExecuteFailed重试次数：</label>
+                        <div class="col-sm-8">
+                            <input name="retryOnExecuteFailed" placeholder="请输入retryOnExecuteFailed" class="form-control" type="number" min="0" th:value="${job.delayJob.retryOnExecuteFailed}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">ExecuteFailed重试回退ms：</label>
+                        <div class="col-sm-8">
+                            <input name="retryBackoffOnExecuteFailed" placeholder="请输入retryBackoffOnExecuteFailed" class="form-control" type="number" min="1000" th:value="${job.delayJob.retryBackoffOnExecuteFailed}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">NoQualified重试次数：</label>
+                        <div class="col-sm-8">
+                            <input name="retryOnNoQualified" placeholder="请输入retryOnNoQualified" class="form-control" type="number" min="0" th:value="${job.delayJob.retryOnNoQualified}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">NoQualified重试回退ms：</label>
+                        <div class="col-sm-8">
+                            <input name="retryBackoffOnNoQualified" placeholder="请输入retryBackoffOnNoQualified" class="form-control" type="number" min="1000" th:value="${job.delayJob.retryBackoffOnNoQualified}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </span>
+            
+            <span th:if="${job.type.toString() == 'Schedule'}">
+            <h4 class="form-header h4">schedule任务信息</h4>
+            <div class="row">
+            	<div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">scheduleFixRate：</label>
+                        <div class="col-sm-8">
+                            <input name="scheduleFixRate" placeholder="请输入scheduleFixRate" class="form-control" type="number" min="1000" max="315360000000" th:value="${job.scheduleJob?.scheduleFixRate}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">scheduleFixDelay：</label>
+                        <div class="col-sm-8">
+                            <input name="scheduleFixDelay" placeholder="请输入scheduleFixDelay" class="form-control" type="number" min="1000" max="315360000000" th:value="${job.scheduleJob.scheduleFixDelay}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label ">sheduleCron：</label>
+                        <div class="col-sm-8">
+                            <input name="sheduleCron" placeholder="请输入sheduleCron" class="form-control" type="text" th:value="${job.scheduleJob.sheduleCron}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </span>
+            
         </form>
     </div>
     <div class="row">

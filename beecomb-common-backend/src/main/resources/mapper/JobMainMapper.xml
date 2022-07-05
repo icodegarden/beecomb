@@ -24,6 +24,7 @@
 		<result property="end" column="is_end" />
 		<result property="createdBy" column="created_by" />
 		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
 	</resultMap>
 	
 	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO" extends="baseMap">
@@ -115,6 +116,7 @@
 					<if test="with.lastExecuteExecutor == true">a.`last_execute_executor` as last_execute_executor,</if>
 					<if test="with.createdBy == true">a.`created_by` as created_by,</if>
 					<if test="with.createdAt == true">a.`created_at` as created_at,</if>
+					<if test="with.updatedAt == true">a.`updated_at` as updated_at,</if>
 				</trim>
 				<if test="with.jobDetail != null">
 					,b.`job_id` as jd_job_id
@@ -261,7 +263,9 @@
 			<if test="executeTimeout != null">execute_timeout = #{executeTimeout},</if>
 			<if test="nextTrigAt != null">next_trig_at = #{nextTrigAt},</if>
 			<if test="end != null">is_end = #{end},</if>
-			<if test="nextTrigAtNull == true">next_trig_at = null,</if>
+			<if test="updatedBy != null">updated_by = #{updatedBy},</if>
+			<if test="updatedAt != null">updated_at = #{updatedAt},</if>
+			<if test="nextTrigAtNull != null and nextTrigAtNull == true">next_trig_at = null,</if>
 		</trim>
 		where id = #{id}
 	</update>

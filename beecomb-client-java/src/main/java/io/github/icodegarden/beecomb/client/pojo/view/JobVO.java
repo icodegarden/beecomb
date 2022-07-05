@@ -63,7 +63,7 @@ public class JobVO {
 	private Schedule schedule;
 
 	public static class Delay {
-		private Integer delay;// int comment 'ms',
+		private Long delay;// int comment 'ms',
 		private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
 		private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
 		private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
@@ -71,11 +71,11 @@ public class JobVO {
 		private Integer retryBackoffOnNoQualified;// int NOT NULL DEFAULT 30000 comment 'ms要求 gte 5000',
 		private Integer retriedTimesOnNoQualified;// smallint NOT NULL DEFAULT 0 comment '没有可用的executor时已重试次数',
 
-		public Integer getDelay() {
+		public Long getDelay() {
 			return delay;
 		}
 
-		public void setDelay(Integer delay) {
+		public void setDelay(Long delay) {
 			this.delay = delay;
 		}
 
@@ -138,24 +138,24 @@ public class JobVO {
 	}
 
 	public static class Schedule {
-		private Integer scheduleFixRate;// int comment 'ms',
-		private Integer scheduleFixDelay;// int comment 'ms',
+		private Long scheduleFixRate;// int comment 'ms',
+		private Long scheduleFixDelay;// int comment 'ms',
 		private String sheduleCron;// varchar(20),
 		private Long scheduledTimes;// bigint,
 
-		public Integer getScheduleFixRate() {
+		public Long getScheduleFixRate() {
 			return scheduleFixRate;
 		}
 
-		public void setScheduleFixRate(Integer scheduleFixRate) {
+		public void setScheduleFixRate(Long scheduleFixRate) {
 			this.scheduleFixRate = scheduleFixRate;
 		}
 
-		public Integer getScheduleFixDelay() {
+		public Long getScheduleFixDelay() {
 			return scheduleFixDelay;
 		}
 
-		public void setScheduleFixDelay(Integer scheduleFixDelay) {
+		public void setScheduleFixDelay(Long scheduleFixDelay) {
 			this.scheduleFixDelay = scheduleFixDelay;
 		}
 

@@ -57,7 +57,7 @@ public class QuickStartApp {
 			/**
 			 * 创建延迟任务，达到延迟后 {@link QuickStartAppJobHandler} 将触发任务执行
 			 */
-			Delay delay = new CreateDelayJobDTO.Delay(3000);
+			Delay delay = new CreateDelayJobDTO.Delay(3000L);
 			delay.setRetryOnNoQualified(3);//当没有合格的执行器时重试次数
 			delay.setRetryOnExecuteFailed(3);//当执行失败时重试次数
 			CreateDelayJobDTO job = new CreateDelayJobDTO("QuickStartDelayJob", EXECUTOR_NAME, QuickStartJobHandler.NAME,

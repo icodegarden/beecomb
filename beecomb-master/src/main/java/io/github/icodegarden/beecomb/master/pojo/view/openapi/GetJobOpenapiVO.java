@@ -68,7 +68,7 @@ public class GetJobOpenapiVO {
 	@Getter
 	@ToString
 	public static class Delay {
-		private Integer delay;// int comment 'ms',
+		private Long delay;// int comment 'ms',
 		private Integer retryOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
 		private Integer retryBackoffOnExecuteFailed;// int NOT NULL DEFAULT 1000 comment 'ms要求 gte 1000',
 		private Integer retriedTimesOnExecuteFailed;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
@@ -81,8 +81,8 @@ public class GetJobOpenapiVO {
 	@Getter
 	@ToString
 	public static class Schedule {
-		private Integer scheduleFixRate;// int comment 'ms',
-		private Integer scheduleFixDelay;// int comment 'ms',
+		private Long scheduleFixRate;
+		private Long scheduleFixDelay;
 		private String sheduleCron;// varchar(20),
 		private Long scheduledTimes;// bigint,
 	}

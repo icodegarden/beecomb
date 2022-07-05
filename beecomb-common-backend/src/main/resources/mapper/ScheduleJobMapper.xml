@@ -48,6 +48,14 @@
 		where job_id = #{jobId}
 	</update>
 	
+	<update id="updateAlways" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.ScheduleJobPO$Update">
+		update `schedule_job` set
+			`schedule_fix_rate` = #{scheduleFixRate},
+			`schedule_fix_delay` = #{scheduleFixDelay},
+			`shedule_cron` = #{sheduleCron}
+		where job_id = #{jobId}
+	</update>
+	
 	<delete id="delete">
 		delete from schedule_job where job_id = #{jobId}
 	</delete>

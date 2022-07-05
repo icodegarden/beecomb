@@ -43,6 +43,10 @@ public class UpdateJobMainDTO implements Validateable {
 	@Min(JobConstants.MIN_EXECUTE_TIMEOUT)
 	@Max(JobConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
+	/**
+	 * 
+	 */
+	private Boolean nextTrigAtNull;
 
 	@Override
 	public void validate() throws IllegalArgumentException {

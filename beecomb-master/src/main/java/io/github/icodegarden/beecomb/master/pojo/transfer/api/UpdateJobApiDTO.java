@@ -44,7 +44,22 @@ public class UpdateJobApiDTO implements Validateable {
 	private String params;// TEXT comment '任务参数',
 	@Length(max = 200)
 	private String desc;// varchar(200) comment '任务描述',
-
+	
+	//-------------------------------
+	@Max(JobConstants.MAX_EXECUTE_INTERVAL)
+	private Long delay;
+	private Integer retryOnExecuteFailed;
+	private Integer retryBackoffOnExecuteFailed;
+	private Integer retryOnNoQualified;
+	private Integer retryBackoffOnNoQualified;
+	
+	//-------------------------------
+	@Max(JobConstants.MAX_EXECUTE_INTERVAL)
+	private Long scheduleFixRate;
+	@Max(JobConstants.MAX_EXECUTE_INTERVAL)
+	private Long scheduleFixDelay;
+	private String sheduleCron;
+	
 	@Override
 	public void validate() throws IllegalArgumentException {
 		Assert.notNull(id, "Missing:id");

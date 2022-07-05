@@ -27,6 +27,8 @@ CREATE TABLE `job_main` (
   `is_end` bit NOT NULL default 0 comment '是否已结束',
   `created_by` varchar(30) comment 'user.username',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` varchar(30) comment 'user.username',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX `idx_uuid`(`uuid`(20)), -- uuid不约束唯一，是否需要唯一由用户自己保障
   INDEX `idx_for_update_to_recovery`(`next_trig_at`),
@@ -49,7 +51,7 @@ CREATE TABLE `job_detail` (
 DROP TABLE IF EXISTS `delay_job`;
 CREATE TABLE `delay_job` (
   `job_id` bigint unsigned NOT NULL,
-  `delay` int NOT NULL comment 'ms',
+  `delay` bigint NOT NULL comment 'ms',
   `retry_on_execute_failed` smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时、代码异常等',
   `retry_backoff_on_execute_failed` int NOT NULL DEFAULT 3000 comment 'ms要求 gte 1000',
   `retried_times_on_execute_failed` smallint NOT NULL DEFAULT 0 comment 'executor执行失败已重试次数',
@@ -62,8 +64,8 @@ CREATE TABLE `delay_job` (
 DROP TABLE IF EXISTS `schedule_job`;
 CREATE TABLE `schedule_job` (
   `job_id` bigint unsigned NOT NULL,
-  `schedule_fix_rate` int comment 'ms',
-  `schedule_fix_delay` int comment 'ms',
+  `schedule_fix_rate` bigint comment 'ms',
+  `schedule_fix_delay` bigint comment 'ms',
   `shedule_cron` varchar(20),
   `scheduled_times` bigint NOT NULL DEFAULT 0,
   PRIMARY KEY (`job_id`)

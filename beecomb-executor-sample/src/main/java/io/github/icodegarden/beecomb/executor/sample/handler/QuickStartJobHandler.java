@@ -23,7 +23,7 @@ public class QuickStartJobHandler implements JobHandler {
 		System.out.println("handle job:" + job);
 
 		if (job instanceof DelayJob) {
-			int delay = ((DelayJob) job).getDelay();
+			long delay = ((DelayJob) job).getDelay();
 			System.out.println(delay);
 		}
 

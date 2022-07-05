@@ -98,7 +98,7 @@ public class SampleApp {
 	private static void bizOnExpiredDelayJob(BeeCombClient beeCombClient) {
 		int packetId = new Random().nextInt(Integer.MAX_VALUE);
 
-		Delay delay = new CreateDelayJobDTO.Delay(3000);
+		Delay delay = new CreateDelayJobDTO.Delay(3000L);
 		delay.setRetryOnExecuteFailed(3);// 任务执行失败时重试次数
 		delay.setRetryBackoffOnExecuteFailed(3000);
 		delay.setRetryOnNoQualified(3);// 没有合格的Executor时重试次数

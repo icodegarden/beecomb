@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -40,6 +39,8 @@ public class JobMainPO {
 	private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
 	private String createdBy;// varchar(30) comment '租户名',
 	private LocalDateTime createdAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	private String updatedBy;// varchar(30) comment '租户名',
+	private LocalDateTime updatedAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 	@Setter
 	@Getter
@@ -63,11 +64,13 @@ public class JobMainPO {
 		private Integer executeTimeout;// int comment 'ms',
 		private LocalDateTime nextTrigAt;// timestamp comment '下次触发时间,初始是null',
 		private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
+		private String updatedBy;// varchar(30) comment '租户名',
+		private LocalDateTime updatedAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
 		/**
 		 * -----------------------------------------------------
 		 */
-		private boolean nextTrigAtNull;
+		private Boolean nextTrigAtNull;
 
 		public Update() {
 		}
@@ -77,7 +80,7 @@ public class JobMainPO {
 				Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued, LocalDateTime queuedAt,
 				String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
 				Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt, Boolean end,
-				boolean nextTrigAtNull) {
+				String updatedBy, LocalDateTime updatedAt, Boolean nextTrigAtNull) {
 			this.id = id;
 			this.name = name;
 			this.executorName = executorName;
@@ -95,8 +98,10 @@ public class JobMainPO {
 			this.executeTimeout = executeTimeout;
 			this.nextTrigAt = nextTrigAt;
 			this.end = end;
+			this.updatedBy = updatedBy;
+			this.updatedAt = updatedAt;
 			this.nextTrigAtNull = nextTrigAtNull;
-			
+
 			setEnd(end);
 		}
 

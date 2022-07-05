@@ -17,7 +17,7 @@ import io.github.icodegarden.commons.lang.result.Result2;
 public interface JobService extends BackendJobService {
 
 	void updateEnQueue(ExecutableJobBO job);
-
+	
 	/**
 	 * 对end的任务更新会返回成功，但数据不会变
 	 * 

@@ -35,6 +35,7 @@ import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.DeleteJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.GetJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.PageJobsOpenapiVO;
+import io.github.icodegarden.beecomb.master.pojo.view.openapi.UpdateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.beecomb.master.service.JobLocalService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
@@ -183,10 +184,10 @@ public class JobOpenapiController {
 	}
 
 	@PutMapping(value = { "openapi/v1/jobs" })
-	public ResponseEntity<Void> updateJob(@RequestBody @Validated UpdateJobOpenapiDTO dto) {
+	public ResponseEntity<UpdateJobOpenapiVO> updateJob(@RequestBody @Validated UpdateJobOpenapiDTO dto) {
 		dto.validate();
 
-		JobMainVO one = jobMainManager.findOne(dto.getId(), JobMainQuery.With.builder().createdBy(true).build());
+		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(dto.getId());
 
 		if (one == null) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
@@ -198,10 +199,11 @@ public class JobOpenapiController {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
 
-		jobFacadeManager.update(dto);
-		return ResponseEntity.ok().build();
+		boolean success = jobLocalService.update(dto, one);
+		UpdateJobOpenapiVO vo = new UpdateJobOpenapiVO(dto.getId(), success);
+		return ResponseEntity.ok(vo);
 	}
-	
+
 	@DeleteMapping(value = { "openapi/v1/jobs/{id}" })
 	public ResponseEntity<DeleteJobOpenapiVO> deleteJob(@PathVariable Long id) {
 		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(id);
@@ -215,7 +217,7 @@ public class JobOpenapiController {
 		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
 			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
 		}
-		
+
 		boolean success = jobLocalService.delete(one);
 		DeleteJobOpenapiVO vo = new DeleteJobOpenapiVO(id, success);
 		return ResponseEntity.ok(vo);

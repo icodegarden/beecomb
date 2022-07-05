@@ -32,20 +32,20 @@ public class CreateScheduleJobDTO extends CreateJobDTO {
 	}
 
 	public static class Schedule {
-		private Integer scheduleFixRate;
-		private Integer scheduleFixDelay;
+		private Long scheduleFixRate;
+		private Long scheduleFixDelay;
 		private String sheduleCron;
 
 		private Schedule() {
 		}
 
-		public static Schedule scheduleFixRate(Integer scheduleFixRate) {
+		public static Schedule scheduleFixRate(Long scheduleFixRate) {
 			Schedule schedule = new Schedule();
 			schedule.scheduleFixRate = scheduleFixRate;
 			return schedule;
 		}
 
-		public static Schedule scheduleFixDelay(Integer scheduleFixDelay) {
+		public static Schedule scheduleFixDelay(Long scheduleFixDelay) {
 			Schedule schedule = new Schedule();
 			schedule.scheduleFixDelay = scheduleFixDelay;
 			return schedule;
@@ -57,11 +57,11 @@ public class CreateScheduleJobDTO extends CreateJobDTO {
 			return schedule;
 		}
 
-		public Integer getScheduleFixRate() {
+		public Long getScheduleFixRate() {
 			return scheduleFixRate;
 		}
 
-		public Integer getScheduleFixDelay() {
+		public Long getScheduleFixDelay() {
 			return scheduleFixDelay;
 		}
 

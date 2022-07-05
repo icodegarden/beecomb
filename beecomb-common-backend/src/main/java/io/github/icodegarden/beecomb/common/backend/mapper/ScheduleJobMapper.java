@@ -18,6 +18,13 @@ public interface ScheduleJobMapper {
 	ScheduleJobDO findOne(@Param("jobId") Long jobId, @Param("with") ScheduleJobQuery.With with);
 
 	int update(ScheduleJobPO.Update update);
+	
+	/**
+	 * 始终更新所有字段，null也会
+	 * @param update
+	 * @return
+	 */
+	int updateAlways(ScheduleJobPO.Update update);
 
 	int updateAndIncrementScheduledTimes(ScheduleJobPO.Update update);
 	

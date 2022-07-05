@@ -30,6 +30,9 @@ public class UpdateJobDTO {
 	@Length(max = 200)
 	private String desc;
 
+	private Delay delay;
+	private Schedule schedule;
+
 	public UpdateJobDTO(Long id) {
 		Assert.notNull(id, "id must not null");
 		this.id = id;
@@ -111,12 +114,119 @@ public class UpdateJobDTO {
 		return id;
 	}
 
+	public Delay getDelay() {
+		return delay;
+	}
+
+	public void setDelay(Delay delay) {
+		this.delay = delay;
+	}
+
+	public Schedule getSchedule() {
+		return schedule;
+	}
+
+	public void setSchedule(Schedule schedule) {
+		this.schedule = schedule;
+	}
+
 	@Override
 	public String toString() {
 		return "UpdateJobDTO [id=" + id + ", name=" + name + ", executorName=" + executorName + ", jobHandlerName="
 				+ jobHandlerName + ", priority=" + priority + ", weight=" + weight + ", maxParallelShards="
 				+ maxParallelShards + ", executeTimeout=" + executeTimeout + ", params=" + params + ", desc=" + desc
-				+ "]";
+				+ ", delay=" + delay + ", schedule=" + schedule + "]";
 	}
 
+	public static class Delay {
+		private Long delay;
+		private Integer retryOnExecuteFailed;
+		private Integer retryBackoffOnExecuteFailed;
+		private Integer retryOnNoQualified;
+		private Integer retryBackoffOnNoQualified;
+
+		public Long getDelay() {
+			return delay;
+		}
+
+		public void setDelay(Long delay) {
+			this.delay = delay;
+		}
+
+		public Integer getRetryOnExecuteFailed() {
+			return retryOnExecuteFailed;
+		}
+
+		public void setRetryOnExecuteFailed(Integer retryOnExecuteFailed) {
+			this.retryOnExecuteFailed = retryOnExecuteFailed;
+		}
+
+		public Integer getRetryBackoffOnExecuteFailed() {
+			return retryBackoffOnExecuteFailed;
+		}
+
+		public void setRetryBackoffOnExecuteFailed(Integer retryBackoffOnExecuteFailed) {
+			this.retryBackoffOnExecuteFailed = retryBackoffOnExecuteFailed;
+		}
+
+		public Integer getRetryOnNoQualified() {
+			return retryOnNoQualified;
+		}
+
+		public void setRetryOnNoQualified(Integer retryOnNoQualified) {
+			this.retryOnNoQualified = retryOnNoQualified;
+		}
+
+		public Integer getRetryBackoffOnNoQualified() {
+			return retryBackoffOnNoQualified;
+		}
+
+		public void setRetryBackoffOnNoQualified(Integer retryBackoffOnNoQualified) {
+			this.retryBackoffOnNoQualified = retryBackoffOnNoQualified;
+		}
+
+		@Override
+		public String toString() {
+			return "Delay [delay=" + delay + ", retryOnExecuteFailed=" + retryOnExecuteFailed
+					+ ", retryBackoffOnExecuteFailed=" + retryBackoffOnExecuteFailed + ", retryOnNoQualified="
+					+ retryOnNoQualified + ", retryBackoffOnNoQualified=" + retryBackoffOnNoQualified + "]";
+		}
+	}
+
+	public static class Schedule {
+		private Long scheduleFixRate;
+		private Long scheduleFixDelay;
+		private String sheduleCron;
+
+		public Long getScheduleFixRate() {
+			return scheduleFixRate;
+		}
+
+		public void setScheduleFixRate(Long scheduleFixRate) {
+			this.scheduleFixRate = scheduleFixRate;
+		}
+
+		public Long getScheduleFixDelay() {
+			return scheduleFixDelay;
+		}
+
+		public void setScheduleFixDelay(Long scheduleFixDelay) {
+			this.scheduleFixDelay = scheduleFixDelay;
+		}
+
+		public String getSheduleCron() {
+			return sheduleCron;
+		}
+
+		public void setSheduleCron(String sheduleCron) {
+			this.sheduleCron = sheduleCron;
+		}
+
+		@Override
+		public String toString() {
+			return "Schedule [scheduleFixRate=" + scheduleFixRate + ", scheduleFixDelay=" + scheduleFixDelay
+					+ ", sheduleCron=" + sheduleCron + "]";
+		}
+
+	}
 }

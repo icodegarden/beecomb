@@ -47,7 +47,7 @@ public abstract class PrepareDatasUtils {
 
 		CreateDelayJobDTO delay = new CreateDelayJobDTO();
 		delay.setJobId(jobId);
-		delay.setDelay(5000);
+		delay.setDelay(5000L);
 		delay.setRetryOnExecuteFailed(3);
 		delay.setRetryBackoffOnExecuteFailed(3000);
 		delay.setRetryOnNoQualified(5);

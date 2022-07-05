@@ -78,36 +78,37 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 
 	@Override
 	public Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueue(ExecutableJobBO job) {
-		if (metricsOverload.incrementOverload(job)) {
-			Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = doEnQueue(job);
-			if (!enQueueResult.isSuccess()) {
-				JobEngineException exception = enQueueResult.getT3();
-				log.warn("job doEnQueue not success, reason:{}, job:{}", exception.getReason(), job);
-				metricsOverload.decrementOverload(job);
-				return enQueueResult;
-			}
-
-			try {
-				metricsOverload.flushMetrics();
-				/**
-				 * 在任务进队列时把queuedAt，queuedAtInstance等参数填入，因为后续不会再查数据库，触发查库的是恢复的任务
-				 */
-				job.setQueuedAt(SystemUtils.now());
-				InstanceProperties instanceProperties = InstanceProperties.singleton();
-				job.setQueuedAtInstance(SystemUtils.formatIpPort(instanceProperties.getServer().getBindIp(),
-						instanceProperties.getServer().getPort()));
-
-				queuedJobs.put(job.getId(), enQueueResult.getT2());
-
-				return enQueueResult;
-			} catch (Exception e) {
-				// 取消enQueue
-				removeQueue(job);
-				return Results.of(false, job, null, new ExceedExpectedJobEngineException(e));
-			}
+		if (!metricsOverload.incrementOverload(job)) {
+			return Results.of(false, job, null,
+					new ExceedOverloadJobEngineException("metrics will overload", metricsOverload.getLocalMetrics()));
 		}
-		return Results.of(false, job, null,
-				new ExceedOverloadJobEngineException("metrics will overload", metricsOverload.getLocalMetrics()));
+		
+		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = doEnQueue(job);
+		if (!enQueueResult.isSuccess()) {
+			JobEngineException exception = enQueueResult.getT3();
+			log.warn("job doEnQueue not success, reason:{}, job:{}", exception.getReason(), job);
+			metricsOverload.decrementOverload(job);
+			return enQueueResult;
+		}
+
+		try {
+			metricsOverload.flushMetrics();
+			/**
+			 * 在任务进队列时把queuedAt，queuedAtInstance等参数填入，因为后续不会再查数据库，触发查库的是恢复的任务
+			 */
+			job.setQueuedAt(SystemUtils.now());
+			InstanceProperties instanceProperties = InstanceProperties.singleton();
+			job.setQueuedAtInstance(SystemUtils.formatIpPort(instanceProperties.getServer().getBindIp(),
+					instanceProperties.getServer().getPort()));
+
+//			queuedJobs.put(job.getId(), enQueueResult.getT2());
+
+			return enQueueResult;
+		} catch (Exception e) {
+			// 取消enQueue
+			removeQueue(job);
+			return Results.of(false, job, null, new ExceedExpectedJobEngineException(e));
+		}
 	}
 
 	/**
@@ -122,6 +123,9 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	public boolean removeQueue(ExecutableJobBO job) {
 		JobTrigger jobTrigger = queuedJobs.get(job.getId());
 		if (jobTrigger == null) {
+			if (log.isInfoEnabled()) {
+				log.info("removeQueue job not found, job.id:{}, job.name:{}", job.getId(), job.getName());
+			}
 			/**
 			 * 已不存在
 			 */
@@ -129,6 +133,9 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 		}
 
 		boolean b = doRemoveQueue(jobTrigger);
+		if (log.isInfoEnabled()) {
+			log.info("removeQueue result:{}, job.id:{}, job.name:{}", b, job.getId(), job.getName());
+		}
 		if (b) {
 			metricsOverload.decrementOverload(job);
 			queuedJobs.remove(job.getId());
@@ -195,7 +202,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 
 			metricsOverload.flushMetrics();
 		}
-		
+
 		protected abstract void doRun(ExecutableJobBO job);
 
 		public long getExecutedTimes() {

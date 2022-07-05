@@ -55,7 +55,7 @@ class AbstractJobEngineTests extends Properties4Test {
 		job.setId(1L);
 		job.setType(JobType.Delay);
 		DelayBO delay = new DelayBO();
-		delay.setDelay(1000);
+		delay.setDelay(1000L);
 		job.setDelay(delay);
 		return job;
 	}

@@ -76,7 +76,7 @@ class DelayJobServiceTests {
 
 		CreateDelayJobDTO delay = new CreateDelayJobDTO();
 		delay.setJobId(createJobMainDTO.getId());
-		delay.setDelay(3000);
+		delay.setDelay(3000L);
 		delay.setRetryOnExecuteFailed(2);//关系到测试
 		delay.setRetryOnNoQualified(2);//关系到测试
 

@@ -45,6 +45,28 @@ public class UpdateJobOpenapiDTO implements Validateable {
 	@Length(max = 200)
 	private String desc;// varchar(200) comment '任务描述',
 
+	private Delay delay;
+	private Schedule schedule;
+
+	@Data
+	public static class Delay {
+		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
+		private Long delay;
+		private Integer retryOnExecuteFailed;
+		private Integer retryBackoffOnExecuteFailed;
+		private Integer retryOnNoQualified;
+		private Integer retryBackoffOnNoQualified;
+	}
+
+	@Data
+	public static class Schedule {
+		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
+		private Long scheduleFixRate;
+		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
+		private Long scheduleFixDelay;
+		private String sheduleCron;
+	}
+	
 	@Override
 	public void validate() throws IllegalArgumentException {
 		Assert.notNull(id, "Missing:id");

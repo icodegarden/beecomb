@@ -13,7 +13,6 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
 import io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper;
-import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainCountDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO.Update;
@@ -28,6 +27,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.backend.util.PageHelperUtils;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
 /**
  * 
@@ -46,7 +46,7 @@ public class JobMainManager {
 		JobMainPO po = new JobMainPO();
 		BeanUtils.copyProperties(dto, po);
 
-//		po.setCreatedBy(SecurityUtils.getUsername());
+		po.setCreatedBy(SecurityUtils.getUsername());
 		po.setCreatedAt(SystemUtils.now());
 
 		try {
@@ -87,13 +87,17 @@ public class JobMainManager {
 	public boolean update(UpdateJobMainDTO dto) {
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
-
+		update.setUpdatedBy(SecurityUtils.getUsername());
+		update.setUpdatedAt(SystemUtils.now());
+		
 		return jobMainMapper.update(update) == 1;
 	}
 
 	public boolean updateOnExecuted(UpdateJobMainOnExecutedDTO dto) {
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
+		update.setUpdatedBy(SecurityUtils.getUsername());
+		update.setUpdatedAt(SystemUtils.now());
 
 		return jobMainMapper.update(update) == 1;
 	}
@@ -103,12 +107,25 @@ public class JobMainManager {
 
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
+		update.setUpdatedBy(SecurityUtils.getUsername());
+		update.setUpdatedAt(SystemUtils.now());
 
 		/**
 		 * 设为已队列
 		 */
 		update.setQueued(true);
 		update.setQueuedAt(SystemUtils.now());
+
+		return jobMainMapper.update(update) == 1;
+	}
+	
+	public boolean updateRemoveQueue(Long jobId) {
+		Update update = new JobMainPO.Update();
+		update.setUpdatedBy(SecurityUtils.getUsername());
+		update.setUpdatedAt(SystemUtils.now());
+
+		update.setQueued(false);
+		update.setNextTrigAtNull(true);
 
 		return jobMainMapper.update(update) == 1;
 	}
