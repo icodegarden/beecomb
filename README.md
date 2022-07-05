@@ -208,7 +208,7 @@ body参数
 |Delay|
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
-|delay   |int   |Y   |0-N   |任务的延迟执行时间毫秒   |60000   |
+|delay   |int   |Y   |1000-315360000000    |任务的延迟执行时间毫秒   |60000   |
 |retryOnExecuteFailed   |int   |N   |0-N   |当任务执行失败时重试次数，默认0   |3   |
 |retryBackoffOnExecuteFailed   |int   |N   |1000-N   |重试回退时间毫秒，默认3000   |10000   |
 |retryOnNoQualified   |int   |N   |0-N   |当任务执行没有合格的Executor时重试次数，默认0   |3   |
@@ -217,8 +217,8 @@ body参数
 |Schedule|
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
-|scheduleFixRate   |int   |N   |1-N   |任务执行FixRate时间毫秒   |60000   |
-|scheduleFixDelay   |int   |N   |1-N   |任务执行FixDelay时间毫秒   |60000   |
+|scheduleFixRate   |int   |N   |1000-315360000000    |任务执行FixRate时间毫秒   |60000   |
+|scheduleFixDelay   |int   |N   |1000-315360000000    |任务执行FixDelay时间毫秒   |60000   |
 |sheduleCron   |string   |N   |符合cron   |任务cron   |0 0/2 * * * *   |
 scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
 
@@ -348,8 +348,32 @@ body参数
 |executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
 |params   |string   |N   |65535   |任务执行的参数   |id=100   |
 |desc   |string   |N   |200   |任务描述   |我的任务   |
+|delay   |Delay   |当type是Delay时可选   |1   |delay参数   |   |
+|schedule   |Schedule   |当type是Schedule时可选   |1   |schedule参数   |   |
 
-响应参数，无参
+|Delay|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|delay   |int   |Y   |1000-315360000000    |任务的延迟执行时间毫秒   |60000   |
+|retryOnExecuteFailed   |int   |N   |0-N   |当任务执行失败时重试次数，默认0   |3   |
+|retryBackoffOnExecuteFailed   |int   |N   |1000-N   |重试回退时间毫秒，默认3000   |10000   |
+|retryOnNoQualified   |int   |N   |0-N   |当任务执行没有合格的Executor时重试次数，默认0   |3   |
+|retryBackoffOnNoQualified   |int   |N   |5000-N   |重试回退时间毫秒，默认30000   |30000   |
+
+|Schedule|
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|scheduleFixRate   |int   |N   |1000-315360000000    |任务执行FixRate时间毫秒   |60000   |
+|scheduleFixDelay   |int   |N   |1000-315360000000    |任务执行FixDelay时间毫秒   |60000   |
+|sheduleCron   |string   |N   |符合cron   |任务cron   |0 0/2 * * * *   |
+scheduleFixRate、scheduleFixDelay、sheduleCron选其一
+
+响应参数
+|参数   |类型   |是否必填   |长度   |描述   |示例值   |
+|---|---|---|---|---|---|
+|id   |long   |Y   |1-N   |任务的唯一序列   |1   |
+|success   |boolean   |Y   |1   |是否成功；注意如果更新任务的执行时间，则从更新时间开始重新计时   |true   |
+
 
 ### 删除任务
 接口地址 DELETE openapi/v1/jobs/{id}
