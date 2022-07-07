@@ -39,14 +39,21 @@ public class ApiShardingSphereBuilder {
 		result.getTables().add(getJobDetailTableRuleConfiguration(datasources));
 		result.getTables().add(getDelayJobTableRuleConfiguration(datasources));
 		result.getTables().add(getScheduleJobTableRuleConfiguration(datasources));
+		result.getTables().add(getPendingRecoveryJobTableRuleConfiguration(datasources));
 		result.getTables().add(getJobExecuteRecordTableRuleConfiguration(datasources));
 		result.getTables().add(getJobRecoveryRecordTableRuleConfiguration(datasources));
 
-		result.getBindingTableGroups()
-				.add("job_main,job_detail,delay_job,schedule_job,job_execute_record,job_recovery_record");
+		/**
+		 * 绑定表
+		 */
+		result.getBindingTableGroups().add(
+				"job_main,job_detail,delay_job,schedule_job,pending_recovery_job,job_execute_record,job_recovery_record");
 //		result.getBroadcastTables().add("t_address");
 //		result.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "inline"));
 
+		/**
+		 * 分片算法
+		 */
 		Properties props = new Properties();
 		props = new Properties();
 		props.setProperty("strategy", "standard");
@@ -56,11 +63,16 @@ public class ApiShardingSphereBuilder {
 		result.getShardingAlgorithms().put("jobidrangemod",
 				new ShardingSphereAlgorithmConfiguration("CLASS_BASED", props));
 
+		/**
+		 * 全局id生成
+		 */
 		Properties mysqljobmainProps = new Properties();
 		mysqljobmainProps.setProperty("moduleName", "job_main");
 		result.getKeyGenerators().put("mysqljobmain",
 				new ShardingSphereAlgorithmConfiguration("MYSQL", mysqljobmainProps));
-
+		/**
+		 * 全局id生成
+		 */
 		Properties mysqljobexecuterrecordProps = new Properties();
 		mysqljobexecuterrecordProps.setProperty("moduleName", "job_execute_record");
 		result.getKeyGenerators().put("mysqljobexecuterrecord",
@@ -69,6 +81,9 @@ public class ApiShardingSphereBuilder {
 		return result;
 	}
 
+	/**
+	 * job_main配置
+	 */
 	private static ShardingTableRuleConfiguration getJobMainRuleConfiguration(List<Datasource> datasources) {
 		String actualDataNodes = datasources.stream().map(ds -> {
 			return ds.getName() + ".job_main";
@@ -86,6 +101,9 @@ public class ApiShardingSphereBuilder {
 		return result;
 	}
 
+	/**
+	 * job_detail配置
+	 */
 	private static ShardingTableRuleConfiguration getJobDetailTableRuleConfiguration(List<Datasource> datasources) {
 		String actualDataNodes = datasources.stream().map(ds -> {
 			return ds.getName() + ".job_detail";
@@ -102,6 +120,9 @@ public class ApiShardingSphereBuilder {
 		return result;
 	}
 
+	/**
+	 * delay_job配置
+	 */
 	private static ShardingTableRuleConfiguration getDelayJobTableRuleConfiguration(List<Datasource> datasources) {
 		String actualDataNodes = datasources.stream().map(ds -> {
 			return ds.getName() + ".delay_job";
@@ -118,6 +139,9 @@ public class ApiShardingSphereBuilder {
 		return result;
 	}
 
+	/**
+	 * schedule_job配置
+	 */
 	private static ShardingTableRuleConfiguration getScheduleJobTableRuleConfiguration(List<Datasource> datasources) {
 		String actualDataNodes = datasources.stream().map(ds -> {
 			return ds.getName() + ".schedule_job";
@@ -134,6 +158,30 @@ public class ApiShardingSphereBuilder {
 		return result;
 	}
 
+	/**
+	 * 待恢复任务配置
+	 */
+	private static ShardingTableRuleConfiguration getPendingRecoveryJobTableRuleConfiguration(
+			List<Datasource> datasources) {
+		String actualDataNodes = datasources.stream().map(ds -> {
+			return ds.getName() + ".pending_recovery_job";
+		}).collect(Collectors.joining(","));
+
+		log.info("actualDataNodes of pending_recovery_job:{}", actualDataNodes);
+
+		ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("pending_recovery_job",
+				actualDataNodes);
+
+		StandardShardingStrategyConfiguration databaseShardingStrategy = new StandardShardingStrategyConfiguration(
+				"job_id", "jobidrangemod");
+		result.setDatabaseShardingStrategy(databaseShardingStrategy);
+
+		return result;
+	}
+
+	/**
+	 * 任务执行记录配置
+	 */
 	private static ShardingTableRuleConfiguration getJobExecuteRecordTableRuleConfiguration(
 			List<Datasource> datasources) {
 		String actualDataNodes = datasources.stream().map(ds -> {
@@ -153,6 +201,9 @@ public class ApiShardingSphereBuilder {
 		return result;
 	}
 
+	/**
+	 * 任务恢复记录配置
+	 */
 	private static ShardingTableRuleConfiguration getJobRecoveryRecordTableRuleConfiguration(
 			List<Datasource> datasources) {
 		String actualDataNodes = datasources.stream().map(ds -> {

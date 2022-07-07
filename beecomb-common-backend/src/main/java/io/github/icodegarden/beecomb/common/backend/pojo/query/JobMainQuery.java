@@ -1,6 +1,7 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.query;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
@@ -35,6 +36,7 @@ public class JobMainQuery extends BaseQuery {
 	 * 
 	 */
 	private LocalDateTime nextTrigAtLt;
+	private List<Long> jobIds;
 
 	private With with;
 
@@ -42,7 +44,7 @@ public class JobMainQuery extends BaseQuery {
 	public JobMainQuery(int page, int size, String sort, String limit, Long id, String uuid, Boolean queued,
 			Boolean end, String createdBy, String nameLike, JobType type, Boolean parallel, Boolean lastExecuteSuccess,
 			LocalDateTime createdAtGte, LocalDateTime createdAtLte, LocalDateTime lastTrigAtGte,
-			LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, With with) {
+			LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, List<Long> jobIds, With with) {
 		super(page, size, sort, limit);
 		this.id = id;
 		this.uuid = uuid;
@@ -58,6 +60,7 @@ public class JobMainQuery extends BaseQuery {
 		this.lastTrigAtGte = lastTrigAtGte;
 		this.lastTrigAtLte = lastTrigAtLte;
 		this.nextTrigAtLt = nextTrigAtLt;
+		this.jobIds = jobIds;
 		this.with = with;
 	}
 

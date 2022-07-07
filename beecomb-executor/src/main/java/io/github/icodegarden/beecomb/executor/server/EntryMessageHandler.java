@@ -69,12 +69,17 @@ public class EntryMessageHandler implements MessageHandler {
 
 			Result2<Object, ExchangeFailedReason> result2 = null;
 			if (dto != null) {
-				Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod(),
-						dto.getBody().getClass());
-				/**
-				 * 所有接口约定
-				 */
-				result2 = (Result2<Object, ExchangeFailedReason>) method.invoke(dispatcherHandler, dto.getBody());
+				if (dto.getBody() != null) {
+					Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod(),
+							dto.getBody().getClass());
+					/**
+					 * 所有接口约定
+					 */
+					result2 = (Result2<Object, ExchangeFailedReason>) method.invoke(dispatcherHandler, dto.getBody());
+				} else {
+					Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod());
+					result2 = (Result2<Object, ExchangeFailedReason>) method.invoke(dispatcherHandler);
+				}
 			} else {
 				result2 = Results.of(true, null, null);
 			}

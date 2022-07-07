@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.common.backend.mapper.PendingRecoveryJobMapper">
+
+	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO">
+		<id property="jobId" column="job_id" />
+		<result property="priority" column="priority" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+	
+	<resultMap id="DOMap" type="io.github.icodegarden.beecomb.common.backend.pojo.data.PendingRecoveryJobDO" extends="baseMap">
+	</resultMap>
+	
+	<insert id="add" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO">
+		insert into pending_recovery_job (
+			job_id,
+			priority,
+			created_at,
+			updated_at
+		)  
+		values (
+			#{jobId},
+			#{priority},
+			#{createdAt},
+			#{updatedAt}
+		)
+		on duplicate key update priority = #{priority}, updated_at = #{updatedAt}
+	</insert>
+	
+	<sql id="findPrefix">
+		select 
+			a.job_id as job_id
+			<if test="with != null">
+				<trim prefix="," suffixOverrides=",">
+					<if test="with.priority == true">a.`priority` as priority,</if>
+					<if test="with.createdAt == true">a.`created_at` as created_at,</if>
+					<if test="with.updatedAt == true">a.`updated_at` as updated_at,</if>
+				</trim>
+			</if>
+		from `pending_recovery_job` a
+	</sql>
+	
+	<select id="findAll" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.PendingRecoveryJobQuery" resultMap="DOMap">
+		<include refid="findPrefix"/>
+		
+<!-- 		<trim prefix="WHERE" prefixOverrides="AND"> -->
+<!-- 			<if test="jobId != null"> -->
+<!-- 				and a.job_id = #{jobId} -->
+<!-- 			</if> -->
+<!-- 			<if test="success != null"> -->
+<!-- 				and a.is_success = #{success} -->
+<!-- 			</if> -->
+<!-- 		</trim> -->
+		<if test="sort != null">
+			${sort}
+		</if>
+		<if test="limit != null">
+			${limit}
+		</if>
+		
+	</select>
+	
+	<update id="insertSelectByScan" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO$InsertSelect">
+		insert into pending_recovery_job(job_id,priority,created_at,updated_at)  
+		select 
+			id,
+			priority,
+			#{dt},
+			#{dt}
+		from 
+		job_main 
+		where next_trig_at &lt; #{nextTrigAtLt} and is_end = 0
+		on duplicate key update priority = values(priority), updated_at = #{dt}
+	</update>
+	
+	<update id="insertSelectByInstance" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO$InsertSelect">
+		insert into pending_recovery_job(job_id,priority,created_at,updated_at)  
+		select 
+			id,
+			priority,
+			#{dt},
+			#{dt}
+		from 
+		job_main 
+		where queued_at_instance = #{queuedAtInstance} and is_end = 0
+		on duplicate key update priority = values(priority), updated_at = #{dt}
+	</update>
+	
+	<delete id="delete">
+		delete from pending_recovery_job where job_id = #{jobId}
+	</delete>
+</mapper>

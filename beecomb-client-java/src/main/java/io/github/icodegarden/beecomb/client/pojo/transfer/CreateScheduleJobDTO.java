@@ -31,9 +31,23 @@ public class CreateScheduleJobDTO extends CreateJobDTO {
 		return "ScheduleJob [schedule=" + schedule + ", toString()=" + super.toString() + "]";
 	}
 
+	/**
+	 * scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
+	 * @author Fangfang.Xu
+	 *
+	 */
 	public static class Schedule {
+		/**
+		 * 任务执行FixRate时间毫秒，1000-31536000000000
+		 */
 		private Long scheduleFixRate;
+		/**
+		 * 任务执行FixDelay时间毫秒，1000-31536000000000
+		 */
 		private Long scheduleFixDelay;
+		/**
+		 * 任务cron，例如 0 0/2 * * * *
+		 */
 		private String sheduleCron;
 
 		private Schedule() {

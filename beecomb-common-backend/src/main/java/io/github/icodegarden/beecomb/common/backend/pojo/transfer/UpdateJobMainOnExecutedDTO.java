@@ -44,6 +44,10 @@ public class UpdateJobMainOnExecutedDTO implements Validateable {
 	 * 不一定结束
 	 */
 	private Boolean end;
+	/**
+	 * 不一定有
+	 */
+	private Boolean queuedAtInstanceNull;
 
 	@Override
 	public void validate() throws IllegalArgumentException {

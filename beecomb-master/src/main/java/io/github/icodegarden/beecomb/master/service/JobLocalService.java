@@ -25,7 +25,7 @@ public class JobLocalService {
 	@Autowired
 	private JobFacadeManager jobFacadeManager;
 	@Autowired
-	private JobRemoteService jobRemoteService;
+	private WorkerRemoteService jobRemoteService;
 
 	public boolean update(UpdateJobOpenapiDTO dto, ExecutableJobBO job) throws ErrorCodeException {
 		boolean doRemoved = false;
@@ -67,7 +67,31 @@ public class JobLocalService {
 
 		return update;
 	}
+	
+	/**
+	 * 删除任务
+	 * 
+	 * @param jobId
+	 */
+	public boolean delete(ExecutableJobBO job) throws ErrorCodeException {
+		if (job.getEnd()) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "job was end");
+		}
 
+		try {
+			boolean remove = jobRemoteService.removeQueue(job);
+			if (remove) {
+				/**
+				 * 处理数据库要在远程执行后，因为任务可能正在执行中需要数据
+				 */
+				jobFacadeManager.delete(job.getId());
+			}
+			return remove;
+		} catch (ExchangeException e) {
+			throw new ServerErrorCodeException("deleteJob", e.getMessage(), e);
+		}
+	}
+	
 	private boolean removeQueueRequiredByUpdateParams(UpdateJobOpenapiDTO dto, ExecutableJobBO job) {
 		/**
 		 * 这些参数有变要先移除队列
@@ -88,33 +112,5 @@ public class JobLocalService {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * 删除任务
-	 * 
-	 * @param jobId
-	 */
-	public boolean delete(ExecutableJobBO job) throws ErrorCodeException {
-		if (job == null) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "job not found");
-		}
-
-		if (job.getEnd()) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "job was end");
-		}
-
-		try {
-			boolean remove = jobRemoteService.removeQueue(job);
-			if (remove) {
-				/**
-				 * 处理数据库要在远程执行后，因为任务可能正在执行中需要数据
-				 */
-				jobFacadeManager.delete(job.getId());
-			}
-			return remove;
-		} catch (ExchangeException e) {
-			throw new ServerErrorCodeException("deleteJob", e.getMessage(), e);
-		}
 	}
 }

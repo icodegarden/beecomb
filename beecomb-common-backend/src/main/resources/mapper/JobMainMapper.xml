@@ -63,6 +63,7 @@
 		<if test="executeTimeout != null">`execute_timeout`,</if>
 		<if test="nextTrigAt != null">`next_trig_at`,</if>
 		<if test="end != null">`is_end`,</if>
+		<if test="updatedAt != null">`updated_at`,</if>
 		<if test="createdAt != null">`created_at`,</if>
 		`created_by`
 		)
@@ -86,6 +87,7 @@
 		<if test="executeTimeout != null">#{executeTimeout},</if>
 		<if test="nextTrigAt != null">#{nextTrigAt},</if>
 		<if test="end != null">#{end},</if>
+		<if test="updatedAt != null">#{updatedAt},</if>
 		<if test="createdAt != null">#{createdAt},</if>
 		#{createdBy}
 		)
@@ -209,6 +211,12 @@
 			<if test="nextTrigAtLt != null">
 				and a.next_trig_at &lt; #{nextTrigAtLt}
 			</if>
+			<if test="jobIds != null">
+	            and a.id in
+	            <foreach collection="jobIds" item="jobId" index="jobIds" open="(" close=")" separator=",">
+					#{jobId}
+				</foreach>
+	        </if>
 		</trim>
 	</sql>
 	
@@ -266,6 +274,7 @@
 			<if test="updatedBy != null">updated_by = #{updatedBy},</if>
 			<if test="updatedAt != null">updated_at = #{updatedAt},</if>
 			<if test="nextTrigAtNull != null and nextTrigAtNull == true">next_trig_at = null,</if>
+			<if test="queuedAtInstanceNull != null and queuedAtInstanceNull == true">queued_at_instance = null,</if>
 		</trim>
 		where id = #{id}
 	</update>
@@ -276,10 +285,16 @@
 	
 	<!-- next_trig_at超过给定的时间，实际上已不在队列中 -->
 	<!-- 尽管这里只使用nextTrigAtLt作为识别条件，会把已经end的任务也进行处理，但这是正确的，end的任务也是实际上noQueued，任务恢复不会把end的任务查出 -->
-	<update id="updateToNoQueued">
+	<update id="updateToNoQueuedByScan">
 		update job_main 
-		set is_queued = 0, next_trig_at = null
+		set is_queued = 0, next_trig_at = null, queued_at_instance = null
 		where next_trig_at &lt; #{nextTrigAtLt}
+	</update>
+	
+	<update id="updateToNoQueuedByInstance">
+		update job_main 
+		set is_queued = 0, next_trig_at = null, queued_at_instance = null
+		where queued_at_instance = #{queuedAtInstance}
 	</update>
 	
 	<select id="count" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainCountQuery" resultMap="countMap">

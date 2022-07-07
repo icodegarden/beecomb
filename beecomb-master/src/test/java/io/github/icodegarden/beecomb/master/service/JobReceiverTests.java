@@ -22,12 +22,12 @@ class JobReceiverTests {
 
 	JobReceiver jobReceiver;
 	JobFacadeManager jobFacadeManager;
-	JobRemoteService jobRemoteService;
+	WorkerRemoteService jobRemoteService;
 
 	@BeforeEach
 	void init() {
 		jobFacadeManager = mock(JobFacadeManager.class);
-		jobRemoteService = mock(JobRemoteService.class);
+		jobRemoteService = mock(WorkerRemoteService.class);
 		jobReceiver = new JobReceiver(jobFacadeManager, jobRemoteService);
 	}
 

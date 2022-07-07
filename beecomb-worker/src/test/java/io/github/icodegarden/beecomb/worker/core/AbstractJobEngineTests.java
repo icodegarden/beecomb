@@ -122,14 +122,12 @@ class AbstractJobEngineTests extends Properties4Test {
 
 		doReturn(true).when(metricsOverload).incrementOverload(job);
 		when(getJobEngine().enQueue(job)).thenCallRealMethod();
-		getJobEngine().queuedJobs = new HashMap<Long, JobTrigger>();
 		doReturn(Results.of(true, job, mock(JobTrigger.class), null)).when(getJobEngine()).doEnQueue(any());
 		
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult1 = getJobEngine().enQueue(job);
 		Optional.ofNullable(enQueueResult1.getT3()).ifPresent(e->e.printStackTrace());
 		assertThat(enQueueResult1.isSuccess()).isTrue();
 		
-		assertThat(getJobEngine().queuedJobs.size()).isEqualTo(1);
 	}
 
 }

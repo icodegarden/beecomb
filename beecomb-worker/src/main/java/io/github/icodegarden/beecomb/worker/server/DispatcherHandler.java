@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.worker.server;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
+import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 
 /**
@@ -12,11 +13,17 @@ import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 public class DispatcherHandler {
 
 	private JobRequestReceiver jobRequestReceiver;
+	private JobEngine jobEngine;
 
-	public DispatcherHandler(JobRequestReceiver jobRequestReceiver) {
+	public DispatcherHandler(JobRequestReceiver jobRequestReceiver, JobEngine jobEngine) {
 		this.jobRequestReceiver = jobRequestReceiver;
+		this.jobEngine = jobEngine;
 	}
-
+	
+	public String ping() {
+		return "pong";
+	}
+	
 	public void receiveJob(ExecutableJobBO job) throws WorkerException {
 		jobRequestReceiver.receive(job);
 	}
@@ -24,5 +31,9 @@ public class DispatcherHandler {
 	public RemoveQueueVO removeJob(ExecutableJobBO job) {
 		return jobRequestReceiver.remove(job);
 	}
-
+	
+	public int queuedSize() {
+		return jobEngine.queuedSize();
+	}
+	
 }

@@ -70,18 +70,21 @@ public class DelayJobService extends BaseJobService {
 
 				boolean thresholdReached = false;
 				Boolean end = null;
+				Boolean queuedAtInstanceNull = null;
 				if (retriedTimesOnNoQualified >= delayJob.getRetryOnNoQualified()) {
 					/**
 					 * 达到阈值则结束
 					 */
 					end = true;
+					queuedAtInstanceNull = true;
 					thresholdReached = true;
 				}
 
 				UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 						.lastTrigAt(update.getLastTrigAt())
 						.lastTrigResult(buildLastTrigResult(update.getNoQualifiedInstanceExchangeException()))
-						.nextTrigAt(nextTrigAt).lastExecuteSuccess(false).end(end).build();
+						.nextTrigAt(nextTrigAt).lastExecuteSuccess(false).end(end)
+						.queuedAtInstanceNull(queuedAtInstanceNull).build();
 
 				RETRY_TEMPLATE.execute(ctx -> {
 					jobExecuteRecordManager.createOnExecuted(mainUpdate);
@@ -105,7 +108,7 @@ public class DelayJobService extends BaseJobService {
 					.lastTrigAt(update.getLastTrigAt()).lastTrigResult("Success").end(true)
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
-					/* 不需要指定该参数.queued(false) */.build();
+					.queuedAtInstanceNull(true)/* 不需要指定该参数.queued(false) */.build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
 				jobExecuteRecordManager.createOnExecuted(mainUpdate);
@@ -151,16 +154,18 @@ public class DelayJobService extends BaseJobService {
 
 					boolean thresholdReached = false;
 					Boolean end = null;
+					Boolean queuedAtInstanceNull = null;
 					if (retriedTimesOnExecuteFailed >= delayJob.getRetryOnExecuteFailed()) {
 						// 达到阈值则结束
 						end = true;
+						queuedAtInstanceNull = true;
 						thresholdReached = true;
 					}
 
 					UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
 							.lastTrigResult(buildLastTrigResult(update.getException())).nextTrigAt(nextTrigAt).end(end)
-							.build();
+							.queuedAtInstanceNull(queuedAtInstanceNull).build();
 
 					RETRY_TEMPLATE.execute(ctx -> {
 						jobExecuteRecordManager.createOnExecuted(mainUpdate);
@@ -180,7 +185,7 @@ public class DelayJobService extends BaseJobService {
 					UpdateJobOnExecutedDTO mainUpdate = UpdateJobOnExecutedDTO.builder().id(update.getJobId())
 							.lastTrigAt(update.getLastTrigAt()).lastExecuteSuccess(false)
 							.lastTrigResult(buildLastTrigResult(update.getException())).end(true)
-							/* .queued(false) */.build();
+							.queuedAtInstanceNull(true)/* .queued(false) */.build();
 
 					RETRY_TEMPLATE.execute(ctx -> {
 						jobExecuteRecordManager.createOnExecuted(mainUpdate);

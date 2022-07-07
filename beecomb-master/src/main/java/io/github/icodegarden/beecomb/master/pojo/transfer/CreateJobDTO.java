@@ -57,6 +57,7 @@ public class CreateJobDTO implements Validateable {
 	@Data
 	public static class Delay {
 		@NotNull
+		@Min(JobConstants.MIN_EXECUTE_INTERVAL)
 		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
 		private Long delay;
 		private Integer retryOnExecuteFailed = 0;// smallint NOT NULL DEFAULT 0 comment 'executor执行失败重试次数，包括连接失败、超时等',
@@ -67,8 +68,10 @@ public class CreateJobDTO implements Validateable {
 
 	@Data
 	public static class Schedule {
+		@Min(JobConstants.MIN_EXECUTE_INTERVAL)
 		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
 		private Long scheduleFixRate;
+		@Min(JobConstants.MIN_EXECUTE_INTERVAL)
 		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
 		private Long scheduleFixDelay;
 		private String sheduleCron;// varchar(20),

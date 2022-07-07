@@ -3,6 +3,7 @@ package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
+import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,6 +28,8 @@ public class CreateDelayJobDTO implements Validateable {
 	@Override
 	public void validate() throws IllegalArgumentException {
 		Assert.notNull(getDelay(), "Missing:delay");
+		Assert.isTrue(delay >= JobConstants.MIN_EXECUTE_INTERVAL && delay <= JobConstants.MAX_EXECUTE_INTERVAL,
+				"Invalid:delay");
 	}
 
 }

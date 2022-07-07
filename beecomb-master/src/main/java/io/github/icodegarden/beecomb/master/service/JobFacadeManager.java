@@ -13,18 +13,21 @@ import org.springframework.transaction.annotation.Transactional;
 import io.github.icodegarden.beecomb.common.backend.manager.DelayJobManager;
 import io.github.icodegarden.beecomb.common.backend.manager.JobDetailManager;
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.manager.PendingRecoveryJobManager;
 import io.github.icodegarden.beecomb.common.backend.manager.ScheduleJobManager;
-import io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
+import io.github.icodegarden.beecomb.common.backend.pojo.query.PendingRecoveryJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
+import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreatePendingRecoveryJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
+import io.github.icodegarden.beecomb.common.backend.pojo.view.PendingRecoveryJobVO;
 import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
@@ -41,8 +44,6 @@ import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 public class JobFacadeManager extends AbstractBackendJobService {
 
 	@Autowired
-	private JobMainMapper jobMainMapper;
-	@Autowired
 	private JobMainManager jobMainManager;
 	@Autowired
 	private JobDetailManager jobDetailManager;
@@ -50,6 +51,8 @@ public class JobFacadeManager extends AbstractBackendJobService {
 	private DelayJobManager delayJobManager;
 	@Autowired
 	private ScheduleJobManager scheduleJobManager;
+	@Autowired
+	private PendingRecoveryJobManager pendingRecoveryJobManager;
 
 	@Transactional
 	public ExecutableJobBO create(CreateJobDTO dto) {
@@ -76,14 +79,27 @@ public class JobFacadeManager extends AbstractBackendJobService {
 			scheduleJobManager.create(createScheduleJobDTO);
 		}
 
-		return findOneExecutableJob(createJobMainDTO.getId());
+		ExecutableJobBO job = findOneExecutableJob(createJobMainDTO.getId());
+		/**
+		 * DTO的priority字段可能是null所以先查job
+		 */
+		createPendingRecoveryJob(job);
+
+		return job;
+	}
+
+	private void createPendingRecoveryJob(ExecutableJobBO job) {
+		CreatePendingRecoveryJobDTO createPendingRecoveryJobDTO = new CreatePendingRecoveryJobDTO();
+		createPendingRecoveryJobDTO.setJobId(job.getId());
+		createPendingRecoveryJobDTO.setPriority(job.getPriority());
+		pendingRecoveryJobManager.create(createPendingRecoveryJobDTO);
 	}
 
 	@Transactional
 	public boolean update(UpdateJobOpenapiDTO dto) {
 		return update(dto, false);
 	}
-	
+
 	/**
 	 * 
 	 * @param dto
@@ -98,7 +114,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 
 		UpdateJobMainDTO updateJobMainDTO = new UpdateJobMainDTO();
 		BeanUtils.copyProperties(dto, updateJobMainDTO);
-		if(removedQueue) {
+		if (removedQueue) {
 			updateJobMainDTO.setNextTrigAtNull(true);
 		}
 		if (updateJobMainDTO.shouldUpdate()) {
@@ -143,35 +159,71 @@ public class JobFacadeManager extends AbstractBackendJobService {
 		}
 	}
 
+	/**
+	 * 识别是否存在已不在队列的任务
+	 * 
+	 * @param nextTrigAtLt
+	 * @return
+	 */
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
-		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).limit("limit 1").build();
+		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).end(false).limit("limit 1").build();
 		List<JobMainVO> vos = jobMainManager.list(query);
 		return vos.size() >= 1;
 	}
 
 	/**
-	 * 更新nextTrigAt超过给定的时间->状态未队列
+	 * 更新nextTrigAt超过给定的时间->状态未队列<br>
+	 * 不加事务
 	 * 
 	 * @param nextTrigAtLt
 	 * @return
 	 */
 	public int recoveryThatNoQueuedActually(LocalDateTime nextTrigAtLt) {
-		return jobMainMapper.updateToNoQueued(nextTrigAtLt);
+		int count = pendingRecoveryJobManager.insertSelectByScan(nextTrigAtLt);
+		if (count > 0) {
+			return jobMainManager.updateToNoQueuedByScan(nextTrigAtLt);
+		}
+		return 0;
 	}
 
 	/**
-	 * 获取 未完成且未队列 的任务，这些任务应该被恢复<br>
-	 * 未end、未queued、按priority优先级
+	 * 更新所在实例实际已不存在的->状态未队列<br>
+	 * 不加事务
+	 * 
+	 * @param queuedAtInstance
+	 * @return
+	 */
+	public int recoveryThatNoQueuedActuallyByQueuedAtInstance(String queuedAtInstance) {
+		int count = pendingRecoveryJobManager.insertSelectByInstance(queuedAtInstance);
+		if (count > 0) {
+			return jobMainManager.updateToNoQueuedByInstance(queuedAtInstance);
+		}
+		return 0;
+	}
+
+	/**
+	 * 获取待恢复的任务<br>
 	 * 
 	 * @param skip
 	 * @param size
 	 * @return
 	 */
 	public List<ExecutableJobBO> listJobsShouldRecovery(int skip, int size) {
-		JobMainQuery query = JobMainQuery.builder().end(false).queued(false).with(JobMainQuery.With.WITH_EXECUTABLE)
-				.sort("order by a.priority desc").limit("limit " + skip + "," + size).build();
+		PendingRecoveryJobQuery query = PendingRecoveryJobQuery.builder().sort("order by a.priority desc")
+				.limit("limit " + skip + "," + size).build();
+		List<PendingRecoveryJobVO> list = pendingRecoveryJobManager.list(query);
 
-		List<JobMainVO> vos = jobMainManager.list(query);
+		if (list.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<Long> jobIds = list.stream().map(PendingRecoveryJobVO::getJobId).collect(Collectors.toList());
+
+//		JobMainQuery query = JobMainQuery.builder().end(false).queued(false).with(JobMainQuery.With.WITH_EXECUTABLE)
+//				.sort("order by a.priority desc").limit("limit " + skip + "," + size).build();
+
+		JobMainQuery jobQuery = JobMainQuery.builder().jobIds(jobIds).sort("order by a.priority desc")//此时排序已不重要，但也不影响性能
+				.with(JobMainQuery.With.WITH_EXECUTABLE).build();
+		List<JobMainVO> vos = jobMainManager.list(jobQuery);
 		if (vos.isEmpty()) {
 			return Collections.emptyList();
 		}

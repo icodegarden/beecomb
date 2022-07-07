@@ -1,8 +1,6 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
@@ -43,15 +41,16 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	private final JobService jobService;
 	protected MetricsOverload metricsOverload;
 	protected InstanceProperties instanceProperties;
-	protected Map<Long/* jobId */, JobTrigger> queuedJobs = new HashMap<Long, JobTrigger>();
+	protected final JobQueue jobQueue;
 
 	protected ParallelLoadBalanceExchanger parallelLoadBalanceExchanger;
 
 	public AbstractJobEngine(JobService jobService, MetricsOverload metricsOverload,
-			InstanceProperties instanceProperties) {
+			InstanceProperties instanceProperties, JobQueue jobQueue) {
 		this.jobService = jobService;
 		this.metricsOverload = metricsOverload;
 		this.instanceProperties = instanceProperties;
+		this.jobQueue = jobQueue;
 
 		if (protocol_for_Test != null) {
 			this.protocol = protocol_for_Test;
@@ -78,11 +77,19 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 
 	@Override
 	public Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueue(ExecutableJobBO job) {
+		/**
+		 * 容错
+		 */
+		JobTrigger jobTrigger = jobQueue.getJobTrigger(job.getId());
+		if(jobTrigger != null) {
+			return Results.of(true, job, jobTrigger, null);
+		}
+		
 		if (!metricsOverload.incrementOverload(job)) {
 			return Results.of(false, job, null,
 					new ExceedOverloadJobEngineException("metrics will overload", metricsOverload.getLocalMetrics()));
 		}
-		
+
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = doEnQueue(job);
 		if (!enQueueResult.isSuccess()) {
 			JobEngineException exception = enQueueResult.getT3();
@@ -100,8 +107,6 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			InstanceProperties instanceProperties = InstanceProperties.singleton();
 			job.setQueuedAtInstance(SystemUtils.formatIpPort(instanceProperties.getServer().getBindIp(),
 					instanceProperties.getServer().getPort()));
-
-//			queuedJobs.put(job.getId(), enQueueResult.getT2());
 
 			return enQueueResult;
 		} catch (Exception e) {
@@ -121,29 +126,13 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 
 	@Override
 	public boolean removeQueue(ExecutableJobBO job) {
-		JobTrigger jobTrigger = queuedJobs.get(job.getId());
-		if (jobTrigger == null) {
-			if (log.isInfoEnabled()) {
-				log.info("removeQueue job not found, job.id:{}, job.name:{}", job.getId(), job.getName());
-			}
-			/**
-			 * 已不存在
-			 */
-			return true;
-		}
-
-		boolean b = doRemoveQueue(jobTrigger);
-		if (log.isInfoEnabled()) {
-			log.info("removeQueue result:{}, job.id:{}, job.name:{}", b, job.getId(), job.getName());
-		}
+		boolean b = jobQueue.removeJob(job.getId());
 		if (b) {
 			metricsOverload.decrementOverload(job);
-			queuedJobs.remove(job.getId());
+			metricsOverload.flushMetrics();
 		}
 		return b;
 	}
-
-	protected abstract boolean doRemoveQueue(JobTrigger jobTrigger);
 
 	@Override
 	public void shutdown() {
@@ -158,9 +147,19 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 		return -80;
 	}
 
+	@Override
+	public int queuedSize() {
+		return jobQueue.queuedSize();
+	}
+
+	@Override
+	public void shutdownBlocking(long blockTimeoutMillis) {
+		jobQueue.shutdownBlocking(blockTimeoutMillis);
+	}
+
 	public abstract class JobTrigger implements Runnable {
 
-		protected final Long jobId;
+		private final Long jobId;
 
 		private long executedTimes;
 		private boolean running = false;
@@ -176,7 +175,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			try {
 				ExecutableJobBO job = jobService.findOneExecutableJob(jobId);
 				if (job.getEnd()) {
-					removeQueueOnEnd(job);
+					removeQueue(job);
 					return;
 				}
 
@@ -190,20 +189,11 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			}
 		}
 
-		/**
-		 * 任务end时从队列移除，并实时刷新度量
-		 */
-		protected void removeQueueOnEnd(ExecutableJobBO job) {
-			if (queuedJobs.containsKey(job.getId())) {// 若本地有记录，走完整流程；否则只需执行真实doRemoveQueue
-				removeQueue(job);
-			} else {
-				doRemoveQueue(this);
-			}
-
-			metricsOverload.flushMetrics();
-		}
-
 		protected abstract void doRun(ExecutableJobBO job);
+
+		public Long getJobId() {
+			return jobId;
+		}
 
 		public long getExecutedTimes() {
 			return executedTimes;

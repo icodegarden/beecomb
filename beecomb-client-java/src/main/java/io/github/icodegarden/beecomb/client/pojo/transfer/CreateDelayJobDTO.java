@@ -32,11 +32,26 @@ public class CreateDelayJobDTO extends CreateJobDTO {
 	}
 
 	public static class Delay {
+		/**
+		 * 任务的延迟执行时间毫秒，1000-31536000000000
+		 */
 		@NotNull
 		private Long delay;
+		/**
+		 * 当任务执行失败时重试次数，默认0
+		 */
 		private Integer retryOnExecuteFailed;
+		/**
+		 * 重试回退时间毫秒，默认3000
+		 */
 		private Integer retryBackoffOnExecuteFailed;
+		/**
+		 * 当任务执行没有合格的Executor时重试次数，默认0
+		 */
 		private Integer retryOnNoQualified;
+		/**
+		 * 重试回退时间毫秒，默认30000
+		 */
 		private Integer retryBackoffOnNoQualified;
 
 		public Delay(Long delay) {

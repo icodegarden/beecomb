@@ -1,5 +1,6 @@
 package io.github.icodegarden.beecomb.common.backend.manager;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
+import io.github.icodegarden.beecomb.common.backend.constant.TableNameConstants;
 import io.github.icodegarden.beecomb.common.backend.mapper.JobMainMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobMainDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobMainPO;
@@ -48,6 +50,7 @@ public class JobMainManager {
 
 		po.setCreatedBy(SecurityUtils.getUsername());
 		po.setCreatedAt(SystemUtils.now());
+		po.setUpdatedAt(SystemUtils.now());// 防止时差
 
 		try {
 			jobMainMapper.add(po);
@@ -58,7 +61,9 @@ public class JobMainManager {
 	}
 
 	public Page<JobMainVO> page(JobMainQuery query) {
-		PageHelper.startPage(query.getPage(), query.getSize());
+		boolean allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_MAIN);
+//		allowCount = false;
+		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
 
 		Page<JobMainDO> page = (Page<JobMainDO>) jobMainMapper.findAll(query);
 
@@ -89,8 +94,28 @@ public class JobMainManager {
 		BeanUtils.copyProperties(dto, update);
 		update.setUpdatedBy(SecurityUtils.getUsername());
 		update.setUpdatedAt(SystemUtils.now());
-		
+
 		return jobMainMapper.update(update) == 1;
+	}
+
+	/**
+	 * 更新nextTrigAt超过给定的时间->状态未队列
+	 * 
+	 * @param nextTrigAtLt
+	 * @return
+	 */
+	public int updateToNoQueuedByScan(LocalDateTime nextTrigAtLt) {
+		return jobMainMapper.updateToNoQueuedByScan(nextTrigAtLt);
+	}
+
+	/**
+	 * 更新所在实例实际已不存在的->状态未队列
+	 * 
+	 * @param queuedAtInstance
+	 * @return
+	 */
+	public int updateToNoQueuedByInstance(String queuedAtInstance) {
+		return jobMainMapper.updateToNoQueuedByInstance(queuedAtInstance);
 	}
 
 	public boolean updateOnExecuted(UpdateJobMainOnExecutedDTO dto) {
@@ -118,7 +143,7 @@ public class JobMainManager {
 
 		return jobMainMapper.update(update) == 1;
 	}
-	
+
 	public boolean updateRemoveQueue(Long jobId) {
 		Update update = new JobMainPO.Update();
 		update.setUpdatedBy(SecurityUtils.getUsername());
@@ -129,22 +154,15 @@ public class JobMainManager {
 
 		return jobMainMapper.update(update) == 1;
 	}
-	
+
 	public boolean delete(Long id) {
 		return jobMainMapper.delete(id) == 1;
 	}
 
 	/**
-EXPLAIN -- 总数
-SELECT
-	created_by,
-	type,
-	count( 0 ) AS count 
-FROM
-	job_main 
-GROUP BY
-	created_by,
-	type
+	 * EXPLAIN -- 总数 SELECT created_by, type, count( 0 ) AS count FROM job_main
+	 * GROUP BY created_by, type
+	 * 
 	 * @return
 	 */
 	public List<JobMainCountVO> countTotalGroupByTypeAndCreateBy() {
@@ -152,19 +170,11 @@ GROUP BY
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
+
 	/**
-    EXPLAIN 
--- 队列中
-SELECT
-	created_by,
-	type,
-	count( 0 ) AS count 
-FROM
-	job_main 
-	where is_queued = 1
-GROUP BY
-	created_by,
-	type
+	 * EXPLAIN -- 队列中 SELECT created_by, type, count( 0 ) AS count FROM job_main
+	 * where is_queued = 1 GROUP BY created_by, type
+	 * 
 	 * @return
 	 */
 	public List<JobMainCountVO> countQueuedGroupByTypeAndCreateBy() {
@@ -172,19 +182,11 @@ GROUP BY
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
+
 	/**
-    EXPLAIN 
--- 未队列未结束
-SELECT
-	created_by,
-	type,
-	count( 0 ) AS count 
-FROM
-	job_main 
-	where is_queued = 0 and is_end = 0
-GROUP BY
-	created_by,
-	type	
+	 * EXPLAIN -- 未队列未结束 SELECT created_by, type, count( 0 ) AS count FROM job_main
+	 * where is_queued = 0 and is_end = 0 GROUP BY created_by, type
+	 * 
 	 * @return
 	 */
 	public List<JobMainCountVO> countNoQueuedNoEndGroupByTypeAndCreateBy() {
@@ -192,19 +194,11 @@ GROUP BY
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
+
 	/**
-	    EXPLAIN 
--- 已结束已成功
-SELECT
-	created_by,
-	type,
-	count( 0 ) AS count 
-FROM
-	job_main 
-	where is_end = 1 and is_last_execute_success = 1
-GROUP BY
-	created_by,
-	type	
+	 * EXPLAIN -- 已结束已成功 SELECT created_by, type, count( 0 ) AS count FROM job_main
+	 * where is_end = 1 and is_last_execute_success = 1 GROUP BY created_by, type
+	 * 
 	 * @return
 	 */
 	public List<JobMainCountVO> countEndLastExecuteSuccessGroupByTypeAndCreateBy() {
@@ -212,22 +206,11 @@ GROUP BY
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
-	
+
 	/**
-	    EXPLAIN 
--- 已结束未成功
-SELECT
-	created_by,
-	type,
-	count( 0 ) AS count 
-FROM
-	job_main 
-WHERE
-	is_end = 1 
-	AND is_last_execute_success = 1 
-GROUP BY
-	created_by,
-	type
+	 * EXPLAIN -- 已结束未成功 SELECT created_by, type, count( 0 ) AS count FROM job_main
+	 * WHERE is_end = 1 AND is_last_execute_success = 1 GROUP BY created_by, type
+	 * 
 	 * @return
 	 */
 	public List<JobMainCountVO> countEndLastExecuteFailedGroupByTypeAndCreateBy() {

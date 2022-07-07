@@ -20,6 +20,10 @@ public class DispatcherHandler {
 		this.jobReceiver = jobReceiver;
 	}
 	
+	public String ping() {
+		return "pong";
+	}
+	
 	/**
 	 * 具体参数化 
 	 */

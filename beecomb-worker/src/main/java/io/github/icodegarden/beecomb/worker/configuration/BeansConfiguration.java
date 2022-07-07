@@ -215,7 +215,7 @@ public class BeansConfiguration {
 	
 	@Bean
 	public DispatcherHandler dispatcherHandler(JobRequestReceiver jobReceiver, JobEngine jobEngine) {
-		return new DispatcherHandler(jobReceiver);
+		return new DispatcherHandler(jobReceiver, jobEngine);
 	}
 
 	/**

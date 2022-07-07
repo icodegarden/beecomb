@@ -35,9 +35,9 @@ public class JobReceiver {
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(1000), new NamedThreadFactory("dispatch-job"));
 
 	private JobFacadeManager jobFacadeManager;
-	private JobRemoteService jobRemoteService;
+	private WorkerRemoteService jobRemoteService;
 
-	public JobReceiver(JobFacadeManager jobFacadeManager, JobRemoteService jobRemoteService) {
+	public JobReceiver(JobFacadeManager jobFacadeManager, WorkerRemoteService jobRemoteService) {
 		this.jobFacadeManager = jobFacadeManager;
 		this.jobRemoteService = jobRemoteService;
 	}
@@ -52,6 +52,7 @@ public class JobReceiver {
 		try {
 			job = jobFacadeManager.create(dto);
 		} catch (IllegalArgumentException e) {
+			// 这个catch目前没有也会正确处理了
 			return Results.of(false, null,
 					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
 		}
@@ -84,6 +85,7 @@ public class JobReceiver {
 		try {
 			job = jobFacadeManager.create(dto);
 		} catch (IllegalArgumentException e) {
+			// 这个catch目前没有也会正确处理了
 			return Results.of(false, null,
 					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
 		}

@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
-import io.github.icodegarden.beecomb.master.service.JobRemoteService;
+import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoSwitchableExchangeException;
@@ -23,7 +23,8 @@ import io.github.icodegarden.commons.lang.util.ThreadPoolUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 
+ * 自动重置任务未队列（作为JobRecoveryListener的补充）<br>
+ * 自动恢复任务的调度
  * @author Fangfang.Xu
  *
  */
@@ -39,16 +40,16 @@ public class JobRecoverySchedule implements Closeable {
 	private final AtomicBoolean closed = new AtomicBoolean(true);
 	private final DistributedLock lock;
 	private final JobFacadeManager jobFacadeManager;
-	private final JobRemoteService jobRemoteService;
+	private final WorkerRemoteService remoteService;
 	private final JobRecoveryRecordManager jobRecoveryRecordService;
 
 	private ScheduledFuture<?> future;
 
-	public JobRecoverySchedule(DistributedLock lock, JobFacadeManager jobFacadeManager, JobRemoteService jobRemoteService,
+	public JobRecoverySchedule(DistributedLock lock, JobFacadeManager jobFacadeManager, WorkerRemoteService remoteService,
 			JobRecoveryRecordManager jobRecoveryRecordService) {
 		this.lock = lock;
 		this.jobFacadeManager = jobFacadeManager;
-		this.jobRemoteService = jobRemoteService;
+		this.remoteService = remoteService;
 		this.jobRecoveryRecordService = jobRecoveryRecordService;
 	}
 
@@ -101,7 +102,10 @@ public class JobRecoverySchedule implements Closeable {
 			log.info("recovery jobs Has No Queued Actually:{}", has);
 		}
 		if (has) {
-			jobFacadeManager.recoveryThatNoQueuedActually(nextTrigAtLt);
+			int count = jobFacadeManager.recoveryThatNoQueuedActually(nextTrigAtLt);
+			if (log.isInfoEnabled()) {
+				log.info("recovery jobs nextTrigAtLt:{} count:{}", nextTrigAtLt, count);
+			}
 		}
 	}
 
@@ -134,7 +138,7 @@ public class JobRecoverySchedule implements Closeable {
 				dto.setJobId(job.getId());
 				dto.setRecoveryAt(SystemUtils.now());
 				try {
-					jobRemoteService.enQueue(job);
+					remoteService.enQueue(job);
 
 					dto.setSuccess(true);
 					dto.setDesc("");

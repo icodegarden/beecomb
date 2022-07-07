@@ -50,6 +50,7 @@ public class UpdateJobOpenapiDTO implements Validateable {
 
 	@Data
 	public static class Delay {
+		@Min(JobConstants.MIN_EXECUTE_INTERVAL)
 		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
 		private Long delay;
 		private Integer retryOnExecuteFailed;
@@ -60,8 +61,10 @@ public class UpdateJobOpenapiDTO implements Validateable {
 
 	@Data
 	public static class Schedule {
+		@Min(JobConstants.MIN_EXECUTE_INTERVAL)
 		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
 		private Long scheduleFixRate;
+		@Min(JobConstants.MIN_EXECUTE_INTERVAL)
 		@Max(JobConstants.MAX_EXECUTE_INTERVAL)
 		private Long scheduleFixDelay;
 		private String sheduleCron;

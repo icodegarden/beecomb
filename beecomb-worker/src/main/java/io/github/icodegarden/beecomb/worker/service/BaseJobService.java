@@ -8,6 +8,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
+import io.github.icodegarden.beecomb.common.backend.manager.PendingRecoveryJobManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainEnQueueDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainOnExecutedDTO;
@@ -33,8 +34,11 @@ public abstract class BaseJobService extends AbstractBackendJobService implement
 	@Autowired
 	protected JobMainManager jobMainManager;
 	@Autowired
+	private PendingRecoveryJobManager pendingRecoveryJobManager;
+	@Autowired
 	protected InstanceProperties instanceProperties;
 
+	@Transactional
 	@Override
 	public void updateEnQueue(ExecutableJobBO job) {
 		Long jobId = job.getId();
@@ -49,6 +53,10 @@ public abstract class BaseJobService extends AbstractBackendJobService implement
 				.nextTrigAt(nextTrigAt).build();
 
 		jobMainManager.updateEnQueue(update);
+		/**
+		 * 同时删除 待恢复数据
+		 */
+		pendingRecoveryJobManager.delete(job.getId());
 	}
 	
 	@Transactional

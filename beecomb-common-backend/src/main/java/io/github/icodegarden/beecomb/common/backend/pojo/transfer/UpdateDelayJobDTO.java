@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
+import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.util.ClassUtils;
 import lombok.Data;
 
@@ -30,6 +31,8 @@ public class UpdateDelayJobDTO implements Validateable {
 	@Override
 	public void validate() throws IllegalArgumentException {
 		Assert.notNull(jobId, "Missing:jobId");
+		Assert.isTrue(delay >= JobConstants.MIN_EXECUTE_INTERVAL && delay <= JobConstants.MAX_EXECUTE_INTERVAL,
+				"Invalid:delay");
 	}
 
 	@Override

@@ -11,21 +11,54 @@ import io.github.icodegarden.commons.lang.annotation.NotNull;
  */
 public abstract class CreateJobDTO {
 
+	/**
+	 * 任务的uuid，注意beecomb并不会保证该值唯一性，而是由用户自己决定
+	 */
 	private String uuid;
+	/**
+	 * 任务名称
+	 */
 	@NotEmpty
 	private String name;
 	@NotNull
 	private JobType type;
+	/**
+	 * 执行器名称，该任务由哪个Executor处理
+	 */
 	@NotNull
 	private String executorName;
+	/**
+	 * jobHandler名称，该任务由哪个执行器的jobHandler处理
+	 */
 	@NotNull
 	private String jobHandlerName;
+	/**
+	 * 任务的优先级，默认5，仅在任务恢复时起作用
+	 */
 	private Integer priority;
+	/**
+	 * 任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务
+	 */
 	private Integer weight;
+	/**
+	 * 是否并行任务，默认false
+	 */
 	private Boolean parallel;
+	/**
+	 * 最大并行分片数，默认8，当合格的Executor数大于等于该值时，按该值分片，小于时按实际Executor数分片
+	 */
 	private Integer maxParallelShards;
+	/**
+	 * 任务执行超时毫秒，默认10000
+	 */
 	private Integer executeTimeout;
+	/**
+	 * 任务执行的参数，最大65535
+	 */
 	private String params;
+	/**
+	 * 任务描述，最大200
+	 */
 	private String desc;
 
 	public CreateJobDTO(String name, JobType type, String executorName, String jobHandlerName) {

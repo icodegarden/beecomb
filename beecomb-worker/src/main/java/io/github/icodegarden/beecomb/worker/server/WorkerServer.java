@@ -82,9 +82,15 @@ public class WorkerServer implements GracefullyShutdown {
 						throw WorkerException.workerClosed();
 					}
 
-					Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod(),
-							dto.getBody().getClass());
-					Object object = method.invoke(dispatcherHandler, dto.getBody());
+					Object object;
+					if (dto.getBody() != null) {
+						Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod(),
+								dto.getBody().getClass());
+						object = method.invoke(dispatcherHandler, dto.getBody());
+					} else {
+						Method method = dispatcherHandler.getClass().getDeclaredMethod(dto.getMethod());
+						object = method.invoke(dispatcherHandler);
+					}
 
 					exchangeResult.setSuccess(true);
 					exchangeResult.setResponse(object);

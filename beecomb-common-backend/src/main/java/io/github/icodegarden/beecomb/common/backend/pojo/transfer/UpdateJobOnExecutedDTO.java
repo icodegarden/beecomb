@@ -41,5 +41,8 @@ public class UpdateJobOnExecutedDTO {
 	 * 不一定结束
 	 */
 	private Boolean end;
-
+	/**
+	 * 不一定有
+	 */
+	private Boolean queuedAtInstanceNull;
 }

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
-import io.github.icodegarden.beecomb.master.service.JobRemoteService;
+import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
 
@@ -31,7 +31,7 @@ public class JobRecoveryScheduleTests {
 	void start() throws Exception {
 		DistributedLock lock = mock(DistributedLock.class);
 		JobFacadeManager jobFacadeManager = mock(JobFacadeManager.class);
-		JobRemoteService jobRemoteService = mock(JobRemoteService.class);
+		WorkerRemoteService jobRemoteService = mock(WorkerRemoteService.class);
 		JobRecoveryRecordManager jobRecoveryRecordService = mock(JobRecoveryRecordManager.class);
 
 		// recoveryThatNoQueuedActually部分------------------------------------------

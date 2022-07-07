@@ -73,7 +73,8 @@ public class ScheduleJobService extends BaseJobService {
 					.lastTrigAt(update.getLastTrigAt()).lastTrigResult("Success").end(update.getEnd())
 					.lastExecuteExecutor(SystemUtils.formatIpPort(update.getExecutorIp(), update.getExecutorPort()))
 					.lastExecuteReturns(update.getLastExecuteReturns()).lastExecuteSuccess(true)
-					.nextTrigAt(update.getNextTrigAt()).build();
+					.nextTrigAt(update.getNextTrigAt())
+					.queuedAtInstanceNull(Boolean.TRUE.equals(update.getEnd()) ? true : null).build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
 				jobExecuteRecordManager.createOnExecuted(mainUpdate);

@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.master.configuration;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
@@ -23,11 +24,13 @@ import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSp
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
+import io.github.icodegarden.beecomb.master.discovery.InstanceDiscoveryListener;
+import io.github.icodegarden.beecomb.master.discovery.ListenableNamesWatchedZooKeeperInstanceDiscovery;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
-import io.github.icodegarden.beecomb.master.service.JobRemoteService;
-import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
+import io.github.icodegarden.beecomb.master.service.JobReceiver;
+import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
@@ -50,7 +53,6 @@ import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
 import io.github.icodegarden.commons.zookeeper.concurrent.lock.ZooKeeperLock;
 import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
-import io.github.icodegarden.commons.zookeeper.registry.NamesWatchedZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
@@ -173,14 +175,21 @@ public class BeansConfiguration {
 	 * InstanceDiscovery缓存刷新方式
 	 */
 	@Bean
-	public InstanceDiscovery<ZooKeeperRegisteredInstance> zooKeeperInstanceDiscovery(ZooKeeperHolder zooKeeperHolder) {
+	public InstanceDiscovery<ZooKeeperRegisteredInstance> zooKeeperInstanceDiscovery(ZooKeeperHolder zooKeeperHolder,
+			List<InstanceDiscoveryListener> instanceDiscoveryListeners) {
 		ZooKeeperInstanceDiscovery<ZooKeeperRegisteredInstance> delegator = new ZnodePatternZooKeeperInstanceDiscovery(
 				zooKeeperHolder, instanceProperties.getZookeeper().getRoot());
 
-		NamesWatchedZooKeeperInstanceDiscovery instanceDiscovery = new NamesWatchedZooKeeperInstanceDiscovery(delegator,
-				zooKeeperHolder, instanceProperties.getZookeeper().getRoot(),
+//		NamesWatchedZooKeeperInstanceDiscovery instanceDiscovery = new NamesWatchedZooKeeperInstanceDiscovery(delegator,
+//				zooKeeperHolder, instanceProperties.getZookeeper().getRoot(),
+//				Arrays.asList(NodeRole.Worker.getRoleName()),
+//				instanceProperties.getSchedule().getDiscoveryCacheRefreshIntervalMillis());
+
+		ListenableNamesWatchedZooKeeperInstanceDiscovery instanceDiscovery = new ListenableNamesWatchedZooKeeperInstanceDiscovery(
+				delegator, zooKeeperHolder, instanceProperties.getZookeeper().getRoot(),
 				Arrays.asList(NodeRole.Worker.getRoleName()),
 				instanceProperties.getSchedule().getDiscoveryCacheRefreshIntervalMillis());
+		instanceDiscovery.setInstanceDiscoveryListeners(instanceDiscoveryListeners);
 
 		/**
 		 * 停止调度
@@ -212,24 +221,16 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public JobRemoteService jobRemoteService(InstanceLoadBalance instanceLoadBalance) {
-		JobRemoteService jobDispatcher = new JobRemoteService(instanceLoadBalance,
-				instanceProperties.getJob().getDispatchTimeoutMillis(),
-				instanceProperties.getLoadBalance().getMaxCandidates());
-		return jobDispatcher;
-	}
-
-	@Bean
-	public JobReceiver jobReceiver(JobFacadeManager jobFacadeManager, JobRemoteService jobRemoteService) {
-		return new JobReceiver(jobFacadeManager, jobRemoteService);
+	public JobReceiver jobReceiver(JobFacadeManager jobFacadeManager, WorkerRemoteService remoteService) {
+		return new JobReceiver(jobFacadeManager, remoteService);
 	}
 
 	@Bean
 	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobFacadeManager jobFacadeManager,
-			JobRemoteService jobRemoteService, JobRecoveryRecordManager jobRecoveryRecordService) {
+			WorkerRemoteService remoteService, JobRecoveryRecordManager jobRecoveryRecordService) {
 		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
 
-		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobFacadeManager, jobRemoteService,
+		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobFacadeManager, remoteService,
 				jobRecoveryRecordService);
 		jobRecovery.start(instanceProperties.getJob().getRecoveryScheduleMillis());
 

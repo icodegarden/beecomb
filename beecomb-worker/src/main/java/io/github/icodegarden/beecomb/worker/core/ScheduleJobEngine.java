@@ -2,7 +2,6 @@ package io.github.icodegarden.beecomb.worker.core;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -52,18 +51,21 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	private InstanceMetrics instanceMetrics;
 	private ScheduleJobService scheduleJobService;
 
-	private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-
 	public ScheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery, InstanceMetrics instanceMetrics,
 			MetricsOverload jobOverload, ScheduleJobService scheduleJobService, InstanceProperties instanceProperties) {
-		super(scheduleJobService, jobOverload, instanceProperties);
+		super(scheduleJobService, jobOverload, instanceProperties, buildJobQueue(instanceProperties));
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;
 		this.scheduleJobService = scheduleJobService;
-		this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
+	}
+
+	private static JobQueue buildJobQueue(InstanceProperties instanceProperties) {
+		ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
 				instanceProperties.getOverload().getJobs().getMax(), new NamedThreadFactory("schedule-jobs"),
 				new ThreadPoolExecutor.AbortPolicy());
 		scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
+
+		return new JobQueue(scheduledThreadPoolExecutor);
 	}
 
 	@Override
@@ -85,22 +87,17 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			 */
 			long nextDelayMillis = schedule.calcNextTrigDelayMillisOnEnQueue();
 
-			ScheduledFuture<?> future = null;
 			if (schedule.getScheduleFixDelay() != null) {
-				future = scheduledThreadPoolExecutor.scheduleWithFixedDelay(trigger, nextDelayMillis,
-						schedule.getScheduleFixDelay(), TimeUnit.MILLISECONDS);
+				jobQueue.scheduleWithFixedDelay(trigger, nextDelayMillis, schedule.getScheduleFixDelay(),
+						TimeUnit.MILLISECONDS);
 			} else if (schedule.getScheduleFixRate() != null) {
-				future = scheduledThreadPoolExecutor.scheduleAtFixedRate(trigger, nextDelayMillis,
-						schedule.getScheduleFixRate(), TimeUnit.MILLISECONDS);
+				jobQueue.scheduleAtFixedRate(trigger, nextDelayMillis, schedule.getScheduleFixRate(),
+						TimeUnit.MILLISECONDS);
 			} else {
 				// 计算出下次执行时间
-				future = scheduledThreadPoolExecutor.schedule(trigger, nextDelayMillis, TimeUnit.MILLISECONDS);
+				jobQueue.schedule(trigger, nextDelayMillis, TimeUnit.MILLISECONDS);
 			}
 
-			trigger.setFuture(future);
-			
-			queuedJobs.put(job.getId(), trigger);
-			
 			return Results.of(true, job, trigger, null);
 		} catch (RejectedExecutionException e) {
 			return Results.of(false, job, null,
@@ -118,7 +115,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		public void doRun(ExecutableJobBO job) {
 			boolean end = ScheduleJobEngine.this.runJob(job);
 			if (end) {
-				removeQueueOnEnd(job);
+				removeQueue(job);
 			} else {
 				reEnQueueIfCron(job);
 			}
@@ -132,8 +129,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 				/**
 				 * 原因同delay
 				 */
-				queuedJobs.remove(job.getId());
-				
+				jobQueue.removeJobTrigger(job.getId());
+
 				Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 以新的身份重进队列
 				if (result3.isSuccess()) {
 					this.setFuture(result3.getT2().getFuture());
@@ -268,37 +265,4 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		}
 	}
 
-	/**
-	 * 进行中的任务也能true（进行中的任务cancel后下次不会再进入队列，当然不会再触发调度）<br>
-	 */
-	@Override
-	protected boolean doRemoveQueue(JobTrigger jobTrigger) {
-		ScheduledFuture<?> future = jobTrigger.getFuture();
-		if (!future.isDone() && !future.isCancelled()) {
-			/**
-			 * IMPT 这里cancel(false)不要使用true，一方面没必要，另一方面因为remove
-			 * queue后后续要把度量刷入zk，那时zk会报InterruptedException导致无法刷入
-			 * （因为这里true的话会中断线程，即对应的本线程，而zk的sdk会进行object.wait而报InterruptedException）
-			 */
-			return future.cancel(false);
-		}
-		return true;
-	}
-
-	/**
-	 * schedule类型的任务，在处于执行中时，将从队列中暂时移除，此时队列的size不会包含该任务，直到任务执行完毕再加入到队列中，此时size包含该任务
-	 */
-	@Override
-	public int queuedSize() {
-		return scheduledThreadPoolExecutor.getQueue().size();
-	}
-
-	@Override
-	public void shutdownBlocking(long blockTimeoutMillis) {
-		scheduledThreadPoolExecutor.shutdown();
-		try {
-			scheduledThreadPoolExecutor.awaitTermination(blockTimeoutMillis, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException ignore) {
-		}
-	}
 }

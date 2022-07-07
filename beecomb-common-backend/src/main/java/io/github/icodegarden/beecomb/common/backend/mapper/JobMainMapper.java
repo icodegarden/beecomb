@@ -42,7 +42,9 @@ public interface JobMainMapper {
 
 	int delete(@Param("id") Long id);
 
-	int updateToNoQueued(@Param("nextTrigAtLt") LocalDateTime nextTrigAtLt);
+	int updateToNoQueuedByScan(@Param("nextTrigAtLt") LocalDateTime nextTrigAtLt);
+	
+	int updateToNoQueuedByInstance(@Param("queuedAtInstance") String queuedAtInstance);
 	
 	List<JobMainCountDO> count(JobMainCountQuery query);
 }

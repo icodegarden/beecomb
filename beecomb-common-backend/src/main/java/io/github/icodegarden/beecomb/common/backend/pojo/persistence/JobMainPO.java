@@ -71,6 +71,7 @@ public class JobMainPO {
 		 * -----------------------------------------------------
 		 */
 		private Boolean nextTrigAtNull;
+		private Boolean queuedAtInstanceNull;
 
 		public Update() {
 		}
@@ -80,7 +81,7 @@ public class JobMainPO {
 				Integer weight, Boolean parallel, Integer maxParallelShards, Boolean queued, LocalDateTime queuedAt,
 				String queuedAtInstance, LocalDateTime lastTrigAt, String lastExecuteExecutor,
 				Boolean lastExecuteSuccess, Integer executeTimeout, LocalDateTime nextTrigAt, Boolean end,
-				String updatedBy, LocalDateTime updatedAt, Boolean nextTrigAtNull) {
+				String updatedBy, LocalDateTime updatedAt, Boolean nextTrigAtNull, Boolean queuedAtInstanceNull) {
 			this.id = id;
 			this.name = name;
 			this.executorName = executorName;
@@ -101,6 +102,7 @@ public class JobMainPO {
 			this.updatedBy = updatedBy;
 			this.updatedAt = updatedAt;
 			this.nextTrigAtNull = nextTrigAtNull;
+			this.queuedAtInstanceNull = queuedAtInstanceNull;
 
 			setEnd(end);
 		}
@@ -115,6 +117,7 @@ public class JobMainPO {
 			if (Boolean.TRUE.equals(end)) {
 				queued = false;
 				nextTrigAtNull = true;
+				queuedAtInstanceNull = true;
 			}
 		}
 

@@ -23,7 +23,7 @@ CREATE TABLE `job_main` (
   `last_execute_executor` varchar(21) comment 'ip:port',
   `is_last_execute_success` bit NOT NULL default 0,
   `execute_timeout` int NOT NULL default 10000 comment 'ms',
-  `next_trig_at` timestamp NULL comment '下次触发时间,初始是null',
+  `next_trig_at` datetime NULL comment '下次触发时间,初始是null',
   `is_end` bit NOT NULL default 0 comment '是否已结束',
   `created_by` varchar(30) comment 'user.username',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -31,8 +31,8 @@ CREATE TABLE `job_main` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX `idx_uuid`(`uuid`(20)), -- uuid不约束唯一，是否需要唯一由用户自己保障
-  INDEX `idx_for_update_to_recovery`(`next_trig_at`),
-  INDEX `idx_for_list_recovery`(`is_end`,`is_queued`,`priority`),  
+  INDEX `idx_recovery_by_scan`(`next_trig_at`,`is_end`), -- 扫描检测重置任务未队列需要
+  INDEX `idx_recovery_by_instance`(`queued_at_instance`,`is_end`), -- 监听检测重置任务未队列需要
   INDEX `idx_name`(`name`(20))
 --  INDEX `idx_for_count_queued`(`is_queued`, `created_by`, `type`),
 --  INDEX `idx_for_count_end_success`(`is_end`, `is_last_execute_success`, `created_by`, `type`)
@@ -71,6 +71,16 @@ CREATE TABLE `schedule_job` (
   PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `pending_recovery_job`;
+CREATE TABLE `pending_recovery_job` (
+  `job_id` bigint unsigned NOT NULL, 
+  `priority` tinyint NOT NULL,	
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`job_id`),
+  INDEX `idx_priority`(`priority`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;		
+
 DROP TABLE IF EXISTS `job_execute_record`;
 CREATE TABLE `job_execute_record` (
   `id` bigint unsigned NOT NULL,
@@ -98,6 +108,15 @@ CREATE TABLE `report_line` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(50) NOT NULL UNIQUE comment '报表类型',
   `content` JSON,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `table_data_count`;
+CREATE TABLE `table_data_count` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `table_name` varchar(50) NOT NULL UNIQUE,
+  `data_count` bigint NOT NULL DEFAULT 0,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -80,6 +80,7 @@ class DelayJobEngineTests extends Properties4Test {
 		job.setJobHandlerName(JOB_HANDLER_NAME);
 		job.setExecuteTimeout(3000);
 		job.setCreatedAt(LocalDateTime.now());
+		job.setUpdatedAt(LocalDateTime.now());
 		job.setPriority(5);
 		job.setWeight(1);
 		job.setParallel(new Random().nextBoolean());
@@ -256,7 +257,7 @@ class DelayJobEngineTests extends Properties4Test {
 		assertThat(delayJobEngine.queuedSize()).isEqualTo(1);
 		verify(executorInstanceDiscovery, times(0)).listInstances(anyString());
 
-		assertThat(delayJobEngine.queuedJobs.size()).isEqualTo(1);//
+		assertThat(delayJobEngine.queuedSize()).isEqualTo(1);//
 		
 		// 验证到达延迟后，触发任务执行
 		JobTrigger jobTrigger = result3.getT2();
@@ -265,7 +266,7 @@ class DelayJobEngineTests extends Properties4Test {
 		}
 		verify(executorInstanceDiscovery, times(1)).listInstances(anyString());
 		
-		assertThat(delayJobEngine.queuedJobs.size()).isEqualTo(0);//
+		assertThat(delayJobEngine.queuedSize()).isEqualTo(0);//
 	}
 
 	@Test

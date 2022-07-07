@@ -2,7 +2,6 @@ package io.github.icodegarden.beecomb.worker.core;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -52,21 +51,23 @@ public class DelayJobEngine extends AbstractJobEngine {
 	private InstanceMetrics instanceMetrics;
 	private DelayJobService delayJobService;
 
-	private final ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-
 	public DelayJobEngine(ExecutorInstanceDiscovery<? extends ExecutorRegisteredInstance> executorInstanceDiscovery,
 			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobService,
 			InstanceProperties instanceProperties) {
-		super(delayJobService, jobOverload, instanceProperties);
+		super(delayJobService, jobOverload, instanceProperties, buildJobQueue(instanceProperties));
 
 		this.executorInstanceDiscovery = executorInstanceDiscovery;
 		this.instanceMetrics = instanceMetrics;
 		this.delayJobService = delayJobService;
+	}
 
-		this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
+	private static JobQueue buildJobQueue(InstanceProperties instanceProperties) {
+		ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
 				instanceProperties.getOverload().getJobs().getMax(), new NamedThreadFactory("delay-jobs"),
 				new ThreadPoolExecutor.AbortPolicy());
 		scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
+
+		return new JobQueue(scheduledThreadPoolExecutor);
 	}
 
 	@Override
@@ -94,11 +95,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 	private Result3<ExecutableJobBO, JobTrigger, JobEngineException> doEnQueue(ExecutableJobBO job, long delayMillis) {
 		try {
 			DelayJobTrigger trigger = new DelayJobTrigger(job.getId());
-			ScheduledFuture<?> future = scheduledThreadPoolExecutor.schedule(trigger, delayMillis,
-					TimeUnit.MILLISECONDS);
-			trigger.setFuture(future);
-
-			queuedJobs.put(job.getId(), trigger);
+			jobQueue.schedule(trigger, delayMillis, TimeUnit.MILLISECONDS);
 
 			return Results.of(true, job, trigger, null);
 		} catch (RejectedExecutionException e) {
@@ -118,7 +115,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 			/**
 			 * delay任务每次执行后，一定会从scheduledThreadPoolExecutor.queue中移除，而失败的则可能以新的任务对象方式进queue，所以这里每次都先执行remove
 			 */
-			queuedJobs.remove(job.getId());
+			jobQueue.removeJobTrigger(job.getId());
 
 			DelayJobEngine.this.runJob(job);
 		}
@@ -271,36 +268,5 @@ public class DelayJobEngine extends AbstractJobEngine {
 			log.info("delay job reEnQueue with delayMillis:{}", delayMillis);
 		}
 		return doEnQueue(job, delayMillis);
-	}
-
-	/**
-	 * ScheduledFuture 的cancel只有在 已经完成 或 已经取消 的状态下才会false，进行中的任务也能true<br>
-	 * 关于 scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
-	 * 默认false，任务只有在完成时才从队列移除，cancel是不会触发移除的（要等到任务触发时间到了才真正从队列remove）<br>
-	 */
-	@Override
-	protected boolean doRemoveQueue(JobTrigger jobTrigger) {
-		ScheduledFuture<?> future = jobTrigger.getFuture();
-		if (!future.isDone() && !future.isCancelled()) {
-			return future.cancel(false);
-		}
-		return true;
-	}
-
-	/**
-	 * delay类型的任务，在处于执行中时，将从队列中移除，此时队列的size不会包含该任务
-	 */
-	@Override
-	public int queuedSize() {
-		return scheduledThreadPoolExecutor.getQueue().size();
-	}
-
-	@Override
-	public void shutdownBlocking(long blockTimeoutMillis) {
-		scheduledThreadPoolExecutor.shutdown();
-		try {
-			scheduledThreadPoolExecutor.awaitTermination(blockTimeoutMillis, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException ignore) {
-		}
 	}
 }
