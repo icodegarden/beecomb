@@ -2,7 +2,7 @@
 mybatis.mapper-locations: classpath*:mapper/*Mapper.xml
 
 pagehelper.helperDialect: mysql
-pagehelper.reasonable: true
+pagehelper.reasonable: false
 pagehelper.supportMethodsArguments: true
 pagehelper.params=count: countSql
 
@@ -22,7 +22,7 @@ spring:
   thymeleaf:
     cache: false
 #  datasource:
-#    url: jdbc:mysql://172.22.122.23:53306/beecomb?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true
+#    url: jdbc:mysql://192.168.80.128:3306/beecomb_0?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #    username: root
 #    password: 123456

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
+import io.github.icodegarden.beecomb.common.backend.constant.TableNameConstants;
 import io.github.icodegarden.beecomb.common.backend.mapper.JobExecuteRecordMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO;
@@ -51,7 +52,8 @@ public class JobExecuteRecordManager {
 	}
 
 	public Page<JobExecuteRecordVO> page(JobExecuteRecordQuery query) {
-		PageHelper.startPage(query.getPage(), query.getSize());
+		boolean allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_EXECUTE_RECORD);
+		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
 
 		Page<JobExecuteRecordDO> page = (Page<JobExecuteRecordDO>) jobExecuteRecordMapper.findAll(query);
 

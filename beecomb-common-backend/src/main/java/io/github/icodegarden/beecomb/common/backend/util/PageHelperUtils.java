@@ -45,7 +45,7 @@ public abstract class PageHelperUtils {
 				p.setTotal((p.getPages() - 1) * page.getPageSize() + page.getResult().size());
 			} else {
 				p.setPages(WebUtils.MAX_TOTAL_PAGES);
-				p.setTotal(page.getPageSize() * WebUtils.MAX_TOTAL_PAGES);
+				p.setTotal(10000);
 			}
 		}
 

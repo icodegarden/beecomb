@@ -62,7 +62,6 @@ public class JobMainManager {
 
 	public Page<JobMainVO> page(JobMainQuery query) {
 		boolean allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_MAIN);
-//		allowCount = false;
 		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
 
 		Page<JobMainDO> page = (Page<JobMainDO>) jobMainMapper.findAll(query);
