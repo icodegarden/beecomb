@@ -19,14 +19,30 @@ import io.github.icodegarden.commons.exchange.exception.ExchangeException;
  */
 public interface BeeCombClient extends Closeable {
 
+	/**
+	 * 创建任务
+	 * @param job
+	 * @return
+	 * @throws ExchangeException
+	 */
 	CreateJobVO createJob(CreateJobDTO job) throws ExchangeException;
-
+	/**
+	 * 创建任务，异步分配
+	 * @param job
+	 * @return
+	 * @throws ExchangeException
+	 */
 	CreateJobVO createJobAsync(CreateJobDTO job) throws ExchangeException;
-
+	
 	PageVO<JobVO> pageJobs(JobQuery query) throws ExchangeException;
-
+	
 	JobVO getJob(Long jobId) throws ExchangeException;
-
+	/**
+	 * 使用uuid查询任务，uuid由用户自己控制唯一性，如果不是唯一的只返回1条
+	 * @param uuid
+	 * @return
+	 * @throws ExchangeException
+	 */
 	JobVO getJobByUUID(String uuid) throws ExchangeException;
 	/**
 	 * 如果更新任务的执行时间，则从更新时间开始重新计时
@@ -37,7 +53,7 @@ public interface BeeCombClient extends Closeable {
 	UpdateJobVO updateJob(UpdateJobDTO update) throws ExchangeException;
 	
 	/**
-	 * delay任务在已经完成 或 已经取消时会失败<br>
+	 * 任务在已经完成 或 已经取消时会失败<br>
 	 * 
 	 * @throws ExchangeException
 	 */
