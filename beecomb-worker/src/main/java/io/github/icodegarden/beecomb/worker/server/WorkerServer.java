@@ -62,7 +62,7 @@ public class WorkerServer implements GracefullyShutdown {
 			@Override
 			public Object reply(Object obj) {
 				if (log.isInfoEnabled()) {
-					log.info("Worker server receive a reply obj {}", obj);//FIXME 修改为debug
+					log.info("Worker server receive a reply obj {}", obj);
 				}
 
 				if (!(obj instanceof RequestWorkerDTO)) {

@@ -110,9 +110,6 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 				}
 
 				/**
-				 * TODO 使用cache框架来处理自动过期
-				 */
-				/**
 				 * 校验用户名密码
 				 * 
 				 */

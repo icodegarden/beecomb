@@ -68,7 +68,7 @@ public class SampleApp {
 
 		for (;;) {
 			try {
-				System.out.println("请输入需要演示的任务，1=红包自动退款场景，2=抢票场景，3=任务分片并行处理场景");
+				System.out.println("请输入需要演示的任务，1=红包自动退款场景，2=抢票场景，3=任务分片并行处理场景，e退出");
 				int read = System.in.read();
 				if (read == '1') {
 					bizOnExpiredDelayJob(beeCombClient);
@@ -106,17 +106,21 @@ public class SampleApp {
 		CreateDelayJobDTO job = new CreateDelayJobDTO("testBizOnExpired" + packetId, EXECUTOR_NAME,
 				BizOnExpiredDelayJobHandler.NAME, delay);
 		job.setUuid("biz_packct_" + packetId);
-
+		
+		System.out.println("正在创建类型1任务");
 		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}
 
 	private static void scheudleUntilSuccessScheduleJob(BeeCombClient beeCombClient) {
 		Schedule schedule = CreateScheduleJobDTO.Schedule.sheduleCron("1/3 * * * * *");
+//		Schedule schedule = CreateScheduleJobDTO.Schedule.scheduleFixDelay(3000);
+//		Schedule schedule = CreateScheduleJobDTO.Schedule.scheduleFixRate(3000);
 		CreateScheduleJobDTO job = new CreateScheduleJobDTO("testScheudleUntilSuccess", EXECUTOR_NAME,
 				ScheudleUntilSuccessScheduleJobHandler.NAME, schedule);
 		job.setParams("{}");// json
 
+		System.out.println("正在创建类型2任务");
 		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}
@@ -128,6 +132,7 @@ public class SampleApp {
 		job.setParallel(true);
 		job.setMaxParallelShards(8);
 
+		System.out.println("正在创建类型3任务");
 		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}

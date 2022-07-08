@@ -36,7 +36,7 @@ public class EntryMessageHandler implements MessageHandler {
 	@Override
 	public Object reply(Object obj) {
 		if (log.isInfoEnabled()) {
-			log.info("Executor receive a reply obj:{}", obj);//FIXME 修改为debug
+			log.info("Executor receive a reply obj:{}", obj);
 		}
 
 		if (closed) {

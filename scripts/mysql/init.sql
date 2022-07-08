@@ -31,11 +31,9 @@ CREATE TABLE `job_main` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   INDEX `idx_uuid`(`uuid`(20)), -- uuid不约束唯一，是否需要唯一由用户自己保障
+  INDEX `idx_name`(`name`(20)),
   INDEX `idx_recovery_by_scan`(`next_trig_at`,`is_end`), -- 扫描检测重置任务未队列需要
-  INDEX `idx_recovery_by_instance`(`queued_at_instance`,`is_end`), -- 监听检测重置任务未队列需要
-  INDEX `idx_name`(`name`(20))
---  INDEX `idx_for_count_queued`(`is_queued`, `created_by`, `type`),
---  INDEX `idx_for_count_end_success`(`is_end`, `is_last_execute_success`, `created_by`, `type`)
+  INDEX `idx_recovery_by_instance`(`queued_at_instance`,`is_end`) -- 监听检测重置任务未队列需要
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `job_detail`;
@@ -71,16 +69,6 @@ CREATE TABLE `schedule_job` (
   PRIMARY KEY (`job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-DROP TABLE IF EXISTS `pending_recovery_job`;
-CREATE TABLE `pending_recovery_job` (
-  `job_id` bigint unsigned NOT NULL, 
-  `priority` tinyint NOT NULL,	
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`job_id`),
-  INDEX `idx_priority`(`priority`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;		
-
 DROP TABLE IF EXISTS `job_execute_record`;
 CREATE TABLE `job_execute_record` (
   `id` bigint unsigned NOT NULL,
@@ -94,6 +82,18 @@ CREATE TABLE `job_execute_record` (
   INDEX `idxs`(`job_id`,`is_success`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- 这个表这样设计主键好处是方便，坏处是数据插入时主键可能不是递增的可能导致页分裂，但任务恢复本身是不常见的所以概率很低
+DROP TABLE IF EXISTS `pending_recovery_job`;
+CREATE TABLE `pending_recovery_job` (
+  `job_id` bigint unsigned NOT NULL, 
+  `priority` tinyint NOT NULL,	
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,  
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`job_id`),
+  INDEX `idx_priority`(`priority`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;	
+
+-- 任务恢复记录每个job最多1条
 DROP TABLE IF EXISTS `job_recovery_record`;
 CREATE TABLE `job_recovery_record` (
   `job_id` bigint unsigned NOT NULL,

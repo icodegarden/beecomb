@@ -53,13 +53,13 @@ public class CreateScheduleJobDTO extends CreateJobDTO {
 		private Schedule() {
 		}
 
-		public static Schedule scheduleFixRate(Long scheduleFixRate) {
+		public static Schedule scheduleFixRate(long scheduleFixRate) {
 			Schedule schedule = new Schedule();
 			schedule.scheduleFixRate = scheduleFixRate;
 			return schedule;
 		}
 
-		public static Schedule scheduleFixDelay(Long scheduleFixDelay) {
+		public static Schedule scheduleFixDelay(long scheduleFixDelay) {
 			Schedule schedule = new Schedule();
 			schedule.scheduleFixDelay = scheduleFixDelay;
 			return schedule;

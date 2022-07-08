@@ -27,6 +27,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobMainO
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainCountVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.backend.util.PageHelperUtils;
+import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
@@ -61,7 +62,15 @@ public class JobMainManager {
 	}
 
 	public Page<JobMainVO> page(JobMainQuery query) {
-		boolean allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_MAIN);
+		boolean allowCount = false;
+		if(query.getType() == null) {
+			allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_MAIN);
+		} else if(query.getType() == JobType.Delay) {
+			allowCount = PageHelperUtils.allowCount(TableNameConstants.DELAY_JOB);
+		} else if(query.getType() == JobType.Schedule) {
+			allowCount = PageHelperUtils.allowCount(TableNameConstants.SCHEDULE_JOB);
+		}
+		
 		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
 
 		Page<JobMainDO> page = (Page<JobMainDO>) jobMainMapper.findAll(query);
