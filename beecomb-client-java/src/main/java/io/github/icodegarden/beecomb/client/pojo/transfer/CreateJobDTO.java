@@ -12,7 +12,7 @@ import io.github.icodegarden.commons.lang.annotation.NotNull;
 public abstract class CreateJobDTO {
 
 	/**
-	 * 任务的uuid，注意beecomb并不会保证该值唯一性，而是由用户自己决定
+	 * 任务的uuid，注意beecomb并不会保证该值唯一性，而是由用户自己决定，uuid可以重复
 	 */
 	private String uuid;
 	/**

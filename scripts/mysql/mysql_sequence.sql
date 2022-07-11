@@ -1,15 +1,15 @@
 DROP TABLE IF EXISTS id_sequence;
 CREATE TABLE id_sequence (
-  NAME VARCHAR (50) NOT NULL,
+  name VARCHAR (50) NOT NULL,
   current_value BIGINT NOT NULL,
   increment INT NOT NULL,
-PRIMARY KEY (NAME)
+PRIMARY KEY (name)
 ) ENGINE = INNODB ;
 
 
 INSERT INTO id_sequence(name,current_value,increment) VALUES ('GLOBAL', 0, 100);
 INSERT INTO id_sequence(name,current_value,increment) VALUES ('job_main', 0, 20);
-INSERT INTO id_sequence(name,current_value,increment) VALUES ('job_execute_record', 0, 100);
+INSERT INTO id_sequence(name,current_value,increment) VALUES ('job_execute_record', 0, 50);
 
 
 DROP FUNCTION IF EXISTS `id_seq_currval`;

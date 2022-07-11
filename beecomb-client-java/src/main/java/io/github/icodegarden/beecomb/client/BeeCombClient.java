@@ -38,7 +38,7 @@ public interface BeeCombClient extends Closeable {
 	
 	JobVO getJob(Long jobId) throws ExchangeException;
 	/**
-	 * 使用uuid查询任务，uuid由用户自己控制唯一性，如果不是唯一的只返回1条
+	 * 使用uuid查询任务，uuid由用户自己控制唯一性，如果不是唯一的也只返回1条
 	 * @param uuid
 	 * @return
 	 * @throws ExchangeException

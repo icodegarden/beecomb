@@ -35,6 +35,9 @@ public class CreateJobVO {
 
 	public static class Job {
 		private Long id;
+		/**
+		 * 如果创建时没有提供则为null
+		 */
 		private String uuid;
 		private String name;
 		private JobType type;
