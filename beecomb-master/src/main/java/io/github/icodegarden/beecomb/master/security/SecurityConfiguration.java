@@ -89,6 +89,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .and()
             .authorizeRequests()
 //          .antMatchers("/swagger-ui/index.html").permitAll()
+            .antMatchers("/openapi/*/version").permitAll()
             .antMatchers("/view/**").authenticated()
             .antMatchers("/api/**/users/**").hasAuthority(UserPO.PlatformRole.Admin.name())//用户管理模块只对管理员开放
             .antMatchers("/api/**/user/**").hasAuthority(UserPO.PlatformRole.Admin.name())//用户管理模块只对管理员开放
