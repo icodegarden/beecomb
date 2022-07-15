@@ -8,11 +8,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.ZooKeeperExecutorInstanceDiscovery;
+import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.ZooKeeperExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.JobHandlerRegistration;
 import io.github.icodegarden.beecomb.test.ZookeeperBuilder4Test;
-import io.github.icodegarden.beecomb.worker.registry.zookeeper.ZooKeeperExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.registry.zookeeper.ZooKeeperExecutorRegisteredInstance;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
 

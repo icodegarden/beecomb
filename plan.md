@@ -1,1 +1,2 @@
-#集群管理Executor显示执行器名称，增加详情页
+
+#springboot集成

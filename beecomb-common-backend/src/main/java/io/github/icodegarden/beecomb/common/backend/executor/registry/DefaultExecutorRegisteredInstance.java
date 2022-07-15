@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.registry;
+package io.github.icodegarden.beecomb.common.backend.executor.registry;
 
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.commons.lang.registry.DefaultRegisteredInstance;

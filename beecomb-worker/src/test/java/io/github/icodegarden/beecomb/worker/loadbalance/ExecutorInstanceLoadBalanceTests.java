@@ -14,12 +14,12 @@ import java.util.Queue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.DefaultExecutorRegisteredInstance;
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.JobHandlerRegistration;
-import io.github.icodegarden.beecomb.worker.registry.DefaultExecutorRegisteredInstance;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;

@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.registry.zookeeper;
+package io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -7,9 +7,9 @@ import java.util.stream.Collectors;
 
 import org.apache.zookeeper.KeeperException;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;

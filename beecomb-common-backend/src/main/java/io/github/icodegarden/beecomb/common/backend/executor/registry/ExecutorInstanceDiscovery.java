@@ -1,4 +1,4 @@
-package io.github.icodegarden.beecomb.worker.registry;
+package io.github.icodegarden.beecomb.common.backend.executor.registry;
 
 import java.util.List;
 

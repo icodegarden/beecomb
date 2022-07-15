@@ -3,13 +3,18 @@ package io.github.icodegarden.beecomb.master.pojo.view;
 import java.util.List;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
-@Data
+@Getter
+@Setter
+@ToString
 public class ClusterNodeVO {
 
 	private String serviceName;

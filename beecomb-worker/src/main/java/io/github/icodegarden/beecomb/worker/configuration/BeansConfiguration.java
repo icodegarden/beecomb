@@ -11,6 +11,8 @@ import org.springframework.context.SmartLifecycle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
+import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
@@ -20,8 +22,6 @@ import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties.Ove
 import io.github.icodegarden.beecomb.worker.core.DelayJobEngine;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.core.ScheduleJobEngine;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.worker.server.DispatcherHandler;
 import io.github.icodegarden.beecomb.worker.server.JobRequestReceiver;
 import io.github.icodegarden.beecomb.worker.server.WorkerServer;

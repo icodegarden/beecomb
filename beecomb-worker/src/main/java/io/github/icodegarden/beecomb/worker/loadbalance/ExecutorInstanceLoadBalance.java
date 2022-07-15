@@ -2,10 +2,10 @@ package io.github.icodegarden.beecomb.worker.loadbalance;
 
 import java.util.Queue;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;

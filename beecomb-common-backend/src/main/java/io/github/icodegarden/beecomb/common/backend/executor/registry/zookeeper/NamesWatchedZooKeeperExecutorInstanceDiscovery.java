@@ -1,11 +1,11 @@
-package io.github.icodegarden.beecomb.worker.registry.zookeeper;
+package io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.registry.NamesWatchedZooKeeperInstanceDiscovery;

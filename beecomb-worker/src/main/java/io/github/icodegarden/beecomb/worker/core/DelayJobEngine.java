@@ -6,6 +6,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
+import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.DelayJob;
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
@@ -20,8 +22,6 @@ import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBala
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.worker.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
