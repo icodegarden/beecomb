@@ -163,8 +163,11 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 				List<MetricsDimension> metricsDimensions = null;
 				if (m != null) {
 					metricsDimensions = m.getDimensions().values().stream().map(d -> {
+						BigDecimal bd = new BigDecimal(d.getUsed());
+						bd = bd.setScale(4, RoundingMode.UP);
+
 						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(),
-								d.getUsed(), d.getWeight(), d.getDesc());
+								bd.doubleValue(), d.getWeight(), d.getDesc());
 					}).collect(Collectors.toList());
 				}
 
