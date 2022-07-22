@@ -103,12 +103,16 @@ public class InstanceProperties {
 	@Data
 	public static class Schedule {
 		/**
-		 * 
+		 * 刷新Executor的
 		 */
 		private int discoveryCacheRefreshIntervalMillis = 10000;
 		/**
-		 * 
+		 * 刷新Executor的
 		 */
-		private int metricsCacheRefreshIntervalMillis = 1000;
+		private int metricsCacheRefreshIntervalMillis = 3000;
+		/**
+		 * 刷入自己的
+		 */
+		private int flushMetricsIntervalMillis = 3000;
 	}
 }

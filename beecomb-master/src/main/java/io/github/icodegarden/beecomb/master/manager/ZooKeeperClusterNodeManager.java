@@ -1,10 +1,11 @@
 package io.github.icodegarden.beecomb.master.manager;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -13,8 +14,6 @@ import com.github.pagehelper.Page;
 import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.ZooKeeperExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.ZooKeeperExecutorRegisteredInstance;
-import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.pojo.query.ClusterNodeQuery;
@@ -29,7 +28,6 @@ import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,8 +50,9 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 		 */
 		instanceDiscovery = new ZnodePatternZooKeeperInstanceDiscovery(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot());
-		
-		executorInstanceDiscovery = new ZooKeeperExecutorInstanceDiscovery(zooKeeperHolder, instanceProperties.getZookeeper().getRoot());
+
+		executorInstanceDiscovery = new ZooKeeperExecutorInstanceDiscovery(zooKeeperHolder,
+				instanceProperties.getZookeeper().getRoot());
 
 		instanceMetrics = new ZnodeDataZooKeeperInstanceMetrics(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot());
@@ -64,13 +63,14 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 		NodePager nodePager = SpringContext.getApplicationContext().getBean(query.getServiceName(), NodePager.class);
 		return nodePager.pageNodes(query);
 	}
-	
+
 	private abstract class NodePager {
-		
+
 		protected abstract InstanceDiscovery<? extends RegisteredInstance> getInstanceDiscovery();
-		
+
 		public Page<ClusterNodeVO> pageNodes(ClusterNodeQuery query) {
-			List<? extends RegisteredInstance> allInstances = getInstanceDiscovery().listInstances(query.getServiceName());
+			List<? extends RegisteredInstance> allInstances = getInstanceDiscovery()
+					.listInstances(query.getServiceName());
 			if (allInstances.isEmpty()) {
 				return new Page<ClusterNodeVO>(query.getPage(), query.getSize());
 			}
@@ -92,7 +92,7 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 					.collect(Collectors.toMap(Metrics::getInstanceName, v -> v));
 
 			List<ClusterNodeVO> resultList = convertInstances(pageInstances, metricsMap);
-			
+
 			Page<ClusterNodeVO> p = new Page<ClusterNodeVO>(query.getPage(), query.getSize());
 			p.setPages(pages);
 			p.setTotal(total);
@@ -100,83 +100,90 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 
 			return p;
 		}
-		
-		protected abstract List<ClusterNodeVO> convertInstances(List<? extends RegisteredInstance> pageInstances,Map<String, ? extends Metrics> metricsMap);
+
+		protected abstract List<ClusterNodeVO> convertInstances(List<? extends RegisteredInstance> pageInstances,
+				Map<String, ? extends Metrics> metricsMap);
 	}
-	
+
 	private class MWNodePager extends NodePager {
 		@Override
 		protected InstanceDiscovery<? extends RegisteredInstance> getInstanceDiscovery() {
 			return instanceDiscovery;
 		}
-		
+
 		@Override
-		protected List<ClusterNodeVO> convertInstances(List<? extends RegisteredInstance> pageInstances, Map<String, ? extends Metrics> metricsMap) {
+		protected List<ClusterNodeVO> convertInstances(List<? extends RegisteredInstance> pageInstances,
+				Map<String, ? extends Metrics> metricsMap) {
 			List<ClusterNodeVO> resultList = pageInstances.stream().map(instance -> {
 				Metrics m = metricsMap.get(instance.getInstanceName());
 
 				List<MetricsDimension> metricsDimensions = null;
 				if (m != null) {
 					metricsDimensions = m.getDimensions().values().stream().map(d -> {
-						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(), d.getUsed(),
-								d.getWeight(), d.getDesc());
+						BigDecimal bd = new BigDecimal(d.getUsed());
+						bd = bd.setScale(4, RoundingMode.UP);
+
+						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(),
+								bd.doubleValue(), d.getWeight(), d.getDesc());
 					}).collect(Collectors.toList());
 				}
 
 				return new ClusterNodeVO(instance.getServiceName(), instance.getInstanceName(), instance.getIp(),
 						instance.getPort(), metricsDimensions);
 			}).collect(Collectors.toList());
-			
+
 			return resultList;
 		}
 	}
-	
+
 	@Service("master")
 	private class MasterPager extends MWNodePager {
 	}
-	
+
 	@Service("worker")
 	private class WorkerNodePager extends MWNodePager {
 	}
-	
+
 	@Service("executor")
 	private class ExecutorNodePager extends NodePager {
 		@Override
 		protected InstanceDiscovery<? extends RegisteredInstance> getInstanceDiscovery() {
 			return executorInstanceDiscovery;
 		}
+
 		@Override
-		protected List<ClusterNodeVO> convertInstances(List<? extends RegisteredInstance> pageInstances, Map<String, ? extends Metrics> metricsMap) {
+		protected List<ClusterNodeVO> convertInstances(List<? extends RegisteredInstance> pageInstances,
+				Map<String, ? extends Metrics> metricsMap) {
 			List<ClusterNodeVO> resultList = pageInstances.stream().map(item -> {
-				ExecutorRegisteredInstance instance = (ExecutorRegisteredInstance)item;
+				ExecutorRegisteredInstance instance = (ExecutorRegisteredInstance) item;
 				JobHandlerRegistrationBean jobHandlerRegistrationBean = instance.getJobHandlerRegistrationBean();
-				
+
 				Metrics m = metricsMap.get(instance.getInstanceName());
 
 				List<MetricsDimension> metricsDimensions = null;
 				if (m != null) {
 					metricsDimensions = m.getDimensions().values().stream().map(d -> {
-						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(), d.getUsed(),
-								d.getWeight(), d.getDesc());
+						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(),
+								d.getUsed(), d.getWeight(), d.getDesc());
 					}).collect(Collectors.toList());
 				}
 
-				return new ExecutorClusterNodeVO(instance.getServiceName(), instance.getInstanceName(), instance.getIp(),
-						instance.getPort(), metricsDimensions,jobHandlerRegistrationBean);
+				return new ExecutorClusterNodeVO(instance.getServiceName(), instance.getInstanceName(),
+						instance.getIp(), instance.getPort(), metricsDimensions, jobHandlerRegistrationBean);
 			}).collect(Collectors.toList());
-			
+
 			return resultList;
 		}
 	}
-	
+
 	@Getter
 	@Setter
 	@ToString
 	public static class ExecutorClusterNodeVO extends ClusterNodeVO {
 		private final JobHandlerRegistrationBean jobHandlerRegistrationBean;
-		
+
 		public ExecutorClusterNodeVO(String serviceName, String instanceName, String ip, int port,
-				List<MetricsDimension> metricsDimensions,JobHandlerRegistrationBean jobHandlerRegistrationBean) {
+				List<MetricsDimension> metricsDimensions, JobHandlerRegistrationBean jobHandlerRegistrationBean) {
 			super(serviceName, instanceName, ip, port, metricsDimensions);
 			this.jobHandlerRegistrationBean = jobHandlerRegistrationBean;
 		}

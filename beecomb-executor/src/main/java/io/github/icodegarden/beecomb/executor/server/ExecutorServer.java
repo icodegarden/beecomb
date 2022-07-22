@@ -121,10 +121,10 @@ public class ExecutorServer implements GracefullyShutdown {
 		return new ZooKeeperJobHandlerRegistry(executorName, zooKeeperHolder, zooKeeperInstanceRegistry);
 	}
 
-	private JobsMetricsOverload prepareJobOverload(ZooKeeperSupportInstanceProperties config,
+	private JobsMetricsOverload prepareJobOverload(ZooKeeperSupportInstanceProperties instanceProperties,
 			InstanceRegistry<? extends RegisteredInstance> instanceRegistry,
 			InstanceMetrics<? extends Metrics> instanceMetrics, ZooKeeperHolder zooKeeperHolder) {
-		Overload overload = config.getOverload();
+		Overload overload = instanceProperties.getOverload();
 		NullableTuple2<Void, Integer> cpu = overload.getCpu() != null
 				? NullableTuples.of(null, overload.getCpu().getWeight())
 				: null;
@@ -139,7 +139,8 @@ public class ExecutorServer implements GracefullyShutdown {
 		/**
 		 * 开启调度刷入度量数据
 		 */
-		jobsMetricsOverload.enableScheduleFlushMetrics(config.getSchedule().getFlushMetricsIntervalMillis());
+		jobsMetricsOverload
+				.enableScheduleFlushMetrics(instanceProperties.getSchedule().getFlushMetricsIntervalMillis());
 
 		zooKeeperHolder.addNewZooKeeperListener(() -> {
 			/**

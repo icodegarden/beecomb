@@ -19,6 +19,7 @@ import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload.Config;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties.Overload;
+import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties.Schedule;
 import io.github.icodegarden.beecomb.worker.core.DelayJobEngine;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.core.ScheduleJobEngine;
@@ -91,16 +92,16 @@ public class BeansConfiguration {
 		});
 		return sqlPerformanceInterceptor;
 	}
-	
+
 	/**
 	 * sharding DataSource
 	 */
 	@Bean
 	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
 		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
-		
+
 		MysqlKeyGenerateAlgorithm.registerDataSource(dataSource);
-		
+
 		return dataSource;
 	}
 
@@ -184,7 +185,11 @@ public class BeansConfiguration {
 
 		Config config = new JobsMetricsOverload.Config(cpu, memory, jobs);
 		JobsMetricsOverload jobsMetricsOverload = new JobsMetricsOverload(instanceRegistry, instanceMetrics, config);
-
+		/**
+		 * 开启调度刷入度量数据
+		 */
+		jobsMetricsOverload
+				.enableScheduleFlushMetrics(instanceProperties.getSchedule().getFlushMetricsIntervalMillis());
 		zooKeeperHolder.addNewZooKeeperListener(() -> {
 			/**
 			 * 保障zk重新建立session后能够自动刷入metrics
@@ -212,7 +217,7 @@ public class BeansConfiguration {
 	public JobRequestReceiver jobReceiver(JobService jobStorage, JobEngine jobEngine) {
 		return new JobRequestReceiver(jobStorage, jobEngine);
 	}
-	
+
 	@Bean
 	public DispatcherHandler dispatcherHandler(JobRequestReceiver jobReceiver, JobEngine jobEngine) {
 		return new DispatcherHandler(jobReceiver, jobEngine);

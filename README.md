@@ -508,7 +508,7 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |job.dispatchTimeoutMillis   |向Worker分配任务时的超时毫秒。dispatch的过程正常是很快的，但在服务刚启动使用阶段可能会需要更大的延迟（worker需要初始化数据库连接等）   |10000   |按需   |
 |job.recoveryScheduleMillis   |检查有可能需要恢复的任务的频率毫秒   |60000   |按需   |
 |schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
-|schedule.metricsCacheRefreshIntervalMillis   |压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |1000   |按需   |
+|schedule.metricsCacheRefreshIntervalMillis   |Worker压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |3000   |按需   |
 |security.jwt.issuer   |web的jwt issuer   |beecomb   |按需   |
 |security.jwt.secretKey   |web的jwt secretKey   |beecomb_jwt@icodegarden   |按需   |
 |security.jwt.tokenExpireSeconds   |web的jwt token过期秒数   |3600   |按需   |
@@ -528,7 +528,8 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
 |loadBalance.maxCandidates   |对Executor执行每一个任务时的候选合格Executor数量。候选的实例是根据压力来筛选的，通常会给候选中的第一个（压力最小的），但是在网络发生问题时会切换候选中的其他实例   |3   |1-N   |
 |schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
-|schedule.metricsCacheRefreshIntervalMillis   |压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |1000   |按需   |
+|schedule.metricsCacheRefreshIntervalMillis   |Executor压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |3000   |按需   |
+|schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
 |overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
 |overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
 |overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |
@@ -547,7 +548,7 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
 |zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
 |zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
-|schedule.flushMetricsIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
+|schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
 |overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
 |overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
 |overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |

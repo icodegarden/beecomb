@@ -207,9 +207,9 @@ public class InstanceProperties {
 
 	public static class Schedule {
 		/**
-		 * 
+		 * 刷入自己的
 		 */
-		private int flushMetricsIntervalMillis = 1000;
+		private int flushMetricsIntervalMillis = 3000;
 
 		public int getFlushMetricsIntervalMillis() {
 			return flushMetricsIntervalMillis;

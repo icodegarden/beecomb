@@ -23,6 +23,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
+import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
 import io.github.icodegarden.beecomb.master.discovery.InstanceDiscoveryListener;
 import io.github.icodegarden.beecomb.master.discovery.ListenableNamesWatchedZooKeeperInstanceDiscovery;
@@ -38,9 +39,13 @@ import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
+import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
 import io.github.icodegarden.commons.lang.metrics.NamesCachedInstanceMetrics;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
+import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
+import io.github.icodegarden.commons.lang.tuple.Tuple2;
+import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
 import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
@@ -198,6 +203,26 @@ public class BeansConfiguration {
 				.register(new CloseableGracefullyShutdown(instanceDiscovery, "instanceDiscovery", -95));
 
 		return instanceDiscovery;
+	}
+
+	/**
+	 * Master的度量仅用于web查看监控
+	 */
+	@Bean
+	public MetricsOverload jobsMetricsOverload(ZooKeeperHolder zooKeeperHolder, InstanceRegistry instanceRegistry,
+			InstanceMetrics instanceMetrics) {
+		NullableTuple2<Void, Integer> cpu = null;
+		NullableTuple2<Void, Integer> memory = null;
+		Tuple2<Integer, Integer> jobs = Tuples.of(0, 0);
+
+		JobsMetricsOverload.Config config = new JobsMetricsOverload.Config(cpu, memory, jobs);
+		JobsMetricsOverload jobsMetricsOverload = new JobsMetricsOverload(instanceRegistry, instanceMetrics, config);
+		/**
+		 * 开启调度刷入度量数据
+		 */
+		jobsMetricsOverload
+				.enableScheduleFlushMetrics(instanceProperties.getSchedule().getFlushMetricsIntervalMillis());
+		return jobsMetricsOverload;
 	}
 
 	@Bean
