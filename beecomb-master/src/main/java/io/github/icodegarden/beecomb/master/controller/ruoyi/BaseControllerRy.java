@@ -7,10 +7,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
+import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
  * web层通用数据处理
@@ -41,23 +43,30 @@ public abstract class BaseControllerRy {
 		TableDataInfo rspData = new TableDataInfo();
 		rspData.setCode(0);
 		rspData.setRows(list);
-		rspData.setTotal(new PageInfo(list).getTotal());
+
+		long total = new PageInfo(list).getTotal();
+		if (list instanceof Page) {
+			int pageSize = ((Page) list).getPageSize();
+			int maxTotal = WebUtils.MAX_TOTAL_PAGES * pageSize;
+			if (total > maxTotal) {
+				total = maxTotal;
+			}
+		}
+		rspData.setTotal(total);
 		return rspData;
 	}
 
 	/**
-     * 返回成功
-     */
-    public AjaxResult success()
-    {
-        return AjaxResult.success();
-    }
+	 * 返回成功
+	 */
+	public AjaxResult success() {
+		return AjaxResult.success();
+	}
 
-    /**
-     * 返回失败消息
-     */
-    public AjaxResult error()
-    {
-        return AjaxResult.error();
-    }
+	/**
+	 * 返回失败消息
+	 */
+	public AjaxResult error() {
+		return AjaxResult.error();
+	}
 }
