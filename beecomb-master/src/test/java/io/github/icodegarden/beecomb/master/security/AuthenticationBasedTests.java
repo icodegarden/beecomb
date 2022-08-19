@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
+import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
 
@@ -39,8 +40,10 @@ public abstract class AuthenticationBasedTests {
 			@Override
 			public Object getPrincipal() {
 				UserPO userPO = new UserPO();
+				userPO.setId(1L);
 				userPO.setUsername("xff");
 				userPO.setPassword("password");
+				userPO.setPlatformRole(PlatformRole.Admin);
 				return new UserDetails(userPO, Collections.emptyList());
 			}
 

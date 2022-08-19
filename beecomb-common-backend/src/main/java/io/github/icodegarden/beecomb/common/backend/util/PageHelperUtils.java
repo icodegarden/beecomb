@@ -10,7 +10,6 @@ import com.github.pagehelper.Page;
 
 import io.github.icodegarden.beecomb.common.backend.manager.TableDataCountManager;
 import io.github.icodegarden.commons.springboot.SpringContext;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
  * 
@@ -37,15 +36,15 @@ public abstract class PageHelperUtils {
 	public static <E, T> Page<E> ofPage(Page<T> page, Function<T, E> elementConvertor) {
 		Page<E> p = new Page<E>(page.getPageNum(), page.getPageSize());
 		if (page.isCount()) {
-			p.setPages(page.getPages());
 			p.setTotal(page.getTotal());
+			p.setPages(page.getPages());
 		} else {
 			if (page.getResult().size() < page.getPageSize()) {
-				p.setPages(page.getPageNum());
 				p.setTotal((p.getPages() - 1) * page.getPageSize() + page.getResult().size());
+				p.setPages(page.getPageNum());
 			} else {
-				p.setPages(WebUtils.MAX_TOTAL_PAGES);
 				p.setTotal(10000);
+				p.setPages(10000/page.getPageSize());
 			}
 		}
 

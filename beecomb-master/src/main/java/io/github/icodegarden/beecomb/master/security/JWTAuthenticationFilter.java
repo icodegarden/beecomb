@@ -20,7 +20,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
@@ -94,12 +96,25 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
 //					WebUtils.setJWT(jwt);
 				} catch (TokenExpiredException e) {
-					WebUtils.responseWrite(401, null, "Access Denied, Unauthorized, Token Expired", response);
+					/**
+					 * 过期
+					 */
+					WebUtils.responseWrite(401, null, "Not Authenticated, Token Expired", response);
+					return;
+				} catch (JWTDecodeException | SignatureVerificationException e) {
+					/**
+					 * jwt token不合法
+					 */
+					WebUtils.responseWrite(401, null, "Not Authenticated, Token Invalid", response);
 					return;
 				} catch (JWTVerificationException e) {
-					WebUtils.responseWrite(401, null, "Access Denied, Unauthorized, Verification Error", response);
+					/**
+					 * 算法或字段设置有问题
+					 */
+					WebUtils.responseWrite(500, null, "Verification Token Error", response);
 					return;
 				}
+				
 			} else if (WebUtils.isInternalRpc()) {
 //				SecurityUtils.setAuthentication(systemAuthentication);
 			}
