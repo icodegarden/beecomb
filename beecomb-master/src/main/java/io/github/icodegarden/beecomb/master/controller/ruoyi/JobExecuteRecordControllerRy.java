@@ -18,7 +18,7 @@ import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordMana
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 
 /**
  * 
@@ -41,8 +41,8 @@ public class JobExecuteRecordControllerRy extends BaseControllerRy {
 	@PostMapping("api/jobExecuteRecord/list")
 	public ResponseEntity<TableDataInfo> pageJobExecuteRecords(@RequestParam(required = false) Long jobId,
 			@RequestParam(required = false) Boolean success,
-			@RequestParam(defaultValue = "0") @Max(WebUtils.MAX_TOTAL_PAGES) int pageNum,
-			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize) {
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize) {
 		JobExecuteRecordQuery query = JobExecuteRecordQuery.builder().jobId(jobId).success(success).page(pageNum)
 				.size(pageSize).sort("order by a.id desc").build();
 

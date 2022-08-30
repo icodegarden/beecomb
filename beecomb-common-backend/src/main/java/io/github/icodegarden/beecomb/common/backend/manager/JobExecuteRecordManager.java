@@ -19,7 +19,8 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobExecu
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExecutedDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordCountVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordVO;
-import io.github.icodegarden.beecomb.common.backend.util.PageHelperUtils;
+import io.github.icodegarden.beecomb.common.backend.util.TableDataCountUtils;
+import io.github.icodegarden.commons.lang.util.PageHelperUtils;
 
 /**
  * 
@@ -52,7 +53,7 @@ public class JobExecuteRecordManager {
 	}
 
 	public Page<JobExecuteRecordVO> page(JobExecuteRecordQuery query) {
-		boolean allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_EXECUTE_RECORD);
+		boolean allowCount = TableDataCountUtils.allowCount(TableNameConstants.JOB_EXECUTE_RECORD);
 		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
 
 		Page<JobExecuteRecordDO> page = (Page<JobExecuteRecordDO>) jobExecuteRecordMapper.findAll(query);

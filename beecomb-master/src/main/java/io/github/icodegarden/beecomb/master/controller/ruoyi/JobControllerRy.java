@@ -34,17 +34,16 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
-import io.github.icodegarden.beecomb.master.pojo.view.openapi.UpdateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.beecomb.master.service.JobLocalService;
+import io.github.icodegarden.beecomb.master.service.JobReceiver;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -80,8 +79,8 @@ public class JobControllerRy extends BaseControllerRy {
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime lastTrigAtGte,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime lastTrigAtLte,
 			@RequestParam(required = false) Boolean queued, @RequestParam(required = false) Boolean end,
-			@RequestParam(defaultValue = "0") @Max(WebUtils.MAX_TOTAL_PAGES) int pageNum,
-			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize, /**
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize, /**
 																							 * with
 																							 */
 			@RequestParam(required = false) boolean withQueuedAt,

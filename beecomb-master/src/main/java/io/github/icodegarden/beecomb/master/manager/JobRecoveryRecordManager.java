@@ -8,13 +8,14 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 
 import io.github.icodegarden.beecomb.common.backend.constant.TableNameConstants;
-import io.github.icodegarden.beecomb.common.backend.util.PageHelperUtils;
+import io.github.icodegarden.beecomb.common.backend.util.TableDataCountUtils;
 import io.github.icodegarden.beecomb.master.mapper.JobRecoveryRecordMapper;
 import io.github.icodegarden.beecomb.master.pojo.data.JobRecoveryRecordDO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.JobRecoveryRecordPO;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
+import io.github.icodegarden.commons.lang.util.PageHelperUtils;
 
 /**
  * 
@@ -41,7 +42,7 @@ public class JobRecoveryRecordManager {
 	}
 
 	public Page<JobRecoveryRecordVO> page(JobRecoveryRecordQuery query) {
-		boolean allowCount = PageHelperUtils.allowCount(TableNameConstants.JOB_RECOVERY_RECORD);
+		boolean allowCount = TableDataCountUtils.allowCount(TableNameConstants.JOB_RECOVERY_RECORD);
 		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
 
 		Page<JobRecoveryRecordDO> page = (Page<JobRecoveryRecordDO>) jobRecoveryRecordMapper.findAll(query);

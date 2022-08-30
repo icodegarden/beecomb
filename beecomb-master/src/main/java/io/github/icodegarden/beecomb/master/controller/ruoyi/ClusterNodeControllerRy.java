@@ -17,7 +17,7 @@ import io.github.icodegarden.beecomb.master.manager.ClusterNodeManager;
 import io.github.icodegarden.beecomb.master.pojo.query.ClusterNodeQuery;
 import io.github.icodegarden.beecomb.master.pojo.view.ClusterNodeVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 
 /**
  * 
@@ -38,8 +38,8 @@ public class ClusterNodeControllerRy extends BaseControllerRy {
 	@PostMapping("api/node/list")
 	public ResponseEntity<TableDataInfo> pageNodes(@RequestParam String serviceName,
 			@RequestParam(required = false) String ip,
-			@RequestParam(defaultValue = "0") @Max(WebUtils.MAX_TOTAL_PAGES) int pageNum,
-			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize) {
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize) {
 		ClusterNodeQuery query = ClusterNodeQuery.builder().page(pageNum).size(pageSize).serviceName(serviceName).ip(ip)
 				.build();
 		Page<ClusterNodeVO> p = clusterNodeService.pageNodes(query);

@@ -20,8 +20,8 @@ import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
 import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.commons.springboot.security.AccessDeniedHandler;
-import io.github.icodegarden.commons.springboot.security.Http401UnauthorizedEntryPoint;
+import io.github.icodegarden.commons.springboot.security.NativeRestApiAccessDeniedHandler;
+import io.github.icodegarden.commons.springboot.security.NativeRestApiAuthenticationEntryPoint;
 
 /**
  * @author Fangfang.Xu
@@ -78,8 +78,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             //.sessionRegistry(sessionRegistry)
             .and()
             .exceptionHandling()
-            .authenticationEntryPoint(new Http401UnauthorizedEntryPoint())
-            .accessDeniedHandler(new AccessDeniedHandler())
+            .authenticationEntryPoint(new NativeRestApiAuthenticationEntryPoint())
+            .accessDeniedHandler(new NativeRestApiAccessDeniedHandler())
         .and()
             .csrf()
             .disable()

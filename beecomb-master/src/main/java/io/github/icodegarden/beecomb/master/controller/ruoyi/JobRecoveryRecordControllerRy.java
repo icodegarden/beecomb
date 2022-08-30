@@ -18,8 +18,8 @@ import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
  * 
@@ -41,8 +41,8 @@ public class JobRecoveryRecordControllerRy extends BaseControllerRy {
 	@PostMapping("api/jobRecoveryRecord/list")
 	public ResponseEntity<TableDataInfo> pageJobRecoveryRecords(@RequestParam(required = false) Long jobId,
 			@RequestParam(required = false) Boolean success,
-			@RequestParam(defaultValue = "0") @Max(WebUtils.MAX_TOTAL_PAGES) int pageNum,
-			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize) {
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize) {
 		String username = SecurityUtils.getUsername();
 
 		JobRecoveryRecordQuery query = JobRecoveryRecordQuery.builder().jobId(jobId).success(success)

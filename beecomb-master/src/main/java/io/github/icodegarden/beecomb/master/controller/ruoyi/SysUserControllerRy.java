@@ -26,9 +26,9 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateUserApiDTO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
  * 
@@ -51,8 +51,8 @@ public class SysUserControllerRy extends BaseControllerRy {
 	public ResponseEntity<TableDataInfo> pageUsers(@RequestParam(required = false) String usernameLike,
 			@RequestParam(required = false) String nameLike, @RequestParam(required = false) String phone,
 			@RequestParam(required = false) Boolean actived, @RequestParam(required = false) PlatformRole platformRole,
-			@RequestParam(defaultValue = "0") @Max(WebUtils.MAX_TOTAL_PAGES) int pageNum,
-			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int pageSize) {
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize) {
 		UserQuery query = UserQuery.builder().usernameLike(usernameLike).actived(actived).nameLike(nameLike)
 				.phone(phone).platformRole(platformRole).page(pageNum).size(pageSize).sort("order by a.id desc")
 				.build();

@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
 
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 
 /**
  * web层通用数据处理
@@ -47,7 +47,7 @@ public abstract class BaseControllerRy {
 		long total = new PageInfo(list).getTotal();
 		if (list instanceof Page) {
 			int pageSize = ((Page) list).getPageSize();
-			int maxTotal = WebUtils.MAX_TOTAL_PAGES * pageSize;
+			int maxTotal = BaseQuery.MAX_TOTAL_PAGES * pageSize;
 			if (total > maxTotal) {
 				total = maxTotal;
 			}

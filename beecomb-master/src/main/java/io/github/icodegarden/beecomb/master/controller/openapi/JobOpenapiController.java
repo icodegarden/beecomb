@@ -39,6 +39,7 @@ import io.github.icodegarden.beecomb.master.pojo.view.openapi.UpdateJobOpenapiVO
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.beecomb.master.service.JobLocalService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
@@ -102,8 +103,8 @@ public class JobOpenapiController {
 			@RequestParam(required = false) LocalDateTime lastTrigAtGte,
 			@RequestParam(required = false) LocalDateTime lastTrigAtLte, @RequestParam(required = false) Boolean queued,
 			@RequestParam(required = false) Boolean end,
-			@RequestParam(defaultValue = "0") @Max(WebUtils.MAX_TOTAL_PAGES) int page,
-			@RequestParam(defaultValue = "10") @Max(WebUtils.MAX_PAGE_SIZE) int size, /**
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int page,
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int size, /**
 																						 * with
 																						 */
 			@RequestParam(required = false) boolean withQueuedAt,
