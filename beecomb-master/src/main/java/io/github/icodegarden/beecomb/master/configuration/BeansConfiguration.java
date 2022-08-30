@@ -211,8 +211,8 @@ public class BeansConfiguration {
 	@Bean
 	public MetricsOverload jobsMetricsOverload(ZooKeeperHolder zooKeeperHolder, InstanceRegistry instanceRegistry,
 			InstanceMetrics instanceMetrics) {
-		NullableTuple2<Void, Integer> cpu = null;
-		NullableTuple2<Void, Integer> memory = null;
+		NullableTuple2<Double, Integer> cpu = null;
+		NullableTuple2<Double, Integer> memory = null;
 		Tuple2<Integer, Integer> jobs = Tuples.of(0, 0);
 
 		JobsMetricsOverload.Config config = new JobsMetricsOverload.Config(cpu, memory, jobs);
