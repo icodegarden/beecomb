@@ -72,13 +72,13 @@ public class InstanceProperties {
 
 		@Data
 		public static class Cpu {
-			private double max = 0.8;//不高于80%。系统最大1.0表示100%
+			private double max = 0.9;//不高于90%。系统最大1.0表示100%
 			private int weight = 1;
 		}
 
 		@Data
 		public static class Memory {
-			private double max = 0.8 * SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 不高于80%。
+			private double max = 0.95 * SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 
 			private int weight = 1;
 		}
 

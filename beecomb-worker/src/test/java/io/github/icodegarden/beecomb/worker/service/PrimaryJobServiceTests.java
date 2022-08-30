@@ -53,6 +53,7 @@ class PrimaryJobServiceTests {
 		jobPO.setUuid(uuid);
 		jobPO.setWeight(1);
 		jobPO.setCreatedAt(LocalDateTime.now());
+		jobPO.setUpdatedAt(LocalDateTime.now());
 
 		jobMainMapper.add(jobPO);
 

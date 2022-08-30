@@ -41,7 +41,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	private final JobService jobService;
 	protected MetricsOverload metricsOverload;
 	protected InstanceProperties instanceProperties;
-	protected final JobQueue jobQueue;
+	protected JobQueue jobQueue;
 
 	protected ParallelLoadBalanceExchanger parallelLoadBalanceExchanger;
 

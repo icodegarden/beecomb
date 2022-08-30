@@ -94,8 +94,9 @@ public class DelayJob extends Job {
 
 	@Override
 	public double ofOverload() {
-		DelayBO bo = DelayBO.of(this);
-		return getWeight() * bo.rateOfSecond();
+//		DelayBO bo = DelayBO.of(this);
+//		return getWeight() * bo.rateOfSecond();
+		return getWeight();//对于Executor是实时在运行的
 	}
 
 	@Override

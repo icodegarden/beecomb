@@ -69,8 +69,9 @@ public class ScheduleJob extends Job {
 
 	@Override
 	public double ofOverload() {
-		ScheduleBO bo = ScheduleBO.of(this);
-		return getWeight() * bo.rateOfSecond();
+//		ScheduleBO bo = ScheduleBO.of(this);
+//		return getWeight() * bo.rateOfSecond();
+		return getWeight();//对于Executor是实时在运行的
 	}
 
 	@Override

@@ -120,11 +120,10 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 				List<MetricsDimension> metricsDimensions = null;
 				if (m != null) {
 					metricsDimensions = m.getDimensions().values().stream().map(d -> {
-						BigDecimal bd = new BigDecimal(d.getUsed());
-						bd = bd.setScale(4, RoundingMode.UP);
-
-						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(),
-								bd.doubleValue(), d.getWeight(), d.getDesc());
+						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(),
+								new BigDecimal(d.getMax()).setScale(4, RoundingMode.HALF_UP).doubleValue(),
+								new BigDecimal(d.getUsed()).setScale(4, RoundingMode.HALF_UP).doubleValue(),
+								d.getWeight(), d.getDesc());
 					}).collect(Collectors.toList());
 				}
 
@@ -163,11 +162,10 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 				List<MetricsDimension> metricsDimensions = null;
 				if (m != null) {
 					metricsDimensions = m.getDimensions().values().stream().map(d -> {
-						BigDecimal bd = new BigDecimal(d.getUsed());
-						bd = bd.setScale(4, RoundingMode.UP);
-
-						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(), d.getMax(),
-								bd.doubleValue(), d.getWeight(), d.getDesc());
+						return new ClusterNodeVO.MetricsDimension(d.getDimensionName().getValue(),
+								new BigDecimal(d.getMax()).setScale(4, RoundingMode.HALF_UP).doubleValue(),
+								new BigDecimal(d.getUsed()).setScale(4, RoundingMode.HALF_UP).doubleValue(),
+								d.getWeight(), d.getDesc());
 					}).collect(Collectors.toList());
 				}
 

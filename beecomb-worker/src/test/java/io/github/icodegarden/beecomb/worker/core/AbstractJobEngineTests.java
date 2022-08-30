@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,12 +33,14 @@ import io.github.icodegarden.commons.lang.result.Results;
 class AbstractJobEngineTests extends Properties4Test {
 
 	MetricsOverload metricsOverload = mock(MetricsOverload.class);
+	JobQueue jobQueue = mock(JobQueue.class);
 	
 	AbstractJobEngine abstractJobEngine;
 	@BeforeEach
 	void init() {
 		abstractJobEngine = mock(AbstractJobEngine.class);
 		abstractJobEngine.metricsOverload = metricsOverload;
+		abstractJobEngine.jobQueue = jobQueue;
 		
 		if(InstanceProperties.singleton() == null) {
 			new InstanceProperties().setServer(new InstanceProperties.Server());

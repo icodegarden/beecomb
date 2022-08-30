@@ -128,8 +128,8 @@ public class InstanceProperties {
 		/**
 		 * 需要开启cpu、memory，虽然jobs是通过cpu核memory综合计算得出的，但只使用jobs不一定能控制memory的上限能力，例如大量任务的执行频率非常低时
 		 */
-		private Cpu cpu;
-		private Memory memory;
+		private Cpu cpu = new Cpu();
+		private Memory memory = new Memory();
 		private Jobs jobs = new Jobs();
 
 		public Cpu getCpu() {
@@ -157,7 +157,7 @@ public class InstanceProperties {
 		}
 
 		public static class Cpu {
-			private double max = 0.8;//不高于80%。系统最大1.0表示100%
+			private double max = 0.9;//不高于90%。系统最大1.0表示100%
 			private int weight = 1;
 
 			public int getWeight() {
@@ -179,7 +179,7 @@ public class InstanceProperties {
 		}
 
 		public static class Memory {
-			private double max = 0.8 * SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 不高于80%。
+			private double max = 0.95 * SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 
 			private int weight = 1;
 
 			public int getWeight() {

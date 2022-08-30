@@ -530,10 +530,12 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
 |schedule.metricsCacheRefreshIntervalMillis   |Executor压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |3000   |按需   |
 |schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
-|overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N   |
-|overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N   |
-|overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
+|overload.cpu.max   |允许cpu最大百分比   |0.9   |0-1   |
+|overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N 0表示忽略该项  |
+|overload.memory.max   |允许memory最大值   |0.95*Xmx   |0-1   |
+|overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N 0表示忽略该项  |
 |overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值   |1-N   |
+|overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
 
 ## Executor
 |参数   |描述   |默认值   |配置范围   |
@@ -549,10 +551,12 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
 |zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
 |schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
+|overload.cpu.max   |允许cpu最大百分比   |0.9   |0-1   |
 |overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N   |
+|overload.memory.max   |允许memory最大值   |0.95*Xmx   |0-1   |
 |overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N   |
 |overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
-|overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/2资源用于Executor   |1-N   |
+|overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/2资源用于Executor   |1-N  |
 
 
 # 多系统
