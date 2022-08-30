@@ -15,3 +15,7 @@
 * 增加版本查询接口 http://{master}/openapi/v1/version
 * 集群管理Executor显示执行器名称，增加JobHandler详情展示
 * 优化度量监控定时写入
+
+# 0.2.2
+
+* 优化负载权重

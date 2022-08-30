@@ -125,11 +125,11 @@ public class ExecutorServer implements GracefullyShutdown {
 			InstanceRegistry<? extends RegisteredInstance> instanceRegistry,
 			InstanceMetrics<? extends Metrics> instanceMetrics, ZooKeeperHolder zooKeeperHolder) {
 		Overload overload = instanceProperties.getOverload();
-		NullableTuple2<Void, Integer> cpu = overload.getCpu() != null
-				? NullableTuples.of(null, overload.getCpu().getWeight())
+		NullableTuple2<Double, Integer> cpu = overload.getCpu() != null
+				? NullableTuples.of(overload.getCpu().getMax(), overload.getCpu().getWeight())
 				: null;
-		NullableTuple2<Void, Integer> memory = overload.getMemory() != null
-				? NullableTuples.of(null, overload.getMemory().getWeight())
+		NullableTuple2<Double, Integer> memory = overload.getMemory() != null
+				? NullableTuples.of(overload.getMemory().getMax(), overload.getMemory().getWeight())
 				: null;
 		Tuple2<Integer, Integer> jobs = Tuples.of(overload.getJobs().getMax(), overload.getJobs().getWeight());
 		JobsMetricsOverload.Config overloadConfig = new JobsMetricsOverload.Config(cpu, memory, jobs);

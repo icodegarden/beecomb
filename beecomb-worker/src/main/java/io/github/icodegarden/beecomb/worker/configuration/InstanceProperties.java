@@ -64,26 +64,28 @@ public class InstanceProperties {
 	@Data
 	public static class Overload {
 		/**
-		 * 默认不需要开启cpu、memory，因为jobs是通过cpu核memory综合计算得出的，只使用jobs具有了cpu和memory的上限能力
+		 * 需要开启cpu、memory，虽然jobs是通过cpu核memory综合计算得出的，但只使用jobs不一定能控制memory的上限能力，例如大量任务的执行频率非常低时
 		 */
-		private Cpu cpu;
-		private Memory memory;
+		private Cpu cpu = new Cpu();
+		private Memory memory = new Memory();
 		private Jobs jobs = new Jobs();
 
 		@Data
 		public static class Cpu {
+			private double max = 0.8;//不高于80%。系统最大1.0表示100%
 			private int weight = 1;
 		}
 
 		@Data
 		public static class Memory {
+			private double max = 0.8 * SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 不高于80%。
 			private int weight = 1;
 		}
 
 		@Getter
 		public static class Jobs {
-			private int weight = 8;
 			private int max = (int) SystemUtils.getVmRuntime().maxConcurrentThreadsPerSecond();
+			private int weight = 1;
 
 			public void setWeight(int weight) {
 				this.weight = weight;

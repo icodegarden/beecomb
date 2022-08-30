@@ -36,11 +36,11 @@ public class JobsMetricsOverload implements MetricsOverload {
 
 	public static class Config {
 
-		private final NullableTuple2<Void/*max由系统给*/, Integer/* 权重 */> cpu;
-		private final NullableTuple2<Void/*max由系统给*/, Integer/* 权重 */> memory;
+		private final NullableTuple2<Double/*max*/, Integer/* 权重 */> cpu;
+		private final NullableTuple2<Double/*max*/, Integer/* 权重 */> memory;
 		private final Tuple2<Integer/* maxJobsOverload */, Integer/* 权重 */> jobs;
 
-		public Config(NullableTuple2<Void, Integer> cpu, NullableTuple2<Void, Integer> memory,
+		public Config(NullableTuple2<Double, Integer> cpu, NullableTuple2<Double, Integer> memory,
 				@NotNull Tuple2<Integer, Integer> jobs) {
 			Objects.requireNonNull(jobs, "jobs must not null");
 			this.cpu = cpu;
@@ -48,11 +48,11 @@ public class JobsMetricsOverload implements MetricsOverload {
 			this.jobs = jobs;
 		}
 
-		public NullableTuple2<Void, Integer> getCpu() {
+		public NullableTuple2<Double, Integer> getCpu() {
 			return cpu;
 		}
 
-		public NullableTuple2<Void, Integer> getMemory() {
+		public NullableTuple2<Double, Integer> getMemory() {
 			return memory;
 		}
 
@@ -82,17 +82,18 @@ public class JobsMetricsOverload implements MetricsOverload {
 		/**
 		 * cpu使用率，1.0表示100%
 		 */
-		int cpuWeight = config.getCpu() != null ? config.getCpu().getT2() : 0;
-		Dimension cpuD = new Metrics.Dimension(DimensionName.Cpu, 1.0, SystemUtils.getVmRuntime().getProcessCpuLoad(),
+		double cpuMax = config.getCpu() != null ? config.getCpu().getT1() : 1.0;
+		int cpuWeight = config.getCpu() != null ? config.getCpu().getT2() : 0;//权重0表示不使用
+		Dimension cpuD = new Metrics.Dimension(DimensionName.Cpu, cpuMax, SystemUtils.getVmRuntime().getProcessCpuLoad(),
 				cpuWeight);
 		dimensions.add(cpuD);
 		
 		/**
 		 * 单位MB
 		 */
-		int memoryWeight = config.getMemory() != null ? config.getMemory().getT2() : 0;
-		Dimension memoryD = new Metrics.Dimension(DimensionName.Memory,
-				SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024,
+		double memoryMax = config.getMemory() != null ? config.getMemory().getT1() : SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;
+		int memoryWeight = config.getMemory() != null ? config.getMemory().getT2() : 0;//权重0表示不使用
+		Dimension memoryD = new Metrics.Dimension(DimensionName.Memory, memoryMax,
 				SystemUtils.getVmRuntime().getJvmUsedMemory() / 1024 / 1024, memoryWeight);
 		dimensions.add(memoryD);
 		

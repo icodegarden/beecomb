@@ -196,7 +196,7 @@ body参数
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
-|weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务   |e1   |
+|weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务   |1   |
 |parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
 |maxParallelShards   |int   |N   |2-64   |最大并行分片数，默认8，当合格的Executor数大于等于该值时，按该值分片，小于时按实际Executor数分片   |8   |
 |executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认10000   |10000   |
@@ -236,7 +236,7 @@ scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
 |name   |string   |Y   |1-30   |任务名   |jname   |
 |type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
 |priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
-|weight   |int   |N   |1-5   |任务的重量   |e1   |
+|weight   |int   |N   |1-5   |任务的重量   |1   |
 |queued   |boolean   |Y   |1   |任务是否已队列   |true   |
 |queuedAtInstance   |string   |N   |1-N   |任务已队列时对应的地址   |145.23.12.3:19898   |
 
@@ -258,7 +258,7 @@ path参数
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级   |5   |
-|weight   |int   |N   |1-5   |任务的重量   |e1   |
+|weight   |int   |N   |1-5   |任务的重量   |1   |
 |parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
 |maxParallelShards   |int   |N   |2-64   |最大并行分片数   |8   |
 |queued   |boolean   |Y   |1   |任务是否已队列   |true   |
@@ -343,7 +343,7 @@ body参数
 |executorName   |string   |N   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |N   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级   |5   |
-|weight   |int   |N   |1-5   |任务的重量   |e1   |
+|weight   |int   |N   |1-5   |任务的重量   |1   |
 |maxParallelShards   |int   |N   |2-64   |最大并行分片数   |8   |
 |executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
 |params   |string   |N   |65535   |任务执行的参数   |id=100   |
@@ -530,9 +530,9 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
 |schedule.metricsCacheRefreshIntervalMillis   |Executor压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |3000   |按需   |
 |schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
-|overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
-|overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
-|overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |
+|overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N   |
+|overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N   |
+|overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
 |overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值   |1-N   |
 
 ## Executor
@@ -549,9 +549,9 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
 |zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
 |schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
-|overload.cpu.weight   |cpu对负载压力的影响权重   |无，不开启   |0-N   |
-|overload.memory.weight   |内存对负载压力的影响权重   |无，不开启   |0-N   |
-|overload.jobs.weight   |每个任务对负载压力的影响权重   |8，当其他影响如cpu不开启时，job实际的影响即100%   |0-N   |
+|overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N   |
+|overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N   |
+|overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
 |overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/2资源用于Executor   |1-N   |
 
 
@@ -561,6 +561,10 @@ beecomb的初始用户只有beecomb，他是管理员身份
 在web 用户管理模块可以新增用户，以支持不同的系统接入，不同系统用户对应各自的数据权限、Client（或restapi）的身份认证
 
 # FAQ
+## Weight有什么作用？
+Worker、Executor具有cpu、内存、job重量数 的负载weight权重指数， 当任务分配和执行时会选择负载最低的最优实例，负载最低的实例算法是根据这几项指标的权重得出的，默认各项权重都是1
+Job的weight是任务重量，值越大占负载值越大
+
 ## 什么是任务恢复？
 当Worker下线或某种原因导致不可用时 或 创建任务时负载感知到任务不能分配给Worker 时，这些任务会被认为需要 恢复 分配给合适的Worker，会被自动检测进行分配
 
