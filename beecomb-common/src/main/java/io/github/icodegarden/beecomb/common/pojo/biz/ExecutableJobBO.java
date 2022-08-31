@@ -95,6 +95,7 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	@Override
 	public double ofOverload() {
 		double value = getWeight() * rateOfSecond();
+		value = Math.max(value, getWeight() * 0.1);//最小不能低于10倍容量，以免有大量的超低频率任务时内存溢出
 		if (Boolean.TRUE.equals(parallel)) {
 			/**
 			 * 由于该类是给Worker使用的，并行任务执行时需要对每个分片都使用独立线程，因此*maxParallelShards，使得Worker的用户配置的任务负载数相匹配

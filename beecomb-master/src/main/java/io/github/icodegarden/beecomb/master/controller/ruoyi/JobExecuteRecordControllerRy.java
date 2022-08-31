@@ -44,7 +44,7 @@ public class JobExecuteRecordControllerRy extends BaseControllerRy {
 			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
 			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize) {
 		JobExecuteRecordQuery query = JobExecuteRecordQuery.builder().jobId(jobId).success(success).page(pageNum)
-				.size(pageSize).sort("order by a.id desc").build();
+				.size(pageSize).orderBy("a.id desc").build();
 
 		Page<JobExecuteRecordVO> p = jobExecuteRecordManager.page(query);
 		return ResponseEntity.ok(getDataTable(p));

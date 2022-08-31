@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.pojo.query;
 
-import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +20,8 @@ public class ClusterNodeQuery extends BaseQuery {
 	private String ip;
 
 	@Builder
-	public ClusterNodeQuery(int page, int size, String sort, String limit, String serviceName, String ip) {
-		super(page, size, sort, limit);
+	public ClusterNodeQuery(int page, int size, String orderBy, String serviceName, String ip) {
+		super(page, size, orderBy);
 		this.serviceName = serviceName;
 		this.ip = ip;
 	}

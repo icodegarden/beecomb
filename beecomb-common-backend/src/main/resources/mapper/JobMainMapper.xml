@@ -224,12 +224,6 @@
 		<include refid="findPrefix"/>
 		<include refid="whereSql"/>
 		
-		<if test="sort != null">
-			${sort}
-		</if>
-		<if test="limit != null">
-			${limit}
-		</if>
 	</select>
 	
 	<select id="findAll_COUNT" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery" resultType="Long">

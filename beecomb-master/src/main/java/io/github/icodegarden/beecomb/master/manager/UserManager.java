@@ -62,7 +62,7 @@ public class UserManager {
 	}
 
 	public Page<UserPO> page(UserQuery query) {
-		PageHelper.startPage(query.getPage(), query.getSize());
+		PageHelper.startPage(query.getPage(), query.getSize(), query.getOrderBy());
 
 		Page<UserPO> page = (Page<UserPO>) userMapper.findAll(query);
 		return page;

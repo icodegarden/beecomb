@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.pojo.query;
 
-import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -24,9 +24,9 @@ public class JobRecoveryRecordQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public JobRecoveryRecordQuery(int page, int size, String sort, String limit, Long jobId, Boolean success,
+	public JobRecoveryRecordQuery(int page, int size, String orderBy, Long jobId, Boolean success,
 			String jobCreatedBy, With with) {
-		super(page, size, sort, limit);
+		super(page, size, orderBy);
 		this.jobId = jobId;
 		this.success = success;
 		this.jobCreatedBy = jobCreatedBy;

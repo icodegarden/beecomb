@@ -8,6 +8,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+
 import io.github.icodegarden.beecomb.common.backend.mapper.PendingRecoveryJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.PendingRecoveryJobDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO;
@@ -47,10 +50,15 @@ public class PendingRecoveryJobManager {
 //	}
 
 	public List<PendingRecoveryJobVO> list(PendingRecoveryJobQuery query) {
-		query.setLimitDefaultValueIfNotPresent();
+		Page<Object> startPage = PageHelper.startPage(query.getPage(), query.getSize(), query.getOrderBy());
+		startPage.setCount(false);
 
 		List<PendingRecoveryJobDO> list = pendingRecoveryJobMapper.findAll(query);
+		return list.stream().map(DO -> PendingRecoveryJobVO.of(DO)).collect(Collectors.toList());
+	}
 
+	public List<PendingRecoveryJobVO> listJobsShouldRecovery(int skip, int size) {
+		List<PendingRecoveryJobDO> list = pendingRecoveryJobMapper.listJobsShouldRecovery(skip, size, null);
 		return list.stream().map(DO -> PendingRecoveryJobVO.of(DO)).collect(Collectors.toList());
 	}
 

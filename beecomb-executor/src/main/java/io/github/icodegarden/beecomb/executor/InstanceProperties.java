@@ -126,7 +126,7 @@ public class InstanceProperties {
 
 	public static class Overload {
 		/**
-		 * 需要开启cpu、memory，虽然jobs是通过cpu核memory综合计算得出的，但只使用jobs不一定能控制memory的上限能力，例如大量任务的执行频率非常低时
+		 * 默认memory权重0即不参与，因为jobs是通过cpu核memory综合计算得出的，使用OverloadCalc.ofOverload()控制memory的上限能力，例如大量任务的执行频率非常低时
 		 */
 		private Cpu cpu = new Cpu();
 		private Memory memory = new Memory();
@@ -175,12 +175,11 @@ public class InstanceProperties {
 			public void setMax(double max) {
 				this.max = max;
 			}
-			
 		}
 
 		public static class Memory {
-			private double max = 0.95 * SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 
-			private int weight = 1;
+			private double max = SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 
+			private int weight = 0;
 
 			public int getWeight() {
 				return weight;

@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.pojo.query;
 
-import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -22,8 +22,8 @@ public class ReportLineQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public ReportLineQuery(int page, int size, String sort, String limit, String type, With with) {
-		super(page, size, sort, limit);
+	public ReportLineQuery(int page, int size, String orderBy, String type, With with) {
+		super(page, size, orderBy);
 		this.type = type;
 		this.with = with;
 	}

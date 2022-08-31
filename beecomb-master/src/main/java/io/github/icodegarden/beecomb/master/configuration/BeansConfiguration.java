@@ -2,7 +2,10 @@ package io.github.icodegarden.beecomb.master.configuration;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.Filter;
 import javax.sql.DataSource;
@@ -11,6 +14,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryForever;
+import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.zookeeper.client.ZKClientConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -41,6 +45,11 @@ import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
 import io.github.icodegarden.commons.lang.metrics.NamesCachedInstanceMetrics;
+import io.github.icodegarden.commons.lang.query.MysqlTableDataCountCollector;
+import io.github.icodegarden.commons.lang.query.MysqlTableDataCountStorage;
+import io.github.icodegarden.commons.lang.query.TableDataCountCollector;
+import io.github.icodegarden.commons.lang.query.TableDataCountManager;
+import io.github.icodegarden.commons.lang.query.TableDataCountStorage;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
@@ -48,6 +57,7 @@ import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
 import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
+import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
 import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
 import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
@@ -89,6 +99,21 @@ public class BeansConfiguration {
 	@Bean
 	public SpringContext springContext() {
 		return new SpringContext();
+	}
+
+	@Bean
+	public TableDataCountManager hbaseTableDataCountManager(DataSource shardingSphereDataSource) {
+		DataSource dataSource = DataSourceUtils.firstDataSource((ShardingSphereDataSource) shardingSphereDataSource);
+
+		Set<String> whiteListTables = new HashSet<String>(Arrays.asList("job_main", "job_detail", "delay_job",
+				"schedule_job", "job_execute_record", "job_recovery_record", "pending_recovery_job"));
+
+		TableDataCountCollector tableDataCountCollector = new MysqlTableDataCountCollector(dataSource, whiteListTables);
+		TableDataCountStorage tableDataCountStorage = new MysqlTableDataCountStorage(dataSource);
+		TableDataCountManager tableDataCountManager = new TableDataCountManager(tableDataCountCollector,
+				tableDataCountStorage);
+		tableDataCountManager.start(5 * 1000, 3600 * 1000);
+		return tableDataCountManager;
 	}
 
 	@Bean

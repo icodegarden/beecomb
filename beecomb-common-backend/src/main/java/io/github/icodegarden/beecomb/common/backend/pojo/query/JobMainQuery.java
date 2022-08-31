@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -41,11 +41,11 @@ public class JobMainQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public JobMainQuery(int page, int size, String sort, String limit, Long id, String uuid, Boolean queued,
+	public JobMainQuery(int page, int size, String orderBy, Long id, String uuid, Boolean queued,
 			Boolean end, String createdBy, String nameLike, JobType type, Boolean parallel, Boolean lastExecuteSuccess,
 			LocalDateTime createdAtGte, LocalDateTime createdAtLte, LocalDateTime lastTrigAtGte,
 			LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, List<Long> jobIds, With with) {
-		super(page, size, sort, limit);
+		super(page, size, orderBy);
 		this.id = id;
 		this.uuid = uuid;
 		this.queued = queued;

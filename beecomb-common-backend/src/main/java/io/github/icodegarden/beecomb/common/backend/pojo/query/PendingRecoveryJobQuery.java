@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.query;
 
-import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +19,8 @@ public class PendingRecoveryJobQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public PendingRecoveryJobQuery(int page, int size, String sort, String limit, With with) {
-		super(page, size, sort, limit);
+	public PendingRecoveryJobQuery(int page, int size, String orderBy, With with) {
+		super(page, size, orderBy);
 		this.with = with;
 	}
 

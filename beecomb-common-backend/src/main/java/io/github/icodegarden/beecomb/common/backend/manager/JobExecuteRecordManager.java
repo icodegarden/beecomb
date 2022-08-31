@@ -54,7 +54,8 @@ public class JobExecuteRecordManager {
 
 	public Page<JobExecuteRecordVO> page(JobExecuteRecordQuery query) {
 		boolean allowCount = TableDataCountUtils.allowCount(TableNameConstants.JOB_EXECUTE_RECORD);
-		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
+		Page<Object> startPage = PageHelper.startPage(query.getPage(), query.getSize(), query.getOrderBy());
+		startPage.setCount(allowCount);
 
 		Page<JobExecuteRecordDO> page = (Page<JobExecuteRecordDO>) jobExecuteRecordMapper.findAll(query);
 

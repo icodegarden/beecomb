@@ -64,15 +64,16 @@ public class JobMainManager {
 
 	public Page<JobMainVO> page(JobMainQuery query) {
 		boolean allowCount = false;
-		if(query.getType() == null) {
+		if (query.getType() == null) {
 			allowCount = TableDataCountUtils.allowCount(TableNameConstants.JOB_MAIN);
-		} else if(query.getType() == JobType.Delay) {
+		} else if (query.getType() == JobType.Delay) {
 			allowCount = TableDataCountUtils.allowCount(TableNameConstants.DELAY_JOB);
-		} else if(query.getType() == JobType.Schedule) {
+		} else if (query.getType() == JobType.Schedule) {
 			allowCount = TableDataCountUtils.allowCount(TableNameConstants.SCHEDULE_JOB);
 		}
-		
-		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
+
+		Page<Object> startPage = PageHelper.startPage(query.getPage(), query.getSize(), query.getOrderBy());
+		startPage.setCount(allowCount);
 
 		Page<JobMainDO> page = (Page<JobMainDO>) jobMainMapper.findAll(query);
 
@@ -81,7 +82,8 @@ public class JobMainManager {
 	}
 
 	public List<JobMainVO> list(JobMainQuery query) {
-		query.setLimitDefaultValueIfNotPresent();
+		Page<Object> startPage = PageHelper.startPage(query.getPage(), query.getSize(), query.getOrderBy());
+		startPage.setCount(false);
 
 		List<JobMainDO> list = jobMainMapper.findAll(query);
 

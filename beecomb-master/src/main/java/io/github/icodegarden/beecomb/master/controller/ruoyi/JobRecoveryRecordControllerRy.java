@@ -49,7 +49,7 @@ public class JobRecoveryRecordControllerRy extends BaseControllerRy {
 				.jobCreatedBy(username)
 				.with(JobRecoveryRecordQuery.With.builder()
 						.jobMain(JobRecoveryRecordQuery.With.JobMain.builder().build()).build())
-				.page(pageNum).size(pageSize).sort("order by a.recovery_at desc").build();
+				.page(pageNum).size(pageSize).orderBy("a.recovery_at desc").build();
 
 		Page<JobRecoveryRecordVO> p = jobRecoveryRecordService.page(query);
 		return ResponseEntity.ok(getDataTable(p));

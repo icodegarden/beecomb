@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.master.pojo.query;
 
-import io.github.icodegarden.beecomb.common.pojo.query.BaseQuery;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
+import io.github.icodegarden.commons.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -27,9 +27,9 @@ public class UserQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public UserQuery(int page, int size, String sort, String limit, String usernameLike, String nameLike, String phone,
+	public UserQuery(int page, int size, String orderBy, String usernameLike, String nameLike, String phone,
 			Boolean actived, PlatformRole platformRole, With with) {
-		super(page, size, sort, limit);
+		super(page, size, orderBy);
 		this.usernameLike = usernameLike;
 		this.nameLike = nameLike;
 		this.phone = phone;

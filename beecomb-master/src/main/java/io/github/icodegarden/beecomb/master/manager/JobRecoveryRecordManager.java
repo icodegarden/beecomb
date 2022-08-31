@@ -43,7 +43,8 @@ public class JobRecoveryRecordManager {
 
 	public Page<JobRecoveryRecordVO> page(JobRecoveryRecordQuery query) {
 		boolean allowCount = TableDataCountUtils.allowCount(TableNameConstants.JOB_RECOVERY_RECORD);
-		PageHelper.startPage(query.getPage(), query.getSize(), allowCount);
+		Page<Object> startPage = PageHelper.startPage(query.getPage(), query.getSize(), query.getOrderBy());
+		startPage.setCount(allowCount);
 
 		Page<JobRecoveryRecordDO> page = (Page<JobRecoveryRecordDO>) jobRecoveryRecordMapper.findAll(query);
 

@@ -55,7 +55,7 @@ class JobsMetricsOverloadTests {
 		metrics.setInstanceName(registeredInstance.getInstanceName());
 		doReturn(metrics).when(instanceMetrics).getMetrics(registeredInstance);
 
-		Config jobOverloadConfig = new JobsMetricsOverload.Config(NullableTuples.of(null, 1), NullableTuples.of(null, 1),
+		Config jobOverloadConfig = new JobsMetricsOverload.Config(NullableTuples.of(1.0, 1), NullableTuples.of(1024*1024.0, 1),
 				Tuples.of(MAX_JOBS_OVERLOAD, 1));
 		allJobOverload = new JobsMetricsOverload(instanceRegistry, instanceMetrics, jobOverloadConfig);
 

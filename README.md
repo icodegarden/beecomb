@@ -532,7 +532,7 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
 |overload.cpu.max   |允许cpu最大百分比   |0.9   |0-1   |
 |overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N 0表示忽略该项  |
-|overload.memory.max   |允许memory最大值   |0.95*Xmx   |0-1   |
+|overload.memory.max   |允许memory最大值   |等于Xmx   |0-N   |
 |overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N 0表示忽略该项  |
 |overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值   |1-N   |
 |overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
@@ -553,10 +553,10 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |schedule.flushMetricsIntervalMillis   |自身压力度量数据的定时写入频率毫秒。   |3000   |按需   |
 |overload.cpu.max   |允许cpu最大百分比   |0.9   |0-1   |
 |overload.cpu.weight   |cpu对负载压力的影响权重   |1   |0-N   |
-|overload.memory.max   |允许memory最大值   |0.95*Xmx   |0-1   |
+|overload.memory.max   |允许memory最大值   |等于Xmx   |0-N   |
 |overload.memory.weight   |内存对负载压力的影响权重   |1   |0-N   |
-|overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
 |overload.jobs.max   |允许负载的最多任务数量   |该数值由算法根据cpu和内存自动得出合理数值。默认Executor同时也视为Application，1/2资源用于Executor   |1-N  |
+|overload.jobs.weight   |每个任务对负载压力的影响权重   |1，当cpu、memory不开启时，job实际的影响即100%   |0-N   |
 
 
 # 多系统
@@ -567,7 +567,7 @@ beecomb的初始用户只有beecomb，他是管理员身份
 # FAQ
 ## Weight有什么作用？
 Worker、Executor具有cpu、内存、job重量数 的负载weight权重指数， 当任务分配和执行时会选择负载最低的最优实例，负载最低的实例算法是根据这几项指标的权重得出的，默认各项权重都是1
-Job的weight是任务重量，值越大占负载值越大
+Job的weight是任务重量，值越大占负载值越大，Worker负载值=Max(weight*每秒频率,weight*0.1)，Executor负载值=weight
 
 ## 什么是任务恢复？
 当Worker下线或某种原因导致不可用时 或 创建任务时负载感知到任务不能分配给Worker 时，这些任务会被认为需要 恢复 分配给合适的Worker，会被自动检测进行分配

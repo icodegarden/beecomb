@@ -52,13 +52,13 @@
 <!-- 				and a.is_success = #{success} -->
 <!-- 			</if> -->
 <!-- 		</trim> -->
-		<if test="sort != null">
-			${sort}
-		</if>
-		<if test="limit != null">
-			${limit}
-		</if>
 		
+	</select>
+	
+	<select id="listJobsShouldRecovery" resultMap="DOMap">
+		<include refid="findPrefix"/>
+		order by a.priority desc
+		limit ${skip}, ${size}
 	</select>
 	
 	<update id="insertSelectByScan" parameterType="io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO$InsertSelect">

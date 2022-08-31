@@ -86,12 +86,6 @@
 				and a.platform_role = #{platformRole}
 			</if>
 		</trim>
-		<if test="sort != null">
-			${sort}
-		</if>
-		<if test="limit != null">
-			${limit}
-		</if>
 	</select>
 	
 	<select id="findOne" resultMap="baseMap">

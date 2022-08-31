@@ -135,7 +135,7 @@ public class JobOpenapiController {
 		JobMainQuery query = JobMainQuery.builder().uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
-				.page(page).size(size).sort("order by a.id desc").with(with).build();
+				.page(page).size(size).orderBy("a.id desc").with(with).build();
 
 		Page<JobMainVO> p = jobMainManager.page(query);
 

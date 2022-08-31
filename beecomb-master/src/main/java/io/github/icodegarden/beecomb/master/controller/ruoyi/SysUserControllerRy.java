@@ -54,7 +54,7 @@ public class SysUserControllerRy extends BaseControllerRy {
 			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
 			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize) {
 		UserQuery query = UserQuery.builder().usernameLike(usernameLike).actived(actived).nameLike(nameLike)
-				.phone(phone).platformRole(platformRole).page(pageNum).size(pageSize).sort("order by a.id desc")
+				.phone(phone).platformRole(platformRole).page(pageNum).size(pageSize).orderBy("a.id desc")
 				.build();
 		query.setWith(UserQuery.With.builder().createdAt(true).createdBy(true).updatedAt(true).updatedBy(true).build());
 

@@ -110,7 +110,7 @@ public class JobControllerRy extends BaseControllerRy {
 		JobMainQuery query = JobMainQuery.builder().id(id).uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
 				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
 				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
-				.page(pageNum).size(pageSize).sort("order by a.id desc").with(with).build();
+				.page(pageNum).size(pageSize).orderBy("a.id desc").with(with).build();
 
 		Page<JobMainVO> p = jobMainManager.page(query);
 

@@ -16,7 +16,6 @@ import io.github.icodegarden.beecomb.common.backend.manager.JobMainManager;
 import io.github.icodegarden.beecomb.common.backend.manager.PendingRecoveryJobManager;
 import io.github.icodegarden.beecomb.common.backend.manager.ScheduleJobManager;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobMainQuery;
-import io.github.icodegarden.beecomb.common.backend.pojo.query.PendingRecoveryJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetailDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
@@ -166,7 +165,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 	 * @return
 	 */
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
-		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).end(false).limit("limit 1").build();
+		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).end(false).size(1).build();
 		List<JobMainVO> vos = jobMainManager.list(query);
 		return vos.size() >= 1;
 	}
@@ -209,10 +208,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 	 * @return
 	 */
 	public List<ExecutableJobBO> listJobsShouldRecovery(int skip, int size) {
-		PendingRecoveryJobQuery query = PendingRecoveryJobQuery.builder().sort("order by a.priority desc")
-				.limit("limit " + skip + "," + size).build();
-		List<PendingRecoveryJobVO> list = pendingRecoveryJobManager.list(query);
-
+		List<PendingRecoveryJobVO> list = pendingRecoveryJobManager.listJobsShouldRecovery(skip, size);
 		if (list.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -221,8 +217,8 @@ public class JobFacadeManager extends AbstractBackendJobService {
 //		JobMainQuery query = JobMainQuery.builder().end(false).queued(false).with(JobMainQuery.With.WITH_EXECUTABLE)
 //				.sort("order by a.priority desc").limit("limit " + skip + "," + size).build();
 
-		JobMainQuery jobQuery = JobMainQuery.builder().jobIds(jobIds).sort("order by a.priority desc")//此时排序已不重要，但也不影响性能
-				.with(JobMainQuery.With.WITH_EXECUTABLE).build();
+		JobMainQuery jobQuery = JobMainQuery.builder().jobIds(jobIds).orderBy("a.priority desc")// 此时排序已不重要，但也不影响性能
+				.size(jobIds.size()).with(JobMainQuery.With.WITH_EXECUTABLE).build();
 		List<JobMainVO> vos = jobMainManager.list(jobQuery);
 		if (vos.isEmpty()) {
 			return Collections.emptyList();
