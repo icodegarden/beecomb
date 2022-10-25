@@ -298,7 +298,7 @@ public class BeansConfiguration {
 		/**
 		 * 顺序最后
 		 */
-		ProcessingRequestCountFilter processingRequestCountFilter = new ProcessingRequestCountFilter(Integer.MIN_VALUE,
+		ProcessingRequestCountFilter processingRequestCountFilter = new ProcessingRequestCountFilter(Integer.MAX_VALUE,
 				instanceProperties.getServer().getShutdownGracefullyWaitMillis());
 
 		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<Filter>();
