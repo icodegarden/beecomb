@@ -69,7 +69,7 @@ public class JobRecoverySchedule implements Closeable {
 								doRecovery();
 
 								/**
-								 * FIXME 需要优化？当前recoveryThatNoQueuedActually 和
+								 * 需要优化?当前recoveryThatNoQueuedActually 和
 								 * listJobsShouldRecovery处于相同的schedule中
 								 */
 								doDispatch();
