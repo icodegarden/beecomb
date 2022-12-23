@@ -18,8 +18,8 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 
 import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.shardingsphere.algorithm.RangeModShardingAlgorithm;
-import io.github.icodegarden.commons.shardingsphere.properties.DataSourceProperties;
-import io.github.icodegarden.commons.shardingsphere.properties.RangeModProperties;
+import io.github.icodegarden.commons.shardingsphere.properties.DataSourceConfig;
+import io.github.icodegarden.commons.shardingsphere.properties.RangeModShardingAlgorithmConfig;
 import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,9 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ApiShardingSphereBuilder {
 
 	public static DataSource getDataSource(BeecombShardingsphereProperties beecombShardingsphereProperties) throws SQLException {
-		RangeModProperties jobidrangemod = beecombShardingsphereProperties.getJobidrangemod();
+		RangeModShardingAlgorithmConfig jobidrangemod = beecombShardingsphereProperties.getJobidrangemod();
 		jobidrangemod.validate();
-		RangeModShardingAlgorithm.registerRangeModProperties("jobidrangemod", jobidrangemod);
+		RangeModShardingAlgorithm.registerRangeModShardingAlgorithmConfig("jobidrangemod", jobidrangemod);
 		
 		LinkedHashMap<String, DataSource> dataSourceMap = DataSourceUtils.createDataSourceMap(beecombShardingsphereProperties.getDatasources());
 		DataSource firstDataSource = DataSourceUtils.firstDataSource(dataSourceMap);
@@ -45,7 +45,7 @@ public class ApiShardingSphereBuilder {
 				Collections.singleton(createShardingRuleConfiguration(beecombShardingsphereProperties.getDatasources())), new Properties());
 	}
 
-	private static ShardingRuleConfiguration createShardingRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+	private static ShardingRuleConfiguration createShardingRuleConfiguration(List<DataSourceConfig> dataSourceProperties) {
 		ShardingRuleConfiguration result = new ShardingRuleConfiguration();
 		result.getTables().add(getJobMainRuleConfiguration(dataSourceProperties));
 		result.getTables().add(getJobDetailTableRuleConfiguration(dataSourceProperties));
@@ -67,11 +67,10 @@ public class ApiShardingSphereBuilder {
 		 * 分片算法
 		 */
 		Properties props = new Properties();
-		props = new Properties();
 		props.setProperty("strategy", "standard");
 		props.setProperty("algorithmClassName",
 				"io.github.icodegarden.commons.shardingsphere.algorithm.RangeModShardingAlgorithm");
-		props.setProperty(RangeModShardingAlgorithm.NAME_KEY, "jobidrangemod");
+		props.setProperty(RangeModShardingAlgorithm.ALGORITHM_NAME_KEY, "jobidrangemod");
 		result.getShardingAlgorithms().put("jobidrangemod",
 				new ShardingSphereAlgorithmConfiguration("CLASS_BASED", props));
 
@@ -96,7 +95,7 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * job_main配置
 	 */
-	private static ShardingTableRuleConfiguration getJobMainRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+	private static ShardingTableRuleConfiguration getJobMainRuleConfiguration(List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_main";
 		}).collect(Collectors.joining(","));
@@ -116,7 +115,7 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * job_detail配置
 	 */
-	private static ShardingTableRuleConfiguration getJobDetailTableRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+	private static ShardingTableRuleConfiguration getJobDetailTableRuleConfiguration(List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_detail";
 		}).collect(Collectors.joining(","));
@@ -135,7 +134,7 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * delay_job配置
 	 */
-	private static ShardingTableRuleConfiguration getDelayJobTableRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+	private static ShardingTableRuleConfiguration getDelayJobTableRuleConfiguration(List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".delay_job";
 		}).collect(Collectors.joining(","));
@@ -154,7 +153,7 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * schedule_job配置
 	 */
-	private static ShardingTableRuleConfiguration getScheduleJobTableRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+	private static ShardingTableRuleConfiguration getScheduleJobTableRuleConfiguration(List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".schedule_job";
 		}).collect(Collectors.joining(","));
@@ -174,7 +173,7 @@ public class ApiShardingSphereBuilder {
 	 * 待恢复任务配置
 	 */
 	private static ShardingTableRuleConfiguration getPendingRecoveryJobTableRuleConfiguration(
-			List<DataSourceProperties> dataSourceProperties) {
+			List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".pending_recovery_job";
 		}).collect(Collectors.joining(","));
@@ -195,7 +194,7 @@ public class ApiShardingSphereBuilder {
 	 * 任务执行记录配置
 	 */
 	private static ShardingTableRuleConfiguration getJobExecuteRecordTableRuleConfiguration(
-			List<DataSourceProperties> dataSourceProperties) {
+			List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_execute_record";
 		}).collect(Collectors.joining(","));
@@ -217,7 +216,7 @@ public class ApiShardingSphereBuilder {
 	 * 任务恢复记录配置
 	 */
 	private static ShardingTableRuleConfiguration getJobRecoveryRecordTableRuleConfiguration(
-			List<DataSourceProperties> dataSourceProperties) {
+			List<DataSourceConfig> dataSourceProperties) {
 		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_recovery_record";
 		}).collect(Collectors.joining(","));
