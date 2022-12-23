@@ -2,6 +2,7 @@ package io.github.icodegarden.beecomb.common.backend.shardingsphere;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -15,7 +16,10 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfi
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 
-import io.github.icodegarden.commons.shardingsphere.properties.Datasource;
+import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
+import io.github.icodegarden.commons.shardingsphere.algorithm.RangeModShardingAlgorithm;
+import io.github.icodegarden.commons.shardingsphere.properties.DataSourceProperties;
+import io.github.icodegarden.commons.shardingsphere.properties.RangeModProperties;
 import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,21 +31,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApiShardingSphereBuilder {
 
-	public static DataSource getDataSource(BeecombShardingsphereProperties properties) throws SQLException {
+	public static DataSource getDataSource(BeecombShardingsphereProperties beecombShardingsphereProperties) throws SQLException {
+		RangeModProperties jobidrangemod = beecombShardingsphereProperties.getJobidrangemod();
+		jobidrangemod.validate();
+		RangeModShardingAlgorithm.registerRangeModProperties("jobidrangemod", jobidrangemod);
+		
+		LinkedHashMap<String, DataSource> dataSourceMap = DataSourceUtils.createDataSourceMap(beecombShardingsphereProperties.getDatasources());
+		DataSource firstDataSource = DataSourceUtils.firstDataSource(dataSourceMap);
+		MysqlKeyGenerateAlgorithm.registerDataSource(firstDataSource);
+		
 		return ShardingSphereDataSourceFactory.createDataSource(
-				DataSourceUtils.createDataSourceMap(properties.getDatasources()),
-				Collections.singleton(createShardingRuleConfiguration(properties.getDatasources())), new Properties());
+				DataSourceUtils.createDataSourceMap(beecombShardingsphereProperties.getDatasources()),
+				Collections.singleton(createShardingRuleConfiguration(beecombShardingsphereProperties.getDatasources())), new Properties());
 	}
 
-	private static ShardingRuleConfiguration createShardingRuleConfiguration(List<Datasource> datasources) {
+	private static ShardingRuleConfiguration createShardingRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
 		ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-		result.getTables().add(getJobMainRuleConfiguration(datasources));
-		result.getTables().add(getJobDetailTableRuleConfiguration(datasources));
-		result.getTables().add(getDelayJobTableRuleConfiguration(datasources));
-		result.getTables().add(getScheduleJobTableRuleConfiguration(datasources));
-		result.getTables().add(getPendingRecoveryJobTableRuleConfiguration(datasources));
-		result.getTables().add(getJobExecuteRecordTableRuleConfiguration(datasources));
-		result.getTables().add(getJobRecoveryRecordTableRuleConfiguration(datasources));
+		result.getTables().add(getJobMainRuleConfiguration(dataSourceProperties));
+		result.getTables().add(getJobDetailTableRuleConfiguration(dataSourceProperties));
+		result.getTables().add(getDelayJobTableRuleConfiguration(dataSourceProperties));
+		result.getTables().add(getScheduleJobTableRuleConfiguration(dataSourceProperties));
+		result.getTables().add(getPendingRecoveryJobTableRuleConfiguration(dataSourceProperties));
+		result.getTables().add(getJobExecuteRecordTableRuleConfiguration(dataSourceProperties));
+		result.getTables().add(getJobRecoveryRecordTableRuleConfiguration(dataSourceProperties));
 
 		/**
 		 * 绑定表
@@ -59,7 +71,7 @@ public class ApiShardingSphereBuilder {
 		props.setProperty("strategy", "standard");
 		props.setProperty("algorithmClassName",
 				"io.github.icodegarden.commons.shardingsphere.algorithm.RangeModShardingAlgorithm");
-		props.setProperty("name", "jobidrangemod");
+		props.setProperty(RangeModShardingAlgorithm.NAME_KEY, "jobidrangemod");
 		result.getShardingAlgorithms().put("jobidrangemod",
 				new ShardingSphereAlgorithmConfiguration("CLASS_BASED", props));
 
@@ -67,16 +79,16 @@ public class ApiShardingSphereBuilder {
 		 * 全局id生成
 		 */
 		Properties mysqljobmainProps = new Properties();
-		mysqljobmainProps.setProperty("moduleName", "job_main");
+		mysqljobmainProps.setProperty(MysqlKeyGenerateAlgorithm.MODULE_NAME_KEY, "job_main");
 		result.getKeyGenerators().put("mysqljobmain",
-				new ShardingSphereAlgorithmConfiguration("MYSQL", mysqljobmainProps));
+				new ShardingSphereAlgorithmConfiguration(MysqlKeyGenerateAlgorithm.TYPE, mysqljobmainProps));
 		/**
 		 * 全局id生成
 		 */
 		Properties mysqljobexecuterrecordProps = new Properties();
-		mysqljobexecuterrecordProps.setProperty("moduleName", "job_execute_record");
+		mysqljobexecuterrecordProps.setProperty(MysqlKeyGenerateAlgorithm.MODULE_NAME_KEY, "job_execute_record");
 		result.getKeyGenerators().put("mysqljobexecuterrecord",
-				new ShardingSphereAlgorithmConfiguration("MYSQL", mysqljobexecuterrecordProps));
+				new ShardingSphereAlgorithmConfiguration(MysqlKeyGenerateAlgorithm.TYPE, mysqljobexecuterrecordProps));
 
 		return result;
 	}
@@ -84,8 +96,8 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * job_main配置
 	 */
-	private static ShardingTableRuleConfiguration getJobMainRuleConfiguration(List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+	private static ShardingTableRuleConfiguration getJobMainRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_main";
 		}).collect(Collectors.joining(","));
 
@@ -104,8 +116,8 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * job_detail配置
 	 */
-	private static ShardingTableRuleConfiguration getJobDetailTableRuleConfiguration(List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+	private static ShardingTableRuleConfiguration getJobDetailTableRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_detail";
 		}).collect(Collectors.joining(","));
 
@@ -123,8 +135,8 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * delay_job配置
 	 */
-	private static ShardingTableRuleConfiguration getDelayJobTableRuleConfiguration(List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+	private static ShardingTableRuleConfiguration getDelayJobTableRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".delay_job";
 		}).collect(Collectors.joining(","));
 
@@ -142,8 +154,8 @@ public class ApiShardingSphereBuilder {
 	/**
 	 * schedule_job配置
 	 */
-	private static ShardingTableRuleConfiguration getScheduleJobTableRuleConfiguration(List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+	private static ShardingTableRuleConfiguration getScheduleJobTableRuleConfiguration(List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".schedule_job";
 		}).collect(Collectors.joining(","));
 
@@ -162,8 +174,8 @@ public class ApiShardingSphereBuilder {
 	 * 待恢复任务配置
 	 */
 	private static ShardingTableRuleConfiguration getPendingRecoveryJobTableRuleConfiguration(
-			List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+			List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".pending_recovery_job";
 		}).collect(Collectors.joining(","));
 
@@ -183,8 +195,8 @@ public class ApiShardingSphereBuilder {
 	 * 任务执行记录配置
 	 */
 	private static ShardingTableRuleConfiguration getJobExecuteRecordTableRuleConfiguration(
-			List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+			List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_execute_record";
 		}).collect(Collectors.joining(","));
 
@@ -205,8 +217,8 @@ public class ApiShardingSphereBuilder {
 	 * 任务恢复记录配置
 	 */
 	private static ShardingTableRuleConfiguration getJobRecoveryRecordTableRuleConfiguration(
-			List<Datasource> datasources) {
-		String actualDataNodes = datasources.stream().map(ds -> {
+			List<DataSourceProperties> dataSourceProperties) {
+		String actualDataNodes = dataSourceProperties.stream().map(ds -> {
 			return ds.getName() + ".job_recovery_record";
 		}).collect(Collectors.joining(","));
 

@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import javax.servlet.Filter;
 import javax.sql.DataSource;
 
 import org.apache.curator.RetryPolicy;
@@ -17,12 +15,9 @@ import org.apache.curator.retry.RetryForever;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.zookeeper.client.ZKClientConfig;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.SmartLifecycle;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
 import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
@@ -32,9 +27,13 @@ import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Zoo
 import io.github.icodegarden.beecomb.master.discovery.InstanceDiscoveryListener;
 import io.github.icodegarden.beecomb.master.discovery.ListenableNamesWatchedZooKeeperInstanceDiscovery;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
+import io.github.icodegarden.beecomb.master.manager.TableManager;
 import io.github.icodegarden.beecomb.master.schedule.JobRecoverySchedule;
+import io.github.icodegarden.beecomb.master.schedule.OptStorageSchedule;
+import io.github.icodegarden.beecomb.master.schedule.ReportSchedule;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
+import io.github.icodegarden.beecomb.master.service.ReportService;
 import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
@@ -55,14 +54,8 @@ import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
-import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
 import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
-import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
-import io.github.icodegarden.commons.springboot.SpringContext;
-import io.github.icodegarden.commons.springboot.web.filter.ProcessingRequestCountFilter;
-import io.github.icodegarden.commons.springboot.web.handler.NativeRestApiExceptionHandler;
-import io.github.icodegarden.commons.springboot.web.util.MappingJackson2HttpMessageConverters;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
 import io.github.icodegarden.commons.zookeeper.concurrent.lock.ZooKeeperLock;
@@ -89,20 +82,16 @@ import lombok.extern.slf4j.Slf4j;
  * @author Fangfang.Xu
  *
  */
-@Slf4j
+@EnableConfigurationProperties(InstanceProperties.class)
 @Configuration
+@Slf4j
 public class BeansConfiguration {
 
 	@Autowired
 	private InstanceProperties instanceProperties;
 
 	@Bean
-	public SpringContext springContext() {
-		return new SpringContext();
-	}
-
-	@Bean
-	public TableDataCountManager hbaseTableDataCountManager(DataSource shardingSphereDataSource) {
+	public TableDataCountManager mysqlTableDataCountManager(DataSource shardingSphereDataSource) {
 		DataSource dataSource = DataSourceUtils.firstDataSource((ShardingSphereDataSource) shardingSphereDataSource);
 
 		Set<String> whiteListTables = new HashSet<String>(Arrays.asList("job_main", "job_detail", "delay_job",
@@ -116,44 +105,18 @@ public class BeansConfiguration {
 		return tableDataCountManager;
 	}
 
-	@Bean
-	public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-		return MappingJackson2HttpMessageConverters.simple();
-	}
-
-	@Bean
-	public NativeRestApiExceptionHandler nativeRestApiParameterInvalidExceptionHandler() {
-		return new NativeRestApiExceptionHandler();
-	}
-
-	@Bean
-	public SmartLifecycle gracefullyShutdownLifecycle() {
-		return new GracefullyShutdownLifecycle();
-	}
-
-	@Bean
-	public SqlPerformanceInterceptor sqlPerformanceInterceptor() {
-		SqlPerformanceInterceptor sqlPerformanceInterceptor = new SqlPerformanceInterceptor();
-		sqlPerformanceInterceptor.setFormat(true);
-		sqlPerformanceInterceptor.setUnhealthMillis(instanceProperties.getServer().getSqlUnhealthMillis());
-		sqlPerformanceInterceptor.setUnhealthSqlConsumer(sql -> {
-			log.warn("unhealth sql : {}", sql);
-		});
-		return sqlPerformanceInterceptor;
-	}
-
 	/**
 	 * sharding DataSource
 	 */
 	@Bean
 	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
 		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
-
-		MysqlKeyGenerateAlgorithm.registerDataSource(dataSource);
-
 		return dataSource;
 	}
 
+	/**
+	 * 由于配置前缀不同，覆盖
+	 */
 	@Bean
 	public ZooKeeperHolder zooKeeperHolder() {
 		Config config = new ZooKeeperHolder.Config(instanceProperties.getZookeeper().getConnectString(),
@@ -161,6 +124,23 @@ public class BeansConfiguration {
 				instanceProperties.getZookeeper().getConnectTimeout());
 		config.setAclAuth(instanceProperties.getZookeeper().getAclAuth());
 		return new ZooKeeperHolder(config);
+	}
+
+	/**
+	 * 由于配置前缀不同，覆盖
+	 */
+	@Bean
+	public CuratorFramework curatorFramework() {
+		ZooKeeper zookeeper = instanceProperties.getZookeeper();
+
+		RetryPolicy retryPolicy = new RetryForever(3000);
+		ZKClientConfig zkClientConfig = new ZKClientConfig();
+		zkClientConfig.setProperty(ZKClientConfig.ZOOKEEPER_SERVER_PRINCIPAL,
+				"zookeeper/" + zookeeper.getConnectString());
+		CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeper.getConnectString(),
+				zookeeper.getSessionTimeout(), zookeeper.getConnectTimeout(), retryPolicy, zkClientConfig);
+		client.start();
+		return client;
 	}
 
 	@Bean
@@ -257,59 +237,46 @@ public class BeansConfiguration {
 	}
 
 	@Bean
-	public CuratorFramework curatorFramework() {
-		ZooKeeper zookeeper = instanceProperties.getZookeeper();
-
-		RetryPolicy retryPolicy = new RetryForever(3000);
-		ZKClientConfig zkClientConfig = new ZKClientConfig();
-		zkClientConfig.setProperty(ZKClientConfig.ZOOKEEPER_SERVER_PRINCIPAL,
-				"zookeeper/" + zookeeper.getConnectString());
-		CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeper.getConnectString(),
-				zookeeper.getSessionTimeout(), zookeeper.getConnectTimeout(), retryPolicy, zkClientConfig);
-		client.start();
-		return client;
-	}
-
-	@Bean
 	public JobReceiver jobReceiver(JobFacadeManager jobFacadeManager, WorkerRemoteService remoteService) {
 		return new JobReceiver(jobFacadeManager, remoteService);
 	}
 
 	@Bean
-	public JobRecoverySchedule jobRecovery(CuratorFramework client, JobFacadeManager jobFacadeManager,
+	public JobRecoverySchedule jobRecoverySchedule(CuratorFramework client, JobFacadeManager jobFacadeManager,
 			WorkerRemoteService remoteService, JobRecoveryRecordManager jobRecoveryRecordService) {
-		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(), "JobRecovery");
+		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(),
+				"JobRecoverySchedule");
 
-		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobFacadeManager, remoteService,
+		long recoveryScheduleMillis = instanceProperties.getSchedule().getRecoveryScheduleMillis();
+		JobRecoverySchedule jobRecoverySchedule = new JobRecoverySchedule(lock, jobFacadeManager, remoteService,
 				jobRecoveryRecordService);
-		jobRecovery.start(instanceProperties.getJob().getRecoveryScheduleMillis());
+		jobRecoverySchedule.scheduleWithFixedDelay(recoveryScheduleMillis, recoveryScheduleMillis);
 
-		/**
-		 * 停止调度
-		 */
-		GracefullyShutdown.Registry.singleton()
-				.register(new CloseableGracefullyShutdown(jobRecovery, "jobRecovery", -90));
-
-		return jobRecovery;
+		return jobRecoverySchedule;
 	}
 
 	@Bean
-	public FilterRegistrationBean<Filter> FilterRegistrationBean() {
-		/**
-		 * 顺序最后
-		 */
-		ProcessingRequestCountFilter processingRequestCountFilter = new ProcessingRequestCountFilter(Integer.MAX_VALUE,
-				instanceProperties.getServer().getShutdownGracefullyWaitMillis());
+	public ReportSchedule reportSchedule(CuratorFramework client, ReportService reportService) {
+		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(),
+				"ReportSchedule");
 
-		FilterRegistrationBean<Filter> bean = new FilterRegistrationBean<Filter>();
-		bean.setFilter(processingRequestCountFilter);
-		bean.setName("processingRequestCountFilter");
-		bean.addUrlPatterns("/*");
-		bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+		String cron = instanceProperties.getSchedule().getReportScheduleCron();
 
-		GracefullyShutdown.Registry.singleton().register(processingRequestCountFilter);
-
-		return bean;
+		ReportSchedule reportSchedule = new ReportSchedule(lock, reportService);
+		reportSchedule.scheduleWithCron(cron);
+		return reportSchedule;
 	}
 
+	@Bean
+	public OptStorageSchedule optStorageSpaceSchedule(CuratorFramework client, TableManager tableManager) {
+		ZooKeeperLock lock = new ZooKeeperLock(client, instanceProperties.getZookeeper().getLockRoot(),
+				"OptStorageSpaceSchedule");
+
+		String cron = instanceProperties.getSchedule().getOptStorageScheduleCron();
+		int days = instanceProperties.getSchedule().getOptStorageDeleteBeforeDays();
+
+		OptStorageSchedule optStorageSpaceSchedule = new OptStorageSchedule(lock, days, tableManager);
+		optStorageSpaceSchedule.scheduleWithCron(cron);
+		return optStorageSpaceSchedule;
+	}
 }

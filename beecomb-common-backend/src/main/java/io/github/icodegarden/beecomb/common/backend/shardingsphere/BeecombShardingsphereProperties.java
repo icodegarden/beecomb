@@ -2,14 +2,11 @@ package io.github.icodegarden.beecomb.common.backend.shardingsphere;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import io.github.icodegarden.commons.shardingsphere.algorithm.RangeModShardingAlgorithm;
-import io.github.icodegarden.commons.shardingsphere.properties.Datasource;
-import io.github.icodegarden.commons.shardingsphere.properties.Rangemod;
+import io.github.icodegarden.commons.shardingsphere.properties.DataSourceProperties;
+import io.github.icodegarden.commons.shardingsphere.properties.RangeModProperties;
 import lombok.Data;
 
 /**
@@ -22,14 +19,6 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "api.shardingsphere")
 public class BeecombShardingsphereProperties {
 
-	private List<Datasource> datasources;
-	private Rangemod jobidrangemod = new Rangemod();
-
-	@PostConstruct
-	void init() {
-		jobidrangemod.validate();
-
-		RangeModShardingAlgorithm.registerRangemod("jobidrangemod", jobidrangemod);
-	}
-
+	private List<DataSourceProperties> datasources;
+	private RangeModProperties jobidrangemod = new RangeModProperties();
 }

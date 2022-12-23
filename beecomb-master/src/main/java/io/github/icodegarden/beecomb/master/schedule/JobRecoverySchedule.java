@@ -1,91 +1,52 @@
 package io.github.icodegarden.beecomb.master.schedule;
 
-import java.io.Closeable;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.manager.JobRecoveryRecordManager;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
-import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
 import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
+import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.exception.NoSwitchableExchangeException;
 import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
+import io.github.icodegarden.commons.lang.schedule.LockSupportSchedule;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
-import io.github.icodegarden.commons.lang.util.ThreadPoolUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * 自动重置任务未队列（作为JobRecoveryListener的补充）<br>
  * 自动恢复任务的调度
+ * 
  * @author Fangfang.Xu
  *
  */
 @Slf4j
-public class JobRecoverySchedule implements Closeable {
+public class JobRecoverySchedule extends LockSupportSchedule {
 
-	private final ScheduledThreadPoolExecutor scheduleRecoveryThreadPool = ThreadPoolUtils
-			.newSingleScheduledThreadPool("JobRecovery-recovery");
-	{
-		scheduleRecoveryThreadPool.setRemoveOnCancelPolicy(true);
-	}
-
-	private final AtomicBoolean closed = new AtomicBoolean(true);
-	private final DistributedLock lock;
 	private final JobFacadeManager jobFacadeManager;
 	private final WorkerRemoteService remoteService;
 	private final JobRecoveryRecordManager jobRecoveryRecordService;
 
-	private ScheduledFuture<?> future;
-
-	public JobRecoverySchedule(DistributedLock lock, JobFacadeManager jobFacadeManager, WorkerRemoteService remoteService,
-			JobRecoveryRecordManager jobRecoveryRecordService) {
-		this.lock = lock;
+	public JobRecoverySchedule(DistributedLock lock, JobFacadeManager jobFacadeManager,
+			WorkerRemoteService remoteService, JobRecoveryRecordManager jobRecoveryRecordService) {
+		super(lock);
 		this.jobFacadeManager = jobFacadeManager;
 		this.remoteService = remoteService;
 		this.jobRecoveryRecordService = jobRecoveryRecordService;
 	}
 
-	public boolean start(long scheduleMillis) {
-		if (closed.compareAndSet(true, false)) {
-			future = scheduleRecoveryThreadPool.scheduleWithFixedDelay(() -> {
-				synchronized (JobRecoverySchedule.this) {
-					if (closed.get()) {
-						/**
-						 * 如果已关闭，终止执行
-						 */
-						return;
-					}
-					try {
-						if (lock.acquire(1000)) {
-							try {
-								doRecovery();
+	@Override
+	protected void doScheduleAfterLocked() throws Throwable {
+		doRecovery();
 
-								/**
-								 * 需要优化?当前recoveryThatNoQueuedActually 和
-								 * listJobsShouldRecovery处于相同的schedule中
-								 */
-								doDispatch();
-							} finally {
-								lock.release();
-							}
-						}
-					} catch (Throwable e) {
-						log.error("WARNING: ex on recovery jobs", e);
-					}
-				}
-			}, scheduleMillis, scheduleMillis, TimeUnit.MILLISECONDS);
-
-			return true;
-		}
-		return false;
+		/**
+		 * 需要优化?当前recoveryThatNoQueuedActually 和 listJobsShouldRecovery处于相同的schedule中
+		 */
+		doDispatch();
 	}
 
 	private void doRecovery() {
@@ -112,7 +73,7 @@ public class JobRecoverySchedule implements Closeable {
 	private void doDispatch() {
 		int skip = 0;
 		for (;;) {
-			if (closed.get()) {
+			if (isClosed()) {
 				/**
 				 * 如果在执行过程中关闭，终止执行
 				 */
@@ -169,23 +130,6 @@ public class JobRecoverySchedule implements Closeable {
 					jobRecoveryRecordService.createOrUpdate(dto);
 				}
 			}
-		}
-	}
-
-	/**
-	 * 阻塞直到处理完毕，这不会阻塞很久
-	 */
-	@Override
-	public void close() {
-		if (future != null) {
-			future.cancel(true);
-		}
-		closed.set(true);
-
-		/**
-		 * 使用synchronized保障如果任务正在处理中，则等待任务处理完毕
-		 */
-		synchronized (this) {
 		}
 	}
 

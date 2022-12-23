@@ -16,5 +16,8 @@ spring:
   profiles:
     include: shardingsphere    
 
-
+commons:
+  mybatis:
+    mapperScan:
+      basePackages: io.github.icodegarden.beecomb.common.backend.mapper
 

@@ -1,10 +1,8 @@
 package io.github.icodegarden.beecomb.master.schedule;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-
 import io.github.icodegarden.beecomb.master.service.ReportService;
+import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
+import io.github.icodegarden.commons.lang.schedule.LockSupportSchedule;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -13,17 +11,17 @@ import lombok.extern.slf4j.Slf4j;
  *
  */
 @Slf4j
-@Component
-public class ReportSchedule {
+public class ReportSchedule extends LockSupportSchedule {
 
-	@Autowired
-	private ReportService reportService;
+	private final ReportService reportService;
 
-	/**
-	 * 每天凌晨2点执行
-	 */
-	@Scheduled(cron = "0 0 2 * * *")
-	void updateReport() {
+	public ReportSchedule(DistributedLock lock, ReportService reportService) {
+		super(lock);
+		this.reportService = reportService;
+	}
+
+	@Override
+	protected void doScheduleAfterLocked() throws Throwable {
 		if (log.isInfoEnabled()) {
 			log.info("schedule updateReport triggered");
 		}

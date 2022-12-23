@@ -5,9 +5,14 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.RetryForever;
+import org.apache.zookeeper.client.ZKClientConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.context.SmartLifecycle;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,8 +23,8 @@ import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardi
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload.Config;
+import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties.Overload;
-import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties.Schedule;
 import io.github.icodegarden.beecomb.worker.core.DelayJobEngine;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.core.ScheduleJobEngine;
@@ -40,10 +45,6 @@ import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
 import io.github.icodegarden.commons.lang.tuple.NullableTuples;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
-import io.github.icodegarden.commons.mybatis.interceptor.SqlPerformanceInterceptor;
-import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
-import io.github.icodegarden.commons.springboot.GracefullyShutdownLifecycle;
-import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
@@ -65,33 +66,13 @@ import lombok.extern.slf4j.Slf4j;
  * @author Fangfang.Xu
  *
  */
-@Slf4j
+@EnableConfigurationProperties(InstanceProperties.class)
 @Configuration
+@Slf4j
 public class BeansConfiguration {
 
 	@Autowired
 	private InstanceProperties instanceProperties;
-
-	@Bean
-	public SpringContext springContext() {
-		return new SpringContext();
-	}
-
-	@Bean
-	public SmartLifecycle gracefullyShutdownLifecycle() {
-		return new GracefullyShutdownLifecycle();
-	}
-
-	@Bean
-	public SqlPerformanceInterceptor sqlPerformanceInterceptor() {
-		SqlPerformanceInterceptor sqlPerformanceInterceptor = new SqlPerformanceInterceptor();
-		sqlPerformanceInterceptor.setFormat(true);
-		sqlPerformanceInterceptor.setUnhealthMillis(instanceProperties.getServer().getSqlUnhealthMillis());
-		sqlPerformanceInterceptor.setUnhealthSqlConsumer(sql -> {
-			log.warn("unhealth sql : {}", sql);
-		});
-		return sqlPerformanceInterceptor;
-	}
 
 	/**
 	 * sharding DataSource
@@ -99,12 +80,12 @@ public class BeansConfiguration {
 	@Bean
 	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
 		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
-
-		MysqlKeyGenerateAlgorithm.registerDataSource(dataSource);
-
 		return dataSource;
 	}
 
+	/**
+	 * 由于配置前缀不同，覆盖
+	 */
 	@Bean
 	public ZooKeeperHolder zooKeeperHolder() {
 		ZooKeeperHolder.Config config = new ZooKeeperHolder.Config(instanceProperties.getZookeeper().getConnectString(),
@@ -112,6 +93,23 @@ public class BeansConfiguration {
 				instanceProperties.getZookeeper().getConnectTimeout());
 		config.setAclAuth(instanceProperties.getZookeeper().getAclAuth());
 		return new ZooKeeperHolder(config);
+	}
+
+	/**
+	 * 由于配置前缀不同，覆盖
+	 */
+	@Bean
+	public CuratorFramework curatorFramework() {
+		ZooKeeper zookeeper = instanceProperties.getZookeeper();
+
+		RetryPolicy retryPolicy = new RetryForever(3000);
+		ZKClientConfig zkClientConfig = new ZKClientConfig();
+		zkClientConfig.setProperty(ZKClientConfig.ZOOKEEPER_SERVER_PRINCIPAL,
+				"zookeeper/" + zookeeper.getConnectString());
+		CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeper.getConnectString(),
+				zookeeper.getSessionTimeout(), zookeeper.getConnectTimeout(), retryPolicy, zkClientConfig);
+//		client.start();没用到，不启动
+		return client;
 	}
 
 	@Bean

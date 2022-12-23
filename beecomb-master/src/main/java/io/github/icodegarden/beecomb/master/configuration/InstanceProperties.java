@@ -1,10 +1,8 @@
 package io.github.icodegarden.beecomb.master.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import io.github.icodegarden.commons.lang.util.SystemUtils;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,9 +12,10 @@ import lombok.ToString;
  * @author Fangfang.Xu
  *
  */
-@Data
-@Configuration
 @ConfigurationProperties
+@Setter
+@Getter
+@ToString
 public class InstanceProperties {
 
 	private Server server = new Server();
@@ -26,7 +25,9 @@ public class InstanceProperties {
 	private Schedule schedule = new Schedule();
 	private Security security = new Security();
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Server {
 		private String bindIp = SystemUtils.getIp();
 		private int port;
@@ -40,13 +41,15 @@ public class InstanceProperties {
 		private long shutdownGracefullyWaitMillis = 30000;
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Job {
 		/**
 		 * dispatch的过程正常是很快的，但在服务刚启动使用阶段可能会需要更大的延迟（worker需要初始化数据库连接等）
 		 */
 		private int dispatchTimeoutMillis = 10000;
-		private int recoveryScheduleMillis = 60000;
+		
 	}
 
 	@Setter
@@ -59,40 +62,62 @@ public class InstanceProperties {
 		private String lockRoot = "/beecomb-lock";
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class LoadBalance {
 		private int maxCandidates = 3;
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Schedule {
 		/**
 		 * 刷新Worker的
 		 */
-		private int discoveryCacheRefreshIntervalMillis = 10000;
+		private long discoveryCacheRefreshIntervalMillis = 10000;
 		/**
 		 * 刷新Worker的
 		 */
-		private int metricsCacheRefreshIntervalMillis = 3000;
+		private long metricsCacheRefreshIntervalMillis = 3000;
 		/**
 		 * 刷入自己的
 		 */
-		private int flushMetricsIntervalMillis = 3000;
+		private long flushMetricsIntervalMillis = 3000;
+		
+		private long recoveryScheduleMillis = 60000;
+		/**
+		 * 每天凌晨2点执行
+		 */
+		private String reportScheduleCron = "0 0 2 * * *";
+		/**
+		 * 每月15日02:00执行
+		 */
+		private String optStorageScheduleCron = "0 0 2 15 * ?";
+		
+		private int optStorageDeleteBeforeDays = 90;
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Security {
 		private Jwt jwt = new Jwt();
 		private BasicAuth basicAuth = new BasicAuth();
 
-		@Data
+		@Setter
+		@Getter
+		@ToString
 		public static class Jwt {
 			private String issuer = "beecomb";
 			private String secretKey = "beecomb_jwt@icodegarden";
 			private int tokenExpireSeconds = 3600;
 		}
 
-		@Data
+		@Setter
+		@Getter
+		@ToString
 		public static class BasicAuth {
 			private int maxUserCacheSeconds = 1800;
 		}

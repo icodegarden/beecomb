@@ -114,7 +114,7 @@ public class JobsMetricsOverload implements MetricsOverload {
 		return metrics;
 	}
 
-	public void enableScheduleFlushMetrics(int scheduleMillis) {
+	public void enableScheduleFlushMetrics(long scheduleMillis) {
 		defaultMetricsOverload.enableScheduleFlushMetrics(scheduleMillis);
 	}
 

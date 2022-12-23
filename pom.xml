@@ -38,7 +38,7 @@
     </developers>
 	
 	<properties>
-        <commons-version>0.3.1</commons-version>
+        <commons-version>1.1.0</commons-version>
     </properties>
 	
 	<modules>

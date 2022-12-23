@@ -2,22 +2,23 @@ package io.github.icodegarden.beecomb.worker.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
-import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
-@Data
-@Configuration
 @ConfigurationProperties
+@Setter
+@Getter
+@ToString
 public class InstanceProperties {
 
 	private static InstanceProperties singleton;
@@ -43,7 +44,9 @@ public class InstanceProperties {
 		return env.getRequiredProperty("spring.application.name");
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Server {
 		private String bindIp = SystemUtils.getIp();
 		private int port = 19898;
@@ -60,8 +63,10 @@ public class InstanceProperties {
 		 */
 		private long engineShutdownBlockingTimeoutMillis = 60000;
 	}
-	
-	@Data
+
+	@Setter
+	@Getter
+	@ToString
 	public static class Overload {
 		/**
 		 * 默认memory权重0即不参与，因为jobs是通过cpu核memory综合计算得出的，使用OverloadCalc.ofOverload()控制memory的上限能力，例如大量任务的执行频率非常低时
@@ -70,39 +75,41 @@ public class InstanceProperties {
 		private Memory memory = new Memory();
 		private Jobs jobs = new Jobs();
 
-		@Data
+		@Setter
+		@Getter
+		@ToString
 		public static class Cpu {
-			private double max = 0.9;//不高于90%。系统最大1.0表示100%
+			private double max = 0.9;// 不高于90%。系统最大1.0表示100%
 			private int weight = 1;
 		}
 
-		@Data
+		@Setter
+		@Getter
+		@ToString
 		public static class Memory {
-			private double max = SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;//MB 
+			private double max = SystemUtils.getVmRuntime().getJvmMaxMemory() / 1024 / 1024;// MB
 			private int weight = 0;
 		}
 
+		@Setter
 		@Getter
+		@ToString
 		public static class Jobs {
 			private int max = (int) SystemUtils.getVmRuntime().maxConcurrentThreadsPerSecond();
 			private int weight = 1;
-
-			public void setWeight(int weight) {
-				this.weight = weight;
-			}
-
-			public void setMax(int max) {
-				this.max = max;
-			}
 		}
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class LoadBalance {
 		private int maxCandidates = 3;
 	}
 
-	@Data
+	@Setter
+	@Getter
+	@ToString
 	public static class Schedule {
 		/**
 		 * 刷新Executor的

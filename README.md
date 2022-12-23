@@ -506,9 +506,12 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |zookeeper.lockRoot   |zk的分布式锁目录   |/beecomb-lock   |按需   |
 |loadBalance.maxCandidates   |对Worker分配每一个任务时的候选合格Worker数量。候选的实例是根据压力来筛选的，通常会给候选中的第一个（压力最小的），但是在网络发生问题时会切换候选中的其他实例   |3   |1-N   |
 |job.dispatchTimeoutMillis   |向Worker分配任务时的超时毫秒。dispatch的过程正常是很快的，但在服务刚启动使用阶段可能会需要更大的延迟（worker需要初始化数据库连接等）   |10000   |按需   |
-|job.recoveryScheduleMillis   |检查有可能需要恢复的任务的频率毫秒   |60000   |按需   |
+|schedule.recoveryScheduleMillis   |检查有可能需要恢复的任务的频率毫秒   |60000   |按需   |
 |schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
 |schedule.metricsCacheRefreshIntervalMillis   |Worker压力度量数据的刷新频率毫秒。这通常需要较高的频率，而zk对读性能是很高的   |3000   |按需   |
+|schedule.reportScheduleCron   |报表统计触发的cron，默认每天凌晨2点执行   |0 0 2 * * *   |按需   |
+|schedule.optStorageScheduleCron   |优化存储空间（mysql）触发的cron，包括删除过早的执行记录、optimize Table，默认每月15日02:00执行   |0 0 2 15 * ?   |按需   |
+|schedule.optStorageDeleteBeforeDays   |优化存储空间时删除多久以前的数据（执行记录等可删的数据），默认90天   |90   |按需   |
 |security.jwt.issuer   |web的jwt issuer   |beecomb   |按需   |
 |security.jwt.secretKey   |web的jwt secretKey   |beecomb_jwt@icodegarden   |按需   |
 |security.jwt.tokenExpireSeconds   |web的jwt token过期秒数   |3600   |按需   |
