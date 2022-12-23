@@ -9,8 +9,6 @@ pagehelper.params=count: countSql
 
 server:
   port: 9898
-  #生产环境只关注大于该值的sql
-#  sqlUnhealthMillis: 150
   
 spring:
   application:
