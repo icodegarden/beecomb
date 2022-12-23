@@ -1,9 +1,6 @@
 package io.github.icodegarden.beecomb.worker.configuration;
 
-import java.sql.SQLException;
 import java.util.Arrays;
-
-import javax.sql.DataSource;
 
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
@@ -18,8 +15,6 @@ import org.springframework.context.annotation.Configuration;
 
 import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
-import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
-import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload.Config;
@@ -73,15 +68,6 @@ public class BeansConfiguration {
 
 	@Autowired
 	private InstanceProperties instanceProperties;
-
-	/**
-	 * sharding DataSource
-	 */
-	@Bean
-	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
-		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
-		return dataSource;
-	}
 
 	/**
 	 * 由于配置前缀不同，覆盖

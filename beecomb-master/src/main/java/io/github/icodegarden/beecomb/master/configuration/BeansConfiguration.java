@@ -1,6 +1,5 @@
 package io.github.icodegarden.beecomb.master.configuration;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +18,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.github.icodegarden.beecomb.common.backend.shardingsphere.ApiShardingSphereBuilder;
-import io.github.icodegarden.beecomb.common.backend.shardingsphere.BeecombShardingsphereProperties;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.ZooKeeper;
@@ -54,7 +51,6 @@ import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
 import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
-import io.github.icodegarden.commons.shardingsphere.algorithm.MysqlKeyGenerateAlgorithm;
 import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
@@ -103,15 +99,6 @@ public class BeansConfiguration {
 				tableDataCountStorage);
 		tableDataCountManager.start(5 * 1000, 3600 * 1000);
 		return tableDataCountManager;
-	}
-
-	/**
-	 * sharding DataSource
-	 */
-	@Bean
-	public DataSource dataSource(BeecombShardingsphereProperties properties) throws SQLException {
-		DataSource dataSource = ApiShardingSphereBuilder.getDataSource(properties);
-		return dataSource;
 	}
 
 	/**
