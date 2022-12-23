@@ -400,59 +400,65 @@ beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysq
 ```properties
 
 # 配置真实数据源
-# 配置第 1 个数据源
-api.shardingsphere.datasources[0].name=ds0
-api.shardingsphere.datasources[0].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_0?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-api.shardingsphere.datasources[0].username=root
-api.shardingsphere.datasources[0].password=123456
+## 配置第 1 个数据源
+commons.shardingsphere.datasources[0].name=ds0
+commons.shardingsphere.datasources[0].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_0?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+commons.shardingsphere.datasources[0].username=root
+commons.shardingsphere.datasources[0].password=123456
 #支持以下参数
-#api.shardingsphere.datasources[0].minimumIdle=
-#api.shardingsphere.datasources[0].idleTimeout=
-#api.shardingsphere.datasources[0].maximumPoolSize=
-#api.shardingsphere.datasources[0].maxLifetime=
-#api.shardingsphere.datasources[0].connectionTimeout=
-#api.shardingsphere.datasources[0].connectionTestQuery=
-#api.shardingsphere.datasources[0].keepaliveTime=
-#api.shardingsphere.datasources[0].validationTimeout=
+#commons.shardingsphere.datasources[0].minimumIdle=
+#commons.shardingsphere.datasources[0].idleTimeout=
+#commons.shardingsphere.datasources[0].maximumPoolSize=
+#commons.shardingsphere.datasources[0].maxLifetime=
+#commons.shardingsphere.datasources[0].connectionTimeout=
+#commons.shardingsphere.datasources[0].connectionTestQuery=
+#commons.shardingsphere.datasources[0].keepaliveTime=
+#commons.shardingsphere.datasources[0].validationTimeout=
 
-# 配置第 2 个数据源
-api.shardingsphere.datasources[1].name=ds1
-api.shardingsphere.datasources[1].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_1?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-api.shardingsphere.datasources[1].username=root
-api.shardingsphere.datasources[1].password=123456
+## 配置第 2 个数据源
+commons.shardingsphere.datasources[1].name=ds1
+commons.shardingsphere.datasources[1].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_1?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+commons.shardingsphere.datasources[1].username=root
+commons.shardingsphere.datasources[1].password=123456
 
 
-# 分片算法配置，name可以自定义；rangeGte=0表示该组库的id范围支持从0开始；rangeLt=20000000表示该组库的任务id范围支持到2000万结束；mod=2表示该组任务id以2取模，因为2个库平均分摊；modLoadBalance={"ds0":[0],"ds1":[1]}  表示取模结果是多少分别存入哪个库
-api.shardingsphere.jobidrangemod.groups[0].name=group0
-api.shardingsphere.jobidrangemod.groups[0].rangeGte=0
-api.shardingsphere.jobidrangemod.groups[0].rangeLt=20000000
-api.shardingsphere.jobidrangemod.groups[0].mod=2
-api.shardingsphere.jobidrangemod.groups[0].modLoadBalance={"ds0":[0],"ds1":[1]}
+# 分片算法
+##algorithmName可以自定义但要与分片表的shardingAlgorithmName对应无需修改
+##rangeGte=0表示该组库的id范围支持从0开始；rangeLt=20000000表示该组库的任务id范围支持到2000万结束
+##mod=2表示该组任务id以2取模，因为2个库平均分摊，如果配置3表示以3取模，此时注意modLoadBalance要配置取模结果是2时存入哪个ds
+##modLoadBalance={"ds0":[0],"ds1":[1]}  表示取模结果是多少分别存入哪个库
+commons.shardingsphere.rangeModShardingAlgorithms[0].algorithmName=jobidrangemod
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[0].name=group0
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[0].rangeGte=0
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[0].rangeLt=20000000
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[0].mod=2
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[0].modLoadBalance={"ds0":[0],"ds1":[1]}
 
 ```
 通过以上示例可以看出分多少库是可以自定义的，并且分片算法配置可以让数据 避免热点、避免迁移，下面展示当上面的几个库即将不够用时，继续增加2个库如何避免迁移
 
 ```properties
 
-#基于上面的配置继续追加下面配置，但省略新增2个库的datasources配置
+#基于上面的配置继续追加下面配置
 # 配置第 3 个数据源
-api.shardingsphere.datasources[2].name=ds2
-api.shardingsphere.datasources[2].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_2?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-api.shardingsphere.datasources[2].username=root
-api.shardingsphere.datasources[2].password=123456
+commons.shardingsphere.datasources[2].name=ds2
+commons.shardingsphere.datasources[2].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_2?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+commons.shardingsphere.datasources[2].username=root
+commons.shardingsphere.datasources[2].password=123456
 
 # 配置第 4 个数据源
-api.shardingsphere.datasources[3].name=ds3
-api.shardingsphere.datasources[3].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_3?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
-api.shardingsphere.datasources[3].username=root
-api.shardingsphere.datasources[3].password=123456
+commons.shardingsphere.datasources[3].name=ds3
+commons.shardingsphere.datasources[3].jdbc-url=jdbc:mysql://127.0.0.1:3306/beecomb_3?setUnicode=true&characterEncoding=utf8&useSSL=false&autoReconnect=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
+commons.shardingsphere.datasources[3].username=root
+commons.shardingsphere.datasources[3].password=123456
 
 # 分片算法配置
-api.shardingsphere.jobidrangemod.groups[1].name=group1 新的组名称
-api.shardingsphere.jobidrangemod.groups[1].rangeGte=20000000 起始值跟跟上面的组衔接
-api.shardingsphere.jobidrangemod.groups[1].rangeLt=50000000 支持到5000万
-api.shardingsphere.jobidrangemod.groups[1].mod=3 该组任务id以3取模，尽管库是2个，但这里假设的是2个库的硬件不一样，其中1个的硬件是2倍能力，因此2倍的库可以承担2倍的数据
-api.shardingsphere.jobidrangemod.groups[1].modLoadBalance={"ds2":[0,1],"ds3":[2]} 取模结果是0和1的存到高性能的库
+##增加新的group来支持更多的数据
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[1].name=group1 #新的组名称
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[1].rangeGte=20000000 #起始值跟跟上面的组衔接
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[1].rangeLt=50000000 #支持到5000万
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[1].mod=3 #该组任务id以3取模，尽管库是2个，但这里假设的是2个库的硬件不一样，其中1个的硬件是2倍能力，因此2倍的库可以承担2倍的数据
+commons.shardingsphere.rangeModShardingAlgorithms[0].groups[1].modLoadBalance={"ds2":[0,1],"ds3":[2]} #取模结果是0和1的存到高性能的库，结果2的存到普通性能
 
 ```
 通过以上示例可以看出数据库可以随着业务发展逐渐的增加，实现水平扩容
@@ -583,3 +589,6 @@ Job的weight是任务重量，值越大占负载值越大，Worker负载值=Max(
 
 ## 为什么有时候任务id后创建的比先创建的值还要小？
 beecomb的全局id使用mysql管理，为了提升吞吐量，默认的步长是大于1的（即把可使用的id缓存在本地，使用完了再获取新的），这样在集群环境下不同实例使用的id存在差异，所以并不是严格的有序，但总体上是有序的。如果需要严格有序，可以把表id_sequence的increment（步长）设置为1，这样并发量大时性能会下降一些
+
+## 历史数据会自动清理吗？
+支持自动清理任务的执行记录数据，默认每月的15日凌晨2点执行，过程是 删除超过90天（默认）的记录，对表进行optimize Table消除碎片
