@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>io.github.icodegarden</groupId>
 		<artifactId>beecomb</artifactId>
-		<version>0.2.1</version>
+		<version>1.0.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>beecomb-worker</artifactId>
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>beecomb-common-backend</artifactId>
-			<version>0.2.1</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>beecomb-test</artifactId>
-			<version>0.2.1</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
