@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.icodegarden.commons.lang.dao.Database;
-import io.github.icodegarden.commons.lang.dao.MysqlDatabase;
+import io.github.icodegarden.commons.lang.dao.MysqlJdbcDatabase;
+import io.github.icodegarden.commons.lang.dao.OptimizeTableResults;
+import io.github.icodegarden.commons.lang.dao.OptimizeTableResults.Result;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ public class TableManager {
 
 	/**
 	 * 优化存储空间
+	 * 
 	 * @param deleteBeforeDays 删除N天之前的
 	 */
 	public void optStorageSpace(int deleteBeforeDays) {
@@ -48,7 +51,8 @@ public class TableManager {
 			/**
 			 * 删除过期数据
 			 */
-			String trigAtLt = SystemUtils.STANDARD_DATETIME_FORMATTER.format(SystemUtils.now().minusDays(deleteBeforeDays));
+			String trigAtLt = SystemUtils.STANDARD_DATETIME_FORMATTER
+					.format(SystemUtils.now().minusDays(deleteBeforeDays));
 			try {
 				int i = deleteJobExecuteRecord(ds, trigAtLt);
 				log.info("optStorageSpace deleteJobExecuteRecord count:{}", i);
@@ -57,7 +61,7 @@ public class TableManager {
 			}
 
 			try {
-				Thread.sleep(5000);//停顿
+				Thread.sleep(5000);// 停顿
 			} catch (InterruptedException e1) {
 			}
 
@@ -75,7 +79,7 @@ public class TableManager {
 				}
 
 				try {
-					Thread.sleep(3000);//停顿
+					Thread.sleep(3000);// 停顿
 				} catch (InterruptedException e1) {
 				}
 			}
@@ -96,13 +100,16 @@ public class TableManager {
 	}
 
 	private List<String> listOptimizeTables(DataSource dataSource) {
-		Database database = new MysqlDatabase(dataSource);
+		Database database = new MysqlJdbcDatabase(dataSource);
 		return database.listTables();
 	}
 
 	private String optimizeTable(DataSource dataSource, String tableName) {
-		Database database = new MysqlDatabase(dataSource);
-		List<String> desc = database.optimizeTable(tableName);
-		return desc.toString();
+		Database database = new MysqlJdbcDatabase(dataSource);
+		OptimizeTableResults<Result> results = database.optimizeTable(tableName);
+		if (results.isErrorInMysql()) {
+			throw new IllegalStateException(results.getDesc());
+		}
+		return results.getDesc();
 	}
 }
