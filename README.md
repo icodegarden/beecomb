@@ -394,7 +394,7 @@ path参数
 ## Zookeeper
 对于Zookeeper的依赖，只需有可用的环境，并没有数据需要初始化
 ## Mysql
-对Mysql需要进行数据初始化，见 快速开始 的 初始化数据库 介绍，除此还需要配置config/下的application-shardingsphere.properties，master和worker保持一致，详细说明如下
+对Mysql需要进行数据初始化，见 快速开始 的 初始化数据库 介绍，除此还需要配置config/下的application-shardingsphere-config.properties，master和worker保持一致，详细说明如下
 
 beecomb使用shardingsphere分库，默认需要2个库（可以在相同的mysql实例），支持自定义多个库，下面先以2个库为例
 ```properties

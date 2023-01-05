@@ -14,7 +14,7 @@ spring:
   application:
     name: beecomb-master
   profiles:
-    include: shardingsphere
+    include: shardingsphere,shardingsphere-config
   mvc.servlet.load-on-startup: 1  
   #关闭thymeleaf的缓存
   thymeleaf:
