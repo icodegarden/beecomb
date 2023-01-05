@@ -11,6 +11,7 @@ public class RequestExecutorDTO implements Serializable {
 	private static final long serialVersionUID = 36827620108902360L;
 	
 	public static final String METHOD_RECEIVEJOB = "receiveJob";
+	public static final String METHOD_ONPARALLELSUCCESS = "onParallelSuccess";
 	public static final String METHOD_PING = "ping";
 
 	private String method;

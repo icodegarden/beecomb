@@ -15,12 +15,16 @@ import io.github.icodegarden.commons.lang.annotation.Length;
 public class ExecuteJobResult implements Serializable {
 	private static final long serialVersionUID = -6248807678193840548L;
 
-	@Length(max = 65535) 
+	@Length(max = 65535)
 	private String executeReturns;
 	/**
 	 * 任务是否结束
 	 */
 	private boolean end;
+	/**
+	 * 是否在并行任务的所有分片都成功时执行回调
+	 */
+	private boolean onParallelSuccessCallback;
 
 	public String getExecuteReturns() {
 		return executeReturns;
@@ -39,6 +43,14 @@ public class ExecuteJobResult implements Serializable {
 
 	public void setEnd(boolean end) {
 		this.end = end;
+	}
+
+	public boolean isOnParallelSuccessCallback() {
+		return onParallelSuccessCallback;
+	}
+
+	public void setOnParallelSuccessCallback(boolean onParallelSuccessCallback) {
+		this.onParallelSuccessCallback = onParallelSuccessCallback;
 	}
 
 	@Override
@@ -60,7 +72,8 @@ public class ExecuteJobResult implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ExecuteJobResult [executeReturns=" + executeReturns + ", end=" + end + "]";
+		return "ExecuteJobResult [executeReturns=" + executeReturns + ", end=" + end + ", onParallelSuccessCallback="
+				+ onParallelSuccessCallback + "]";
 	}
 
 }

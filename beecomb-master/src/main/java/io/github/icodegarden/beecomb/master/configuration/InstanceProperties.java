@@ -31,14 +31,6 @@ public class InstanceProperties {
 	public static class Server {
 		private String bindIp = SystemUtils.getIp();
 		private int port;
-		/**
-		 * 不健康的sql执行时间
-		 */
-		private long sqlUnhealthMillis = -1;
-		/**
-		 * http接口请求优雅停机最大等待
-		 */
-		private long shutdownGracefullyWaitMillis = 30000;
 	}
 
 	@Setter

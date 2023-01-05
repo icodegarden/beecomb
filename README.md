@@ -118,10 +118,19 @@ CreateJobVO response = beeCombClient.createJob(job);
 ```
 
 ## 更多示例
-更多示例见 SampleApp.java
+更多示例见 SampleApp.java，其中包含了经典的 红包自动退款场景，抢票场景，任务分片并行处理场景
 
 ## 打开Web
 访问 {master地址}:9898 默认用户密码beecomb/beecomb
+
+![](./imgs/login.png)
+
+![](./imgs/joblist.png)
+
+![](./imgs/nodelist.png)
+
+![](./imgs/userlist.png)
+
 
 # 开发者
 ## Executor
@@ -503,11 +512,10 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |---|---|---|---|
 |server.port   |matser的http端口   |9898   |按端口规则   |
 |server.bindIp   |master的ip地址   |网络地址   |按ip规则   |
-|server.shutdownGracefullyWaitMillis   |优雅停机最大等待毫秒   |30000   |0-N   |
 |zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
 |zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
-|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
 |zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
+|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
 |zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
 |zookeeper.lockRoot   |zk的分布式锁目录   |/beecomb-lock   |按需   |
 |loadBalance.maxCandidates   |对Worker分配每一个任务时的候选合格Worker数量。候选的实例是根据压力来筛选的，通常会给候选中的第一个（压力最小的），但是在网络发生问题时会切换候选中的其他实例   |3   |1-N   |
@@ -532,8 +540,8 @@ docker run --name beecomb-worker -d -p 19898:19898 -e JAVA_OPTS="..." -e JAVA_AR
 |server.engineShutdownBlockingTimeoutMillis   |影响任务引擎shutdown时等待正在处理中的任务完毕   |60000   |0-N   |
 |zookeeper.root   |beecomb在zk中的root目录   |/beecomb   |任意独占目录   |
 |zookeeper.connectString   |zk的地址，多个以,号分隔   |无   |必须   |
-|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
 |zookeeper.connectTimeout   |zk的connectTimeout   |3000   |按需   |
+|zookeeper.sessionTimeout   |zk的sessionTimeout   |3000   |按需   |
 |zookeeper.aclAuth   |zk的Auth方式认证   |beecomb:beecomb   |按需   |
 |loadBalance.maxCandidates   |对Executor执行每一个任务时的候选合格Executor数量。候选的实例是根据压力来筛选的，通常会给候选中的第一个（压力最小的），但是在网络发生问题时会切换候选中的其他实例   |3   |1-N   |
 |schedule.discoveryCacheRefreshIntervalMillis   |服务发现的刷新频率毫秒。这个频率通常不需要很高   |10000   |按需   |
@@ -577,6 +585,15 @@ beecomb的初始用户只有beecomb，他是管理员身份
 ## Weight有什么作用？
 Worker、Executor具有cpu、内存、job重量数 的负载weight权重指数， 当任务分配和执行时会选择负载最低的最优实例，负载最低的实例算法是根据这几项指标的权重得出的，默认各项权重都是1
 Job的weight是任务重量，值越大占负载值越大，Worker负载值=Max(weight*每秒频率,weight*0.1)，Executor负载值=weight
+
+## Delay任务会触发几次？
+延迟任务在成功后或失败次数达到阈值后，就会结束不再触发
+
+## Schedule任务什么时候结束？
+当调度任务的返回参数设置end为true后，任务将结束不再触发调度
+
+## 怎么感知并行任务的所有分片都执行成功了？
+当并行任务的返回参数设置onParallelSuccessCallback为true，并且所有分片都执行成功后，将会触发onParallelSuccess方法的回调（只会有一个executor收到回调）
 
 ## 什么是任务恢复？
 当Worker下线或某种原因导致不可用时 或 创建任务时负载感知到任务不能分配给Worker 时，这些任务会被认为需要 恢复 分配给合适的Worker，会被自动检测进行分配

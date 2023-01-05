@@ -24,6 +24,7 @@ import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccess
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
+import io.github.icodegarden.commons.exchange.ParallelExchangeResult;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -187,8 +188,10 @@ public class DelayJobEngine extends AbstractJobEngine {
 			 * 并行任务不关注返回体，只关注是否成功，所有分片全部成功才视为成功，否则会收到PartInstanceFailedExchangeException
 			 */
 			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
-			parallelLoadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance,
-					config);
+			ParallelExchangeResult result = parallelLoadBalanceExchanger.exchange(dto,
+					executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance, config);
+
+			runIfParallelSuccess(executorInstanceLoadBalance, job, result);
 
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
 					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */)

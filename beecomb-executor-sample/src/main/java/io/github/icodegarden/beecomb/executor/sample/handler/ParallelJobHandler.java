@@ -65,23 +65,32 @@ public class ParallelJobHandler implements JobHandler {
 			 * Scheudle类型下次会继续调度<br>
 			 * Delay类型如果失败次数没到阈值下次也会再触发
 			 */
-			throw new IOException("本分片处理异常");
+			throw new IOException("分片"+shard+"处理异常");
 		}
 
-		System.out.println("处理成功");
-
+		System.out.println("分片"+shard+"处理成功");
+		
+		ExecuteJobResult executeJobResult = new ExecuteJobResult();
+		/**
+		 * 设置true当所有分片都成功后，将会触发onParallelSuccess方法的回调（只会有一个executor收到回调）
+		 */
+		executeJobResult.setOnParallelSuccessCallback(true);
+		
 		/**
 		 * 区别：<br>
 		 * Scheudle类型：如果 所有的 分片的ExecuteJobResult的end没有设置为true，则下次会继续 并行的 调度<br>
 		 * Delay类型：任务将会结束
 		 */
 		if (job instanceof ScheduleJob) {
-			ExecuteJobResult executeJobResult = new ExecuteJobResult();
 			executeJobResult.setEnd(true);
 			return executeJobResult;
 		}
 		// Delay
-		return new ExecuteJobResult();
+		return executeJobResult;
 	}
 
+	@Override
+	public void onParallelSuccess(Job job) throws Exception {
+		System.out.println("Parallel 所有分片执行成功, job:" + job);
+	}
 }

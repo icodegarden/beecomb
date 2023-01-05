@@ -125,17 +125,36 @@ public class SampleApp {
 		pringResponse(response);
 	}
 
+	/**
+	 * schedule类型的并行任务
+	 */
 	private static void parallelJobHandler(BeeCombClient beeCombClient) {
 		Schedule schedule = CreateScheduleJobDTO.Schedule.sheduleCron("1/3 * * * * *");
 		CreateScheduleJobDTO job = new CreateScheduleJobDTO("testParallelJob", EXECUTOR_NAME, ParallelJobHandler.NAME,
 				schedule);
 		job.setParallel(true);
 		job.setMaxParallelShards(8);
-
+		
 		System.out.println("正在创建类型3任务");
 		CreateJobVO response = beeCombClient.createJob(job);
 		pringResponse(response);
 	}
+	
+	/**
+	 * delay类型的并行任务
+	 */
+//	private static void parallelJobHandler(BeeCombClient beeCombClient) {
+//		CreateDelayJobDTO.Delay delay = new CreateDelayJobDTO.Delay(3000L);
+//		delay.setRetryOnExecuteFailed(3);
+//		CreateDelayJobDTO job = new CreateDelayJobDTO("testParallelJob", EXECUTOR_NAME, ParallelJobHandler.NAME,
+//				delay);
+//		job.setParallel(true);
+//		job.setMaxParallelShards(8);
+//
+//		System.out.println("正在创建类型3任务");
+//		CreateJobVO response = beeCombClient.createJob(job);
+//		pringResponse(response);
+//	}
 
 	private static void pringResponse(CreateJobVO response) {
 		if (response.getDispatchException() == null) {

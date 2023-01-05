@@ -4,12 +4,18 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ScheduledFuture;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
+import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
+import io.github.icodegarden.beecomb.common.executor.Job;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
+import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.exception.ExceedExpectedJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
+import io.github.icodegarden.beecomb.worker.loadbalance.ExecutorInstanceLoadBalance;
 import io.github.icodegarden.beecomb.worker.service.JobService;
+import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
+import io.github.icodegarden.commons.exchange.ParallelExchangeResult;
 import io.github.icodegarden.commons.exchange.ParallelExchanger;
 import io.github.icodegarden.commons.exchange.ParallelLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.loadbalance.EmptyInstanceLoadBalance;
@@ -132,6 +138,31 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			metricsOverload.flushMetrics();
 		}
 		return b;
+	}
+	
+	protected void runIfParallelSuccess(ExecutorInstanceLoadBalance executorInstanceLoadBalance, Job job,
+			ParallelExchangeResult result) {
+		/**
+		 * 只要任一返回是true就需要callback
+		 */
+		boolean isOnParallelSuccessCallback = result.getShardExchangeResults().stream()
+				.anyMatch(shardExchangeResult -> {
+					ExecuteJobResult executeJobResult = (ExecuteJobResult) shardExchangeResult.response();
+					return executeJobResult.isOnParallelSuccessCallback();
+				});
+		if (isOnParallelSuccessCallback) {
+			CandidatesSwitchableLoadBalanceExchanger loadBalanceExchanger = new CandidatesSwitchableLoadBalanceExchanger(
+					this.protocol, executorInstanceLoadBalance, NodeRole.Executor.getRoleName(),
+					instanceProperties.getLoadBalance().getMaxCandidates());
+
+			/*
+			 * 设置有意义的参数
+			 */
+			job.setShardTotal(result.getShardTotal());
+			
+			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_ONPARALLELSUCCESS, job);
+			loadBalanceExchanger.exchange(dto, job.getExecuteTimeout());
+		}
 	}
 
 	@Override

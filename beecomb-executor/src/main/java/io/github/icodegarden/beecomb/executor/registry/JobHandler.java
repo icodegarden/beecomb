@@ -20,11 +20,13 @@ public interface JobHandler {
 	/**
 	 * 当执行成功时返回{@link ExecuteJobResult} <br>
 	 * 若处理需要视为失败，则可以throw异常； schedule类型任务在下次时间继续调度，
-	 * delay类型任务则需要根据所配置的retryOnExecuteFailed次数 和 retryBackoffOnExecuteFailed决定是否继续触发
-	 * <br>
+	 * delay类型任务则需要根据所配置的retryOnExecuteFailed次数 和
+	 * retryBackoffOnExecuteFailed决定是否继续触发 <br>
 	 * 
 	 * @return
 	 */
 	ExecuteJobResult handle(Job job) throws Exception;
 
+	default void onParallelSuccess(Job job) throws Exception {
+	}
 }

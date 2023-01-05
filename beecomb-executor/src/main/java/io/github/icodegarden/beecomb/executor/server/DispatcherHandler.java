@@ -43,4 +43,22 @@ public class DispatcherHandler {
 		return jobReceiver.receive(job);
 	}
 
+	/**
+	 * 具体参数化 
+	 */
+	public Result2<Object, ExchangeFailedReason> onParallelSuccess(Job job) {
+		return jobReceiver.onParallelSuccess(job);
+	}
+	/**
+	 * 具体参数化 
+	 */
+	public Result2<Object, ExchangeFailedReason> onParallelSuccess(DelayJob job) {
+		return jobReceiver.onParallelSuccess(job);
+	}
+	/**
+	 * 具体参数化 
+	 */
+	public Result2<Object, ExchangeFailedReason> onParallelSuccess(ScheduleJob job) {
+		return jobReceiver.onParallelSuccess(job);
+	}
 }

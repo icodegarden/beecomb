@@ -1,5 +1,7 @@
 package io.github.icodegarden.beecomb.executor.server;
 
+import java.util.function.Function;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +37,38 @@ public class JobReceiver {
 	 * @return ExecuteJobResult:on success,ExchangeFailedReason:on fail
 	 */
 	public Result2<ExecuteJobResult, ExchangeFailedReason> receive(Job job) {
+		return handleJobBased(job, jobHandler->{
+			ExecuteJobResult result = jobHandler.handle(job);
+			if (result == null) {
+				/**
+				 * build a result when user return null
+				 */
+				result = new ExecuteJobResult();
+			}
+			return result;
+		});
+	}
+	
+	private interface HandleFunc<R>{
+		R apply(JobHandler jobHandler)throws Exception;
+	}
+	
+//	private class JobBasedDTO{
+//		private final Job job;
+//		private final JobHandler jobHandler;
+//		public JobBasedDTO(Job job, JobHandler jobHandler) {
+//			this.job = job;
+//			this.jobHandler = jobHandler;
+//		}
+//		public Job getJob() {
+//			return job;
+//		}
+//		public JobHandler getJobHandler() {
+//			return jobHandler;
+//		}
+//	}
+	
+	private <R>Result2<R, ExchangeFailedReason> handleJobBased(Job job,HandleFunc<R> func) {
 		JobHandler jobHandler = jobHandlerRegistry.getJobHandler(job.getJobHandlerName());
 		if (jobHandler == null) {
 			return Results.of(false, null, ExchangeFailedReason.serverRejected("No JobHandler", null));
@@ -45,13 +79,7 @@ public class JobReceiver {
 		}
 
 		try {
-			ExecuteJobResult result = jobHandler.handle(job);
-			if (result == null) {
-				/**
-				 * build a result when user return null
-				 */
-				result = new ExecuteJobResult();
-			}
+			R result = func.apply(jobHandler);
 			return Results.of(true, result, null);
 		} catch (Exception e) {
 			log.error("handle job failed, job:{}, jobHandler.name:{}", job, jobHandler.name(), e);
@@ -62,4 +90,16 @@ public class JobReceiver {
 		}
 	}
 
+	/**
+	 * 不会抛出异常
+	 * 
+	 * @param job
+	 * @return ExecuteJobResult:on success,ExchangeFailedReason:on fail
+	 */
+	public Result2<Object, ExchangeFailedReason> onParallelSuccess(Job job) {
+		return handleJobBased(job, jobHandler->{
+			jobHandler.onParallelSuccess(job);
+			return null;
+		});
+	}
 }

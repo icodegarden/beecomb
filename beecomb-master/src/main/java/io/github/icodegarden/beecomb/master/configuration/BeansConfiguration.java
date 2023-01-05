@@ -104,31 +104,31 @@ public class BeansConfiguration {
 	/**
 	 * 由于配置前缀不同，覆盖
 	 */
-//	@Bean
-//	public ZooKeeperHolder zooKeeperHolder() {
-//		Config config = new ZooKeeperHolder.Config(instanceProperties.getZookeeper().getConnectString(),
-//				instanceProperties.getZookeeper().getSessionTimeout(),
-//				instanceProperties.getZookeeper().getConnectTimeout());
-//		config.setAclAuth(instanceProperties.getZookeeper().getAclAuth());
-//		return new ZooKeeperHolder(config);
-//	}
+	@Bean
+	public ZooKeeperHolder zooKeeperHolder() {
+		Config config = new ZooKeeperHolder.Config(instanceProperties.getZookeeper().getConnectString(),
+				instanceProperties.getZookeeper().getSessionTimeout(),
+				instanceProperties.getZookeeper().getConnectTimeout());
+		config.setAclAuth(instanceProperties.getZookeeper().getAclAuth());
+		return new ZooKeeperHolder(config);
+	}
 
 	/**
 	 * 由于配置前缀不同，覆盖
 	 */
-//	@Bean
-//	public CuratorFramework curatorFramework() {
-//		ZooKeeper zookeeper = instanceProperties.getZookeeper();
-//
-//		RetryPolicy retryPolicy = new RetryForever(3000);
-//		ZKClientConfig zkClientConfig = new ZKClientConfig();
-//		zkClientConfig.setProperty(ZKClientConfig.ZOOKEEPER_SERVER_PRINCIPAL,
-//				"zookeeper/" + zookeeper.getConnectString());
-//		CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeper.getConnectString(),
-//				zookeeper.getSessionTimeout(), zookeeper.getConnectTimeout(), retryPolicy, zkClientConfig);
-//		client.start();
-//		return client;
-//	}
+	@Bean
+	public CuratorFramework curatorFramework() {
+		ZooKeeper zookeeper = instanceProperties.getZookeeper();
+
+		RetryPolicy retryPolicy = new RetryForever(3000);
+		ZKClientConfig zkClientConfig = new ZKClientConfig();
+		zkClientConfig.setProperty(ZKClientConfig.ZOOKEEPER_SERVER_PRINCIPAL,
+				"zookeeper/" + zookeeper.getConnectString());
+		CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeper.getConnectString(),
+				zookeeper.getSessionTimeout(), zookeeper.getConnectTimeout(), retryPolicy, zkClientConfig);
+		client.start();
+		return client;
+	}
 
 	@Bean
 	public InstanceRegistry<ZooKeeperRegisteredInstance> zooKeeperInstanceRegistry(ZooKeeperHolder zooKeeperHolder) {

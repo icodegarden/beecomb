@@ -51,10 +51,6 @@ public class InstanceProperties {
 		private String bindIp = SystemUtils.getIp();
 		private int port = 19898;
 		/**
-		 * 不健康的sql执行时间
-		 */
-		private long sqlUnhealthMillis = 100;
-		/**
 		 * 影响nioServer关闭时等待已接收处理中的任务完毕
 		 */
 		private long nioServerShutdownBlockingTimeoutMillis = 30000;

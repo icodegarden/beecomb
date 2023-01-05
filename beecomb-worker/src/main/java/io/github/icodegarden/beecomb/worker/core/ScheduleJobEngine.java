@@ -218,6 +218,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			ParallelExchangeResult result = parallelLoadBalanceExchanger.exchange(dto,
 					executableJobBO.getExecuteTimeout(), executorInstanceLoadBalance, config);
 
+			runIfParallelSuccess(executorInstanceLoadBalance, job, result);
+
 			/**
 			 * 所有分片结果一致都是end则才真的end<br>
 			 * 所有分片全部成功才视为成功，否则会收到PartInstanceFailedExchangeException
