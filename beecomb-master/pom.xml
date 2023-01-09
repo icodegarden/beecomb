@@ -137,6 +137,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>2.7.7</version><!-- 默认已使用spring-boot-maven-plugin:3.0.1 需要JDK17 -->
 				<executions>
 					<execution>
 						<goals>
