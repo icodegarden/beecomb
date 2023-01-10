@@ -2,39 +2,24 @@ package io.github.icodegarden.beecomb.master.service;
 
 import java.net.InetSocketAddress;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
-import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestWorkerDTO;
-import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableExchanger;
-import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
-import io.github.icodegarden.commons.exchange.LoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
-import io.github.icodegarden.commons.exchange.exception.RequesterRejectedExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.DefaultMetricsInstance;
-import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.exchange.nio.NioProtocol;
-import io.github.icodegarden.commons.lang.metrics.Metrics;
-import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
 import io.github.icodegarden.commons.lang.registry.DefaultRegisteredInstance;
-import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
 import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.commons.nio.SerializerType;
 import io.github.icodegarden.commons.nio.netty.NettyNioClient;
 import io.github.icodegarden.commons.nio.pool.NioClientPool;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
 
 /**
  * 
@@ -45,7 +30,9 @@ import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInsta
 public class InstanceRemoteService {
 
 	private NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Master.getRoleName(), (ip, port) -> {
-		return new NettyNioClient(new InetSocketAddress(ip, port));
+		NettyNioClient nioClient = new NettyNioClient(new InetSocketAddress(ip, port));
+		nioClient.setSerializerType(SerializerType.Hessian2);
+		return nioClient;
 	});
 	private NioProtocol protocol = new NioProtocol(nioClientPool);
 
@@ -57,7 +44,7 @@ public class InstanceRemoteService {
 	public InstanceRemoteService(InstanceProperties instanceProperties) {
 		this.exchangeTimeoutMillis = instanceProperties.getJob().getDispatchTimeoutMillis();
 	}
-	
+
 	public NioProtocol getProtocol() {
 		return protocol;
 	}
@@ -65,6 +52,7 @@ public class InstanceRemoteService {
 	/**
 	 * 不会抛出异常<br>
 	 * 会自动重试探测直到次数满
+	 * 
 	 * @return
 	 */
 	public boolean isLiveness(String ip, int port) {

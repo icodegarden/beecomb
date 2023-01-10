@@ -1,5 +1,7 @@
 package io.github.icodegarden.beecomb.worker.configuration;
 
+import java.lang.reflect.Field;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 
 import org.apache.curator.RetryPolicy;
@@ -12,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper.NamesWatchedZooKeeperExecutorInstanceDiscovery;
@@ -20,6 +23,7 @@ import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload.Config;
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties.Overload;
+import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine;
 import io.github.icodegarden.beecomb.worker.core.DelayJobEngine;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.core.ScheduleJobEngine;
@@ -29,6 +33,7 @@ import io.github.icodegarden.beecomb.worker.server.WorkerServer;
 import io.github.icodegarden.beecomb.worker.service.DelayJobService;
 import io.github.icodegarden.beecomb.worker.service.JobService;
 import io.github.icodegarden.beecomb.worker.service.ScheduleJobService;
+import io.github.icodegarden.commons.exchange.nio.NioProtocol;
 import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
 import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
@@ -40,6 +45,11 @@ import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
 import io.github.icodegarden.commons.lang.tuple.NullableTuples;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
+import io.github.icodegarden.commons.nio.SerializerType;
+import io.github.icodegarden.commons.nio.java.ClientNioSelector;
+import io.github.icodegarden.commons.nio.java.JavaNioClient;
+import io.github.icodegarden.commons.nio.pool.NioClientPool;
+import io.github.icodegarden.commons.springboot.SpringContext;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
 import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
@@ -185,16 +195,60 @@ public class BeansConfiguration {
 
 	@Bean("delay")
 	public JobEngine delayJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage) {
-		return new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage) throws Exception {
+		DelayJobEngine jobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
 				instanceProperties);
+		/**
+		 * TODO remove
+		 */
+		if(System.getProperty("executor.serializer.kryo") != null) {
+			log.warn("executor use serializer of kryo");
+			
+			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
+				ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector.openNew(NodeRole.Worker.getRoleName());
+				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
+				nioClient.setSerializerType(SerializerType.Kryo);
+				return nioClient;
+			});
+			NioProtocol protocol = new NioProtocol(nioClientPool);
+			
+			Field field = AbstractJobEngine.class.getDeclaredField("protocol");
+			boolean accessible = field.isAccessible();
+			field.setAccessible(true);
+			field.set(jobEngine, protocol);
+			field.setAccessible(accessible);
+		}
+		
+		return jobEngine;
 	}
 
 	@Bean("schedule")
 	public JobEngine scheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage) {
-		return new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, scheduleJobStorage,
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage) throws Exception {
+		ScheduleJobEngine jobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, scheduleJobStorage,
 				instanceProperties);
+		/**
+		 * TODO remove
+		 */
+		if(System.getProperty("executor.serializer.kryo") != null) {
+			log.warn("executor use serializer of kryo");
+			
+			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
+				ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector.openNew(NodeRole.Worker.getRoleName());
+				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
+				nioClient.setSerializerType(SerializerType.Kryo);
+				return nioClient;
+			});
+			NioProtocol protocol = new NioProtocol(nioClientPool);
+			
+			Field field = AbstractJobEngine.class.getDeclaredField("protocol");
+			boolean accessible = field.isAccessible();
+			field.setAccessible(true);
+			field.set(jobEngine, protocol);
+			field.setAccessible(accessible);
+		}
+		
+		return jobEngine;
 	}
 
 	@Bean

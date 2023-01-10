@@ -25,6 +25,7 @@ import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
 import io.github.icodegarden.commons.lang.result.Result3;
 import io.github.icodegarden.commons.lang.result.Results;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.commons.nio.SerializerType;
 import io.github.icodegarden.commons.nio.java.ClientNioSelector;
 import io.github.icodegarden.commons.nio.java.JavaNioClient;
 import io.github.icodegarden.commons.nio.pool.NioClientPool;
@@ -39,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown {
 	static NioProtocol protocol_for_Test;
 
-	private static final ClientNioSelector CLIENT_NIOSELECTOR = ClientNioSelector
+	private static final ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector
 			.openNew(NodeRole.Worker.getRoleName());
 
 	protected NioProtocol protocol;
@@ -61,8 +62,10 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 		if (protocol_for_Test != null) {
 			this.protocol = protocol_for_Test;
 		} else {
-			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Master.getRoleName(), (ip, port) -> {
-				return new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIOSELECTOR);
+			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
+				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
+				nioClient.setSerializerType(SerializerType.Hessian2);
+				return nioClient;
 			});
 			this.protocol = new NioProtocol(nioClientPool);
 		}
@@ -87,10 +90,10 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 		 * 容错
 		 */
 		JobTrigger jobTrigger = jobQueue.getJobTrigger(job.getId());
-		if(jobTrigger != null) {
+		if (jobTrigger != null) {
 			return Results.of(true, job, jobTrigger, null);
 		}
-		
+
 		if (!metricsOverload.incrementOverload(job)) {
 			return Results.of(false, job, null,
 					new ExceedOverloadJobEngineException("metrics will overload", metricsOverload.getLocalMetrics()));
@@ -139,7 +142,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 		}
 		return b;
 	}
-	
+
 	protected void runIfParallelSuccess(ExecutorInstanceLoadBalance executorInstanceLoadBalance, Job job,
 			ParallelExchangeResult result) {
 		/**
@@ -159,7 +162,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			 * 设置有意义的参数
 			 */
 			job.setShardTotal(result.getShardTotal());
-			
+
 			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_ONPARALLELSUCCESS, job);
 			loadBalanceExchanger.exchange(dto, job.getExecuteTimeout());
 		}
