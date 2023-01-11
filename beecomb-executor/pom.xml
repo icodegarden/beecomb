@@ -34,17 +34,17 @@
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-zookeeper</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-exchange</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-nio-java</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		
 		<dependency>

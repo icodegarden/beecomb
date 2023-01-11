@@ -33,27 +33,27 @@
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-mybatis</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-exchange</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-nio-netty</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-zookeeper</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-springboot_2.5.5</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		
 		<dependency>

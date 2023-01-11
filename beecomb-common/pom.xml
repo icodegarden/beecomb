@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-lang</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		
 		<dependency>

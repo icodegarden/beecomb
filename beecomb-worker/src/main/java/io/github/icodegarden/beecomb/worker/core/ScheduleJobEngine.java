@@ -175,9 +175,12 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			}
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
 					SystemUtils.now());
-			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
-					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e)
-					.nextTrigAt(nextTrigAt).build();
+			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()//
+					.jobId(executableJobBO.getId())//
+					.noQualifiedInstanceExchangeException(e)//
+					.lastTrigAt(trigAt)//
+					.nextTrigAt(nextTrigAt)//
+					.build();
 			Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
@@ -231,9 +234,15 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
 					SystemUtils.now());
-			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
-					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */).lastTrigAt(trigAt)
-					.end(end).nextTrigAt(nextTrigAt).build();
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder()//
+					.jobId(executableJobBO.getId())//
+					.executorIp("parallel")//
+					.executorPort(0)//
+					.lastExecuteReturns(null/* 并行任务不关注返回结果 */)//
+					.end(end)//
+					.lastTrigAt(trigAt)//
+					.nextTrigAt(nextTrigAt)//
+					.build();
 			return update;
 		} else {
 			CandidatesSwitchableLoadBalanceExchanger loadBalanceExchanger = new CandidatesSwitchableLoadBalanceExchanger(
@@ -248,18 +257,27 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
 					SystemUtils.now());
-			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
-					.executorIp(instance.getIp()).executorPort(instance.getPort())
-					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(trigAt)
-					.end(executeJobResult.isEnd()).nextTrigAt(nextTrigAt).build();
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder()//
+					.jobId(executableJobBO.getId())//
+					.executorIp(instance.getIp())//
+					.executorPort(instance.getPort())//
+					.lastExecuteReturns(executeJobResult.getExecuteReturns())//
+					.end(executeJobResult.isEnd())//
+					.lastTrigAt(trigAt)//
+					.nextTrigAt(nextTrigAt)//
+					.build();
 			return update;
 		}
 	}
 
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
 		LocalDateTime nextTrigAt = job.getSchedule().calcNextTrigAtOnTriggered(trigAt, SystemUtils.now());
-		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).nextTrigAt(nextTrigAt).build();
+		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder()//
+				.jobId(job.getId())//
+				.exception(e)//
+				.lastTrigAt(trigAt)//
+				.nextTrigAt(nextTrigAt)//
+				.build();
 		Result2<Boolean, RuntimeException> result2 = scheduleJobService.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {

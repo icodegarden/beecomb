@@ -129,7 +129,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 		}
 
 		try {
-			UpdateOnExecuteSuccessDTO update = exchange(executableJobBO);
+			UpdateOnExecuteSuccessDTO update = exchange(executableJobBO, trigAt);
 			Result1<RuntimeException> result1 = delayJobService.updateOnExecuteSuccess(update);
 			if (!result1.isSuccess()) {
 				/**
@@ -148,8 +148,11 @@ public class DelayJobEngine extends AbstractJobEngine {
 						e.getCandidates());
 			}
 
-			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()
-					.jobId(executableJobBO.getId()).lastTrigAt(trigAt).noQualifiedInstanceExchangeException(e).build();
+			UpdateOnNoQualifiedExecutorDTO update = UpdateOnNoQualifiedExecutorDTO.builder()//
+					.jobId(executableJobBO.getId())//
+					.noQualifiedInstanceExchangeException(e)//
+					.lastTrigAt(trigAt)//
+					.build();
 			Result2<Boolean, RuntimeException> result2 = delayJobService.updateOnNoQualifiedExecutor(update);
 			if (!result2.isSuccess()) {
 				log.error("WARNING ex on update job", result2.getT2());
@@ -171,7 +174,8 @@ public class DelayJobEngine extends AbstractJobEngine {
 		}
 	}
 
-	private UpdateOnExecuteSuccessDTO exchange(ExecutableJobBO executableJobBO) throws ExchangeException {
+	private UpdateOnExecuteSuccessDTO exchange(ExecutableJobBO executableJobBO, LocalDateTime trigAt)
+			throws ExchangeException {
 		final String executorName = executableJobBO.getExecutorName();
 		final String jobHandlerName = executableJobBO.getJobHandlerName();
 
@@ -193,9 +197,13 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 			runIfParallelSuccess(executorInstanceLoadBalance, job, result);
 
-			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
-					.executorIp("parallel").executorPort(0).lastExecuteReturns(null/* 并行任务不关注返回结果 */)
-					.lastTrigAt(SystemUtils.now()).build();
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder()//
+					.jobId(executableJobBO.getId())//
+					.executorIp("parallel")//
+					.executorPort(0)//
+					.lastExecuteReturns(null/* 并行任务不关注返回结果 */)//
+					.lastTrigAt(trigAt)//
+					.build();
 
 			return update;
 		} else {
@@ -211,17 +219,24 @@ public class DelayJobEngine extends AbstractJobEngine {
 			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
-			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder().jobId(executableJobBO.getId())
-					.executorIp(instance.getIp()).executorPort(instance.getPort())
-					.lastExecuteReturns(executeJobResult.getExecuteReturns()).lastTrigAt(SystemUtils.now()).build();
+			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder()//
+					.jobId(executableJobBO.getId())//
+					.executorIp(instance.getIp())//
+					.executorPort(instance.getPort())//
+					.lastExecuteReturns(executeJobResult.getExecuteReturns())//
+					.lastTrigAt(trigAt)//
+					.build();
 
 			return update;
 		}
 	}
 
 	private void onFailed(ExecutableJobBO job, LocalDateTime trigAt, Exception e) {
-		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder().jobId(job.getId()).exception(e)
-				.lastTrigAt(trigAt).build();
+		UpdateOnExecuteFailedDTO update = UpdateOnExecuteFailedDTO.builder()//
+				.jobId(job.getId())//
+				.exception(e)//
+				.lastTrigAt(trigAt)//
+				.build();
 		Result2<Boolean, RuntimeException> result2 = delayJobService.updateOnExecuteFailed(update);
 
 		if (!result2.isSuccess()) {

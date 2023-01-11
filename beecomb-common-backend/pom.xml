@@ -28,17 +28,17 @@
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-springboot_2.5.5</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-zookeeper</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
 			<artifactId>commons-shardingsphere</artifactId>
-			<version>${commons-version}</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mybatis.spring.boot</groupId>
