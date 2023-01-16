@@ -125,7 +125,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 	void runJob(ExecutableJobBO executableJobBO) {
 		LocalDateTime trigAt = SystemUtils.now();
 		if (log.isInfoEnabled()) {
-			log.info("run delay job:{}", executableJobBO);
+			log.info("run delay job:{}", executableJobBO.toStringSimple());
 		}
 
 		try {
@@ -265,7 +265,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 				 * 如果失败则等待任务的恢复机制
 				 */
 				JobEngineException exception = result3.getT3();
-				log.warn("job reEnQueue not success, reason:{}, job:{}", exception.getReason(), job);
+				log.warn("job reEnQueue not success, reason:{}, job:{}", exception.getReason(), job.toStringSimple());
 			}
 		} else {
 			/**

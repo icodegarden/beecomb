@@ -154,7 +154,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	boolean runJob(ExecutableJobBO executableJobBO) {
 		LocalDateTime trigAt = SystemUtils.now();
 		if (log.isInfoEnabled()) {
-			log.info("run schedule job:{}", executableJobBO);
+			log.info("run schedule job:{}", executableJobBO.toStringSimple());
 		}
 
 		try {

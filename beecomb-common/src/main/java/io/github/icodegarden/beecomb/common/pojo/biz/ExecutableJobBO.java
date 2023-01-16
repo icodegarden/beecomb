@@ -368,6 +368,11 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.schedule = schedule;
 	}
 
+	public String toStringSimple() {
+		return "[id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
+				+ executorName + ", jobHandlerName=" + jobHandlerName + ", parallel=" + parallel + "]";
+	}
+
 	@Override
 	public String toString() {
 		return "ExecutableJobBO [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
