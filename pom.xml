@@ -5,7 +5,7 @@
 	
 	<groupId>io.github.icodegarden</groupId>	
 	<artifactId>beecomb</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	
 	<packaging>pom</packaging>
 	
@@ -38,7 +38,7 @@
     </developers>
 	
 	<properties>
-        <commons.version>1.2.0</commons.version>
+        <commons.version>1.2.1</commons.version>
     </properties>
 	
 	<modules>

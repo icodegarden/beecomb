@@ -70,6 +70,7 @@ public class JobReceiver {
 			}
 			return Results.of(true, job, null);
 		} catch (ExchangeException e) {
+			log.warn("exchange failed on dispatch job after receive, job:{}", job, e);
 			// dispatch失败不影响任务的成功接收
 			return Results.of(true, job, new ServerErrorCodeException("dispatch-job-after-receive", e.getMessage(), e));
 		}
@@ -95,7 +96,7 @@ public class JobReceiver {
 				try {
 					jobRemoteService.enQueue(job);
 				} catch (ExchangeException e) {
-					log.warn("exchange failed on dispatch job after receive", e);
+					log.warn("exchange failed on dispatch job after receive, job:{}", job, e);
 				}
 			});
 			return Results.of(true, job, null);

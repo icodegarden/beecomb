@@ -59,7 +59,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * worker需要：<br>
- * 自动注册实例{@link BeansConfiguration#zooKeeperInstanceRegister},{@link ZooKeeperInstanceRegistry#onNewZooKeeper}<br>
+ * 自动注册实例{@link BeansConfiguration#zooKeeperInstanceRegistry},{@link ZooKeeperInstanceRegistry#onNewZooKeeper}<br>
  * 
  * 定时刷新executor的度量数据缓存{@link BeansConfiguration#zooKeeperInstanceMetrics(ZooKeeperHolder)}<br>
  * 

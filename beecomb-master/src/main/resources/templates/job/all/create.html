@@ -97,7 +97,7 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label is-required">任务类型：</label>
                         <div class="col-sm-8">
-							<select name="type" required class="form-control">
+							<select id="typeSelect" name="type" required class="form-control">
 								<option th:text="delay" th:value="Delay"></option>
 								<option th:text="schedule" th:value="Schedule"></option>
 							</select>
@@ -105,8 +105,27 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">任务参数：</label>
+                        <div class="col-sm-8">
+                            <textarea name="params" placeholder="请输入" rows="6" class="form-control" maxlength="65535"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">任务描述：</label>
+                        <div class="col-sm-8">
+                            <textarea name="desc" placeholder="请输入" rows="6" class="form-control" maxlength="200"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             
+            <span id="delaySpan">
             <h4 class="form-header h4">delay任务信息</h4>
             <div class="row">
             	<div class="col-sm-6">
@@ -155,7 +174,9 @@
                     </div>
                 </div>
             </div>
+            </span>
             
+            <span id="scheduleSpan" hidden="true">
             <h4 class="form-header h4">schedule任务信息</h4>
             <div class="row">
             	<div class="col-sm-6">
@@ -185,6 +206,8 @@
                     </div>
                 </div>
             </div>
+            </span>
+            
         </form>
     </div>
       
@@ -197,6 +220,19 @@
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: select2-js" />
 	<script>
+		$("#typeSelect").change(function() {
+			var v = $('#typeSelect').val();
+			if(v == 'Delay'){
+				$("#delaySpan").show();
+				$("#scheduleSpan").hide();
+			}
+			if(v == 'Schedule'){
+				$("#delaySpan").hide();
+				$("#scheduleSpan").show();
+			}
+		});
+		//--------------------------------------
+		
 		var prefix = ctx + "api/job";
 	
         $("#form-user-add").validate({
