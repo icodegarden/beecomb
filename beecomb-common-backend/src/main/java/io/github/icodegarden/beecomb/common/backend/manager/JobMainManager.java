@@ -77,7 +77,7 @@ public class JobMainManager {
 
 		Page<JobMainDO> page = (Page<JobMainDO>) jobMainMapper.findAll(query);
 
-		Page<JobMainVO> p = PageHelperUtils.ofPage(page, jobDO -> JobMainVO.of(jobDO));
+		Page<JobMainVO> p = PageHelperUtils.ofPageNoCountAdapt(page, jobDO -> JobMainVO.of(jobDO));
 		return p;
 	}
 

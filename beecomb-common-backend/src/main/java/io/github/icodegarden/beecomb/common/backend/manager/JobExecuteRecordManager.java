@@ -59,7 +59,7 @@ public class JobExecuteRecordManager {
 
 		Page<JobExecuteRecordDO> page = (Page<JobExecuteRecordDO>) jobExecuteRecordMapper.findAll(query);
 
-		Page<JobExecuteRecordVO> p = PageHelperUtils.ofPage(page, one -> JobExecuteRecordVO.of(one));
+		Page<JobExecuteRecordVO> p = PageHelperUtils.ofPageNoCountAdapt(page, one -> JobExecuteRecordVO.of(one));
 		return p;
 	}
 
