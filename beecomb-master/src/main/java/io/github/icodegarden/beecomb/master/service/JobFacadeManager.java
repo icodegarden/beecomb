@@ -223,6 +223,19 @@ public class JobFacadeManager extends AbstractBackendJobService {
 		JobMainQuery jobQuery = JobMainQuery.builder().jobIds(jobIds).orderBy("a.priority desc")// 此时排序已不重要，但也不影响性能
 				.size(jobIds.size()).with(JobMainQuery.With.WITH_EXECUTABLE).build();
 		List<JobMainVO> vos = jobMainManager.list(jobQuery);
+		
+		/**
+		 * 若size不一样，则说明任务已不存在，删除pending多余部分
+		 */
+		if(vos.size() != list.size()) {
+			List<Long> ids = vos.stream().map(JobMainVO::getId).collect(Collectors.toList());
+			for(PendingRecoveryJobVO one:list) {
+				if(!ids.contains(one.getJobId())) {
+					pendingRecoveryJobManager.delete(one.getJobId());
+				}
+			}
+		}
+		
 		if (vos.isEmpty()) {
 			return Collections.emptyList();
 		}
