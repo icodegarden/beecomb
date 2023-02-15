@@ -14,7 +14,6 @@ import com.github.pagehelper.PageHelper;
 import io.github.icodegarden.beecomb.common.backend.mapper.PendingRecoveryJobMapper;
 import io.github.icodegarden.beecomb.common.backend.pojo.data.PendingRecoveryJobDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO;
-import io.github.icodegarden.beecomb.common.backend.pojo.persistence.PendingRecoveryJobPO.InsertSelect;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.PendingRecoveryJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreatePendingRecoveryJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.PendingRecoveryJobVO;
@@ -35,7 +34,7 @@ public class PendingRecoveryJobManager {
 		PendingRecoveryJobPO po = new PendingRecoveryJobPO();
 		BeanUtils.copyProperties(dto, po);
 		po.setCreatedAt(SystemUtils.now());
-		po.setUpdatedAt(SystemUtils.now());
+		po.setUpdatedAt(po.getCreatedAt());
 
 		pendingRecoveryJobMapper.add(po);
 	}
@@ -74,7 +73,8 @@ public class PendingRecoveryJobManager {
 	 * @return
 	 */
 	public int insertSelectByScan(LocalDateTime nextTrigAtLt) {
-		InsertSelect insertSelect = PendingRecoveryJobPO.InsertSelect.builder().nextTrigAtLt(nextTrigAtLt).build();
+		PendingRecoveryJobPO.InsertSelect insertSelect = PendingRecoveryJobPO.InsertSelect.builder()
+				.nextTrigAtLt(nextTrigAtLt).build();
 		return pendingRecoveryJobMapper.insertSelectByScan(insertSelect);
 	}
 
@@ -85,8 +85,8 @@ public class PendingRecoveryJobManager {
 	 * @return
 	 */
 	public int insertSelectByInstance(String queuedAtInstance) {
-		InsertSelect insertSelect = PendingRecoveryJobPO.InsertSelect.builder().queuedAtInstance(queuedAtInstance)
-				.build();
+		PendingRecoveryJobPO.InsertSelect insertSelect = PendingRecoveryJobPO.InsertSelect.builder()
+				.queuedAtInstance(queuedAtInstance).build();
 		return pendingRecoveryJobMapper.insertSelectByInstance(insertSelect);
 	}
 

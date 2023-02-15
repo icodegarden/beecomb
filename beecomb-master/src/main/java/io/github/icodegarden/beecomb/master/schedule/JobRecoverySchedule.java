@@ -100,6 +100,11 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 				dto.setRecoveryAt(SystemUtils.now());
 				try {
 					remoteService.enQueue(job);
+					
+					try {
+						Thread.sleep(300);//FIXME 避免有大批已过期的任务需要恢复时，Executor被瞬间压力？ 
+					} catch (InterruptedException e) {
+					}
 
 					dto.setSuccess(true);
 					dto.setDesc("");

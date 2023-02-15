@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.icodegarden.beecomb.master.mapper.UpdateNextTrigAtMapper">
+
+	<select id="countDelay" resultType="Long">
+		select count(0) from job_main a join delay_job b on a.id = b.job_id 
+		where a.is_end=0 and date_add(a.created_at,interval b.delay/1000 SECOND) &lt; now()
+	</select>
+	
+<!-- 	<select id="listIdsDelay" resultType="Long"> -->
+<!-- 		select a.id from job_main a join delay_job b on a.id = b.job_id  -->
+<!-- 		where a.is_end=0 and date_add(a.created_at,interval b.delay/1000 SECOND) &lt; now() -->
+<!-- 		limit ${size} -->
+<!-- 	</select> -->
+	
+<!-- 	and date_add(a.created_at,interval b.delay/1000 SECOND) &lt; now() -->
+	<update id="updateDelay">
+		update job_main a join delay_job b on a.id = b.job_id 
+		set a.next_trig_at = date_add(a.created_at,interval b.delay/1000 SECOND) 
+		where a.is_end=0 
+	</update>
+
+</mapper>

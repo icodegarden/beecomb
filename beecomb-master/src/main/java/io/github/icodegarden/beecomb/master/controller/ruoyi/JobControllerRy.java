@@ -30,13 +30,12 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Delay;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO.Schedule;
+import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.api.CreateJobApiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.api.UpdateJobApiDTO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.openapi.CreateJobOpenapiVO;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.beecomb.master.service.JobLocalService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.commons.lang.query.BaseQuery;
@@ -57,8 +56,6 @@ public class JobControllerRy extends BaseControllerRy {
 
 	@Autowired
 	private JobMainManager jobMainManager;
-	@Autowired
-	private JobFacadeManager jobFacadeManager;
 	@Autowired
 	private JobReceiver jobReceiver;
 	@Autowired
@@ -134,20 +131,18 @@ public class JobControllerRy extends BaseControllerRy {
 	@PostMapping(value = "api/job/update")
 	public ResponseEntity<AjaxResult> updateJob(@Validated UpdateJobApiDTO dto) {
 		try {
-			ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(dto.getId());
+			UpdateJobDTO updateJobDTO = new UpdateJobDTO();
+			BeanUtils.copyProperties(dto, updateJobDTO);
 
-			UpdateJobOpenapiDTO updateJobOpenapiDTO = new UpdateJobOpenapiDTO();
-			BeanUtils.copyProperties(dto, updateJobOpenapiDTO);
-
-			UpdateJobOpenapiDTO.Delay delay = new UpdateJobOpenapiDTO.Delay();
+			UpdateJobDTO.Delay delay = new UpdateJobDTO.Delay();
 			BeanUtils.copyProperties(dto, delay);
-			updateJobOpenapiDTO.setDelay(delay);
+			updateJobDTO.setDelay(delay);
 
-			UpdateJobOpenapiDTO.Schedule schedule = new UpdateJobOpenapiDTO.Schedule();
+			UpdateJobDTO.Schedule schedule = new UpdateJobDTO.Schedule();
 			BeanUtils.copyProperties(dto, schedule);
-			updateJobOpenapiDTO.setSchedule(schedule);
+			updateJobDTO.setSchedule(schedule);
 
-			boolean success = jobLocalService.update(updateJobOpenapiDTO, one);
+			boolean success = jobLocalService.updateByApi(updateJobDTO);
 			return ResponseEntity.ok(success ? success() : error());
 		} catch (IllegalArgumentException e) {
 			/**
@@ -205,19 +200,7 @@ public class JobControllerRy extends BaseControllerRy {
 
 	@PostMapping("api/job/{id}/delete")
 	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
-		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(id);
-
-		if (one == null) {
-			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
-		}
-		/**
-		 * 校验归属权
-		 */
-		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
-			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
-		}
-
-		boolean delete = jobLocalService.delete(one);
+		boolean delete = jobLocalService.delete(id);
 		if (!delete) {
 			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "FORBIDDEN");
 		}

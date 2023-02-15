@@ -31,6 +31,7 @@ import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobSe
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 
@@ -94,10 +95,10 @@ public class JobFacadeManager extends AbstractBackendJobService {
 		pendingRecoveryJobManager.create(createPendingRecoveryJobDTO);
 	}
 
-	@Transactional
-	public boolean update(UpdateJobOpenapiDTO dto) {
-		return update(dto, false);
-	}
+//	@Transactional
+//	public boolean update(UpdateJobOpenapiDTO dto) {
+//		return update(dto, false);
+//	}
 
 	/**
 	 * 
@@ -106,14 +107,16 @@ public class JobFacadeManager extends AbstractBackendJobService {
 	 * @return
 	 */
 	@Transactional
-	public boolean update(UpdateJobOpenapiDTO dto, boolean removedQueue) {
+	public boolean update(UpdateJobDTO dto, boolean removedQueue) {
 		dto.validate();
-
-		boolean update = false;
-
 		UpdateJobMainDTO updateJobMainDTO = new UpdateJobMainDTO();
 		BeanUtils.copyProperties(dto, updateJobMainDTO);
+		
+		boolean update = false;
 		if (removedQueue) {
+			/**
+			 * 任务被removedQueue时需要更新为null，因为关系到重新进队列的时间计算
+			 */
 			updateJobMainDTO.setNextTrigAtNull(true);
 		}
 		if (updateJobMainDTO.shouldUpdate()) {

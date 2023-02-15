@@ -95,7 +95,7 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	@Override
 	public double ofOverload() {
 		double value = getWeight() * rateOfSecond();
-		value = Math.max(value, getWeight() * 0.1);//最小不能低于10倍容量，以免有大量的超低频率任务时内存溢出
+		value = Math.max(value, getWeight() * 0.1);// 最小不能低于10倍容量，以免有大量的超低频率任务时内存溢出
 		if (Boolean.TRUE.equals(parallel)) {
 			/**
 			 * 由于该类是给Worker使用的，并行任务执行时需要对每个分片都使用独立线程，因此*maxParallelShards，使得Worker的用户配置的任务负载数相匹配
@@ -124,10 +124,19 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	 * 计算出下一次任务触发时间<br>
 	 * <h1>只适用于OnEnQueue</h1> <br>
 	 * 
-	 * delay类型：时间可能早于当前<br>
-	 * nextTrigAt 是null，说明任务从未进过队列，时间=createdAt + delay<br>
-	 * 否则说明任务进过队列但是需要恢复，时间=nextTrigAt，可能早于当前<br>
-	 * 
+	 * delay类型：结果时间可能早于当前<br>
+	 * 任务创建时=创建或修改时间（他们2个相等）+延迟<br>
+	 * 修改其他字段（不会引起重进队列）=若此后worker重启，重进队列时间要按创建时间+延迟（不能是修改时间+延迟）或 nextTrigAt<br>
+	 * 修改时间字段（需要重进队列）=修改时间+延迟（不能是创建时间+延迟，上次得出的nextTrigAt必须清空）<br>
+	 * 重进队列=修改时间+延迟 或 上次得出的nextTrigAt<br>
+	 *
+	 * 综上总结：<br>
+	 * 任务创建时=修改时间+延迟<br>
+	 * 修改其他字段（不会引起重进队列）=nextTrigAt<br>
+	 * 修改时间字段（需要重进队列）=修改时间+延迟<br>
+	 * 重进队列=nextTrigAt<br>
+	 * 见本方法代码实现<br>
+	 *
 	 * <br>
 	 * schedule类型：{@link ScheduleBO#calcNextTrigAt()}<br>
 	 * 
@@ -137,8 +146,15 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	public LocalDateTime calcNextTrigAtOnEnQueue() {
 		if (delay != null) {
 			if (nextTrigAt == null) {
-				return getUpdatedAt().plus(delay.getDelay(), ChronoUnit.MILLIS);
+				/*
+				 * 创建任务 或 修改时间字段
+				 */
+				return updatedAt.plus(delay.getDelay(), ChronoUnit.MILLIS);
 			}
+			/*
+			 * 重进队列<br>
+			 * 特别说明：worker重启时，
+			 */
 			return nextTrigAt;
 		}
 		if (schedule != null) {
@@ -369,8 +385,8 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 	}
 
 	public String toStringSimple() {
-		return "[id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
-				+ executorName + ", jobHandlerName=" + jobHandlerName + ", parallel=" + parallel + "]";
+		return "[id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName=" + executorName
+				+ ", jobHandlerName=" + jobHandlerName + ", parallel=" + parallel + "]";
 	}
 
 	@Override

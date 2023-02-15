@@ -52,7 +52,7 @@ public class JobMainManager {
 
 		po.setCreatedBy(SecurityUtils.getUsername());
 		po.setCreatedAt(SystemUtils.now());
-		po.setUpdatedAt(SystemUtils.now());// 防止时差
+		po.setUpdatedAt(po.getCreatedAt());// 防止时差
 
 		try {
 			jobMainMapper.add(po);
@@ -100,11 +100,19 @@ public class JobMainManager {
 		return JobMainVO.of(jobDO);
 	}
 
+	/**
+	 * 常规更新字段
+	 */
 	public boolean update(UpdateJobMainDTO dto) {
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
-		update.setUpdatedBy(SecurityUtils.getUsername());
-		update.setUpdatedAt(SystemUtils.now());
+		/**
+		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
+		 */
+		if(SecurityUtils.getUsername() != null) {
+			update.setUpdatedBy(SecurityUtils.getUsername());
+			update.setUpdatedAt(SystemUtils.now());	
+		}
 
 		return jobMainMapper.update(update) == 1;
 	}
@@ -132,8 +140,13 @@ public class JobMainManager {
 	public boolean updateOnExecuted(UpdateJobMainOnExecutedDTO dto) {
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
-		update.setUpdatedBy(SecurityUtils.getUsername());
-		update.setUpdatedAt(SystemUtils.now());
+		/**
+		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
+		 */
+		if(SecurityUtils.getUsername() != null) {
+			update.setUpdatedBy(SecurityUtils.getUsername());
+			update.setUpdatedAt(SystemUtils.now());	
+		}
 
 		return jobMainMapper.update(update) == 1;
 	}
@@ -143,8 +156,13 @@ public class JobMainManager {
 
 		Update update = new JobMainPO.Update();
 		BeanUtils.copyProperties(dto, update);
-		update.setUpdatedBy(SecurityUtils.getUsername());
-		update.setUpdatedAt(SystemUtils.now());
+		/**
+		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
+		 */
+		if(SecurityUtils.getUsername() != null) {
+			update.setUpdatedBy(SecurityUtils.getUsername());
+			update.setUpdatedAt(SystemUtils.now());	
+		}
 
 		/**
 		 * 设为已队列
@@ -155,10 +173,15 @@ public class JobMainManager {
 		return jobMainMapper.update(update) == 1;
 	}
 
-	public boolean updateRemoveQueue(Long jobId) {
+	private boolean updateRemoveQueue(Long jobId) {
 		Update update = new JobMainPO.Update();
-		update.setUpdatedBy(SecurityUtils.getUsername());
-		update.setUpdatedAt(SystemUtils.now());
+		/**
+		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
+		 */
+		if(SecurityUtils.getUsername() != null) {
+			update.setUpdatedBy(SecurityUtils.getUsername());
+			update.setUpdatedAt(SystemUtils.now());	
+		}
 
 		update.setQueued(false);
 		update.setNextTrigAtNull(true);

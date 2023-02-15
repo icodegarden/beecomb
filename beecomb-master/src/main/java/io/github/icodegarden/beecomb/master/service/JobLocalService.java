@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
-import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
+import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ServerErrorCodeException;
+import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,7 +28,19 @@ public class JobLocalService {
 	@Autowired
 	private WorkerRemoteService jobRemoteService;
 
-	public boolean update(UpdateJobOpenapiDTO dto, ExecutableJobBO job) throws ErrorCodeException {
+	public boolean updateByApi(UpdateJobDTO dto) throws ErrorCodeException {
+		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(dto.getId());
+
+		if (job == null) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
+		}
+
 		boolean doRemoved = false;
 		/**
 		 * 如果处于队列中需要先移除
@@ -67,15 +80,27 @@ public class JobLocalService {
 
 		return update;
 	}
-	
+
 	/**
 	 * 删除任务
 	 * 
 	 * @param jobId
 	 */
-	public boolean delete(ExecutableJobBO job) throws ErrorCodeException {
+	public boolean delete(Long id) throws ErrorCodeException {
+		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(id);
+
+		if (job == null) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
+		}
+
 		if (job.getEnd()) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "job was end");
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
 		}
 
 		try {
@@ -91,8 +116,8 @@ public class JobLocalService {
 			throw new ServerErrorCodeException("deleteJob", e.getMessage(), e);
 		}
 	}
-	
-	private boolean removeQueueRequiredByUpdateParams(UpdateJobOpenapiDTO dto, ExecutableJobBO job) {
+
+	private boolean removeQueueRequiredByUpdateParams(UpdateJobDTO dto, ExecutableJobBO job) {
 		/**
 		 * 这些参数有变要先移除队列
 		 */

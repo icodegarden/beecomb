@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('修正delay任务执行时间')" />
+	<th:block th:include="include :: select2-css" />
+</head>
+<body>
+    <div class="main-content">
+        <form id="form-user-add" class="form-horizontal">
+            <input name="deptId" type="hidden" id="treeId"/>
+            <h4 class="form-header h4">基本信息</h4>
+            <div class="row">
+<!--             	<div class="col-sm-6"> -->
+<!--                     <div class="form-group"> -->
+<!--                         <label class="col-sm-4 control-label is-required">数量：</label> -->
+<!--                         <div class="col-sm-8"> -->
+<!--                             <input name="limit" class="form-control" type="number" max="10000" required> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+<!--                 <div class="col-sm-6"> -->
+<!--                     <div class="form-group"> -->
+<!--                         <label class="col-sm-4 control-label is-required">姓名：</label> -->
+<!--                         <div class="col-sm-8"> -->
+<!--                             <input name="name" placeholder="请输入姓名" class="form-control" type="text" maxlength="64" required> -->
+<!--                         </div> -->
+<!--                     </div> -->
+<!--                 </div> -->
+            </div>
+            
+        </form>
+    </div>
+      
+    <div class="row">
+        <div class="col-sm-offset-5 col-sm-10">
+            <button type="button" class="btn btn-sm btn-primary" onclick="submitHandler()"><i class="fa fa-check"></i>保 存</button>&nbsp;
+            <button type="button" class="btn btn-sm btn-danger" onclick="closeItem()"><i class="fa fa-reply-all"></i>关 闭 </button>
+        </div>
+    </div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: select2-js" />
+	<script>
+		var prefix = ctx + "api/update_next_trig_at";
+	
+        function submitHandler() {
+        	var data = $("#form-user-add").serializeArray();
+        	$.operate.saveTab(prefix + "/delay", data);
+	    }
+    </script>
+</body>
+</html>

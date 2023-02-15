@@ -51,7 +51,7 @@ public class UserManager {
 		po.setPlatformRole(dto.getPlatformRole());
 		po.setCreatedAt(SystemUtils.now());
 		po.setCreatedBy(SecurityUtils.getUsername());
-		po.setUpdatedAt(SystemUtils.now());
+		po.setUpdatedAt(po.getCreatedAt());
 		po.setUpdatedBy(SecurityUtils.getUsername());
 		try {
 			userMapper.add(po);
@@ -130,8 +130,8 @@ public class UserManager {
 	private void doUpdate(Update update) {
 		int i = 0;
 		try {
-			update.setUpdatedAt(SystemUtils.now());
 			update.setUpdatedBy(SecurityUtils.getUsername());
+			update.setUpdatedAt(SystemUtils.now());
 			i = userMapper.update(update);
 		} catch (DataIntegrityViolationException e) {
 			throw new SQLConstraintException(e);

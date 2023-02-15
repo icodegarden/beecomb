@@ -277,17 +277,27 @@
 		delete from job_main where id = #{id}
 	</delete>
 	
-	<!-- next_trig_at超过给定的时间，实际上已不在队列中 -->
-	<!-- 尽管这里只使用nextTrigAtLt作为识别条件，会把已经end的任务也进行处理，但这是正确的，end的任务也是实际上noQueued，任务恢复不会把end的任务查出 -->
+	<!-- 
+	next_trig_at超过给定的时间，实际上已不在队列中。
+	尽管这里只使用nextTrigAtLt作为识别条件，会把已经end的任务也进行处理，但这是正确的，end的任务也是实际上noQueued，任务恢复不会把end的任务查出 。
+	现在不要清空next_trig_at，否则重进队列将会算错时间。
+	-->
 	<update id="updateToNoQueuedByScan">
 		update job_main 
-		set is_queued = 0, next_trig_at = null, queued_at_instance = null
+		set is_queued = 0, queued_at_instance = null
 		where next_trig_at &lt; #{nextTrigAtLt}
 	</update>
 	
+	<!--
+	原语句
+	update job_main  
+	set is_queued = 0, next_trig_at = null, queued_at_instance = null 
+	where queued_at_instance = #{queuedAtInstance} 
+	现在不要清空next_trig_at，否则重进队列将会算错时间
+	-->
 	<update id="updateToNoQueuedByInstance">
 		update job_main 
-		set is_queued = 0, next_trig_at = null, queued_at_instance = null
+		set is_queued = 0, queued_at_instance = null
 		where queued_at_instance = #{queuedAtInstance}
 	</update>
 	

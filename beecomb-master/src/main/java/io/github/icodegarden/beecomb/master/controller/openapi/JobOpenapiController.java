@@ -188,38 +188,14 @@ public class JobOpenapiController {
 	public ResponseEntity<UpdateJobOpenapiVO> updateJob(@RequestBody @Validated UpdateJobOpenapiDTO dto) {
 		dto.validate();
 
-		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(dto.getId());
-
-		if (one == null) {
-			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
-		}
-		/**
-		 * 校验归属权
-		 */
-		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
-			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
-		}
-
-		boolean success = jobLocalService.update(dto, one);
+		boolean success = jobLocalService.updateByApi(dto);
 		UpdateJobOpenapiVO vo = new UpdateJobOpenapiVO(dto.getId(), success);
 		return ResponseEntity.ok(vo);
 	}
 
 	@DeleteMapping(value = { "openapi/v1/jobs/{id}" })
 	public ResponseEntity<DeleteJobOpenapiVO> deleteJob(@PathVariable Long id) {
-		ExecutableJobBO one = jobFacadeManager.findOneExecutableJob(id);
-
-		if (one == null) {
-			return (ResponseEntity) ResponseEntity.status(404).body("Not Found");
-		}
-		/**
-		 * 校验归属权
-		 */
-		if (!SecurityUtils.getUsername().equals(one.getCreatedBy())) {
-			return (ResponseEntity) ResponseEntity.status(404).body("Not Found, Ownership");
-		}
-
-		boolean success = jobLocalService.delete(one);
+		boolean success = jobLocalService.delete(id);
 		DeleteJobOpenapiVO vo = new DeleteJobOpenapiVO(id, success);
 		return ResponseEntity.ok(vo);
 	}
