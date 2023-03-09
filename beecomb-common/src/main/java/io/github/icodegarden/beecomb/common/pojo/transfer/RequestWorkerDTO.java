@@ -12,6 +12,7 @@ public class RequestWorkerDTO implements Serializable {
 	
 	public static final String METHOD_RECEIVEJOB = "receiveJob";
 	public static final String METHOD_REMOVEJOB = "removeJob";
+	public static final String METHOD_RUNJOB = "runJob";
 	public static final String METHOD_QUEUEDSIZE = "queuedSize";
 	public static final String METHOD_PING = "ping";
 

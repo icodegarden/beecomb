@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
+import io.github.icodegarden.beecomb.common.pojo.view.RunJobVO;
 import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
@@ -71,5 +72,10 @@ public class JobRequestReceiver {
 		}
 
 		return new RemoveQueueVO(job.getId(), remove);
+	}
+	
+	public RunJobVO run(ExecutableJobBO job) {
+		boolean run = jobEngine.run(job);
+		return new RunJobVO(job.getId(), run);
 	}
 }

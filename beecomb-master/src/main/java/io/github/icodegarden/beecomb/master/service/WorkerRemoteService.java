@@ -12,6 +12,7 @@ import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestWorkerDTO;
 import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
+import io.github.icodegarden.beecomb.common.pojo.view.RunJobVO;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
 import io.github.icodegarden.commons.exchange.LoadBalanceExchanger;
@@ -23,6 +24,8 @@ import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.metrics.Metrics;
 import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
 import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
+import io.github.icodegarden.commons.lang.tuple.Tuple2;
+import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
 import lombok.extern.slf4j.Slf4j;
@@ -84,10 +87,10 @@ public class WorkerRemoteService {
 		}
 		if (job.getQueued()) {
 			String ipport = job.getQueuedAtInstance();
-			String[] split = ipport.split(":");
+			Tuple2<String, Integer> tuple2 = resolveIpPort(ipport);
 
-			String ip = split[0];
-			int port = Integer.parseInt(split[1]);
+			String ip = tuple2.getT1();
+			int port = tuple2.getT2();
 
 			RequestWorkerDTO dto = new RequestWorkerDTO(RequestWorkerDTO.METHOD_REMOVEJOB, job);
 			try {
@@ -111,6 +114,25 @@ public class WorkerRemoteService {
 
 		return true;
 	}
+	
+	public boolean runJob(ExecutableJobBO job) throws ExchangeException {
+		if (log.isInfoEnabled()) {
+			log.info("run job.id:{} that queued:{}", job.getId(), job.getQueued());
+		}
+		if (job.getQueued()) {
+			String ipport = job.getQueuedAtInstance();
+			Tuple2<String, Integer> tuple2 = resolveIpPort(ipport);
+
+			String ip = tuple2.getT1();
+			int port = tuple2.getT2();
+
+			RequestWorkerDTO dto = new RequestWorkerDTO(RequestWorkerDTO.METHOD_RUNJOB, job);
+			RunJobVO vo = (RunJobVO) instanceRemoteService.exchangeAssignedInstance(ip, port, dto);
+			return vo.getSuccess();
+		}
+
+		return false;
+	}
 
 	public int queuedSize(String ip, int port) throws ExchangeException {
 		RequestWorkerDTO dto = new RequestWorkerDTO(RequestWorkerDTO.METHOD_QUEUEDSIZE, null);
@@ -129,6 +151,14 @@ public class WorkerRemoteService {
 		});
 
 		return match;
+	}
+	
+	private Tuple2<String, Integer> resolveIpPort(String ipport) {
+		String[] split = ipport.split(":");
+
+		String ip = split[0];
+		int port = Integer.parseInt(split[1]);
+		return Tuples.of(ip, port);
 	}
 
 	/**

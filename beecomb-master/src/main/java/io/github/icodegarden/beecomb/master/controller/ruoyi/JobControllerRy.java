@@ -197,6 +197,32 @@ public class JobControllerRy extends BaseControllerRy {
 		}
 	}
 
+	@PostMapping("api/job/{id}/reEnQueue")
+	public ResponseEntity<AjaxResult> reEnQueueJob(@PathVariable Long id) {
+		try {
+			jobLocalService.reEnQueue(id);
+		} catch (ErrorCodeException e) {
+			/**
+			 * ruoyi只认message字段
+			 */
+			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
+		}
+		return ResponseEntity.ok(success());
+	}
+	
+	@PostMapping("api/job/{id}/run")
+	public ResponseEntity<AjaxResult> runJob(@PathVariable Long id) {
+		try {
+			jobLocalService.runJob(id);
+		} catch (ErrorCodeException e) {
+			/**
+			 * ruoyi只认message字段
+			 */
+			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
+		}
+		return ResponseEntity.ok(success());
+	}
+	
 	@PostMapping("api/job/{id}/delete")
 	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
 		try {
@@ -211,19 +237,6 @@ public class JobControllerRy extends BaseControllerRy {
 			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
 		}
 
-		return ResponseEntity.ok(success());
-	}
-
-	@PostMapping("api/job/{id}/reEnQueue")
-	public ResponseEntity<AjaxResult> reEnQueueJob(@PathVariable Long id) {
-		try {
-			jobLocalService.reEnQueue(id);
-		} catch (ErrorCodeException e) {
-			/**
-			 * ruoyi只认message字段
-			 */
-			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
-		}
 		return ResponseEntity.ok(success());
 	}
 }

@@ -104,6 +104,14 @@ public class DelayJobEngine extends AbstractJobEngine {
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
 		}
 	}
+	
+	@Override
+	public boolean run(ExecutableJobBO job) {
+		/**
+		 * delay不支持立即执行
+		 */
+		return false;
+	}
 
 	private class DelayJobTrigger extends JobTrigger {
 

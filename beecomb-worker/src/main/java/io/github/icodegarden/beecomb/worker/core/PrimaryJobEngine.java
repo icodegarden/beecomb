@@ -47,6 +47,12 @@ public class PrimaryJobEngine implements JobEngine {
 		JobEngine jobEngine = getJobEngine(job);
 		return jobEngine.removeQueue(job);
 	}
+	
+	@Override
+	public boolean run(ExecutableJobBO job) {
+		JobEngine jobEngine = getJobEngine(job);
+		return jobEngine.run(job);
+	}
 
 	@Override
 	public int queuedSize() {

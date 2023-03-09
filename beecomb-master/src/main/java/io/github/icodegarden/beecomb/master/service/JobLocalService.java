@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
@@ -32,21 +33,7 @@ public class JobLocalService {
 	 * 任务被api更新<br>
 	 */
 	public boolean updateByApi(UpdateJobDTO dto) throws ErrorCodeException {
-		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(dto.getId());
-
-		if (job == null) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
-		}
-		/**
-		 * 校验归属权
-		 */
-		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
-		}
-
-		if (job.getEnd()) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
-		}
+		ExecutableJobBO job = getValidate(dto.getId());
 
 		boolean removed = false;
 		/**
@@ -89,60 +76,10 @@ public class JobLocalService {
 	}
 
 	/**
-	 * 删除任务
-	 * 
-	 * @param jobId
-	 */
-	public boolean delete(Long id) throws ErrorCodeException {
-		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(id);
-
-		if (job == null) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
-		}
-		/**
-		 * 校验归属权
-		 */
-		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
-		}
-
-		if (job.getEnd()) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
-		}
-
-		try {
-			boolean remove = jobRemoteService.removeQueue(job);
-			if (remove) {
-				/**
-				 * 处理数据库要在远程执行后，因为任务可能正在执行中需要数据
-				 */
-				jobFacadeManager.delete(job.getId());
-			}
-			return remove;
-		} catch (ExchangeException e) {
-			throw new ServerErrorCodeException("deleteJob", e.getMessage(), e);
-		}
-	}
-
-	/**
 	 * 任务重进队列<br>
 	 */
 	public void reEnQueue(Long id) throws ErrorCodeException {
-		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(id);
-
-		if (job == null) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
-		}
-		/**
-		 * 校验归属权
-		 */
-		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
-		}
-
-		if (job.getEnd()) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
-		}
+		ExecutableJobBO job = getValidate(id);
 
 		/**
 		 * 如果处于队列中需要先移除
@@ -175,6 +112,76 @@ public class JobLocalService {
 		} catch (ExchangeException e) {
 			throw new ServerErrorCodeException("enQueue on reEnQueue", e.getMessage(), e);
 		}
+	}
+
+	/**
+	 * 任务立即执行<br>
+	 */
+	public void runJob(Long id) throws ErrorCodeException {
+		ExecutableJobBO job = getValidate(id);
+
+		/**
+		 * 只允许schedule类型的
+		 */
+		if (!JobType.Schedule.equals(job.getType())) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN,
+					"Job Type Not Support");
+		}
+
+		/**
+		 * 必须已进队列
+		 */
+		if (!job.getQueued()) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Not Queued");
+		}
+
+		try {
+			jobRemoteService.runJob(job);
+		} catch (ExchangeException e) {
+			throw new ServerErrorCodeException("runJob", e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 删除任务
+	 * 
+	 * @param jobId
+	 */
+	public boolean delete(Long id) throws ErrorCodeException {
+		ExecutableJobBO job = getValidate(id);
+
+		try {
+			boolean remove = jobRemoteService.removeQueue(job);
+			if (remove) {
+				/**
+				 * 处理数据库要在远程执行后，因为任务可能正在执行中需要数据
+				 */
+				jobFacadeManager.delete(job.getId());
+			}
+			return remove;
+		} catch (ExchangeException e) {
+			throw new ServerErrorCodeException("deleteJob", e.getMessage(), e);
+		}
+	}
+
+	private ExecutableJobBO getValidate(Long id) {
+		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(id);
+
+		if (job == null) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Ownership");
+		}
+
+		if (job.getEnd()) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
+		}
+
+		return job;
 	}
 
 	private boolean removeQueueRequiredByUpdateParams(UpdateJobDTO dto, ExecutableJobBO job) {

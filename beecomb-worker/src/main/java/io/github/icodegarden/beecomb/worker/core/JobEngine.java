@@ -26,6 +26,8 @@ public interface JobEngine extends GracefullyShutdown {
 	Result3<ExecutableJobBO, ? extends Object, JobEngineException> enQueue(ExecutableJobBO job);
 
 	boolean removeQueue(ExecutableJobBO job);
+	
+	boolean run(ExecutableJobBO job);
 
 	/**
 	 * 

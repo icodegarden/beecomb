@@ -261,6 +261,11 @@
 		                if(!row.end){
 		                	more.push("<a class='btn btn-success btn-xs " + editFlag + "' href='javascript:void(0)' onclick='$.operate.editTab(" + row.id + ")'><i class='fa fa-edit'></i>修改</a> ");
 			                more.push("<a class='btn btn-success btn-xs " + editFlag + "' href='javascript:void(0)' onclick='reEnQueue(" + row.id + ")'><i class='fa fa-key'></i>重进队列</a> ");
+			                
+			                if(row.type == 'Schedule'){
+			                	more.push("<a class='btn btn-success btn-xs " + editFlag + "' href='javascript:void(0)' onclick='runJob(" + row.id + ")'><i class='fa fa-key'></i>立即执行</a> ");	
+			                }
+			                
 			                more.push("<a class='btn btn-danger btn-xs " + removeFlag + "' href='javascript:void(0)' onclick='remove(" + row.id + ")'><i class='fa fa-remove'></i>删除</a> ");	
 		                }
 		                
@@ -287,6 +292,13 @@
 				$.operate.post(prefix + "/"+id+"/reEnQueue", {});
 		    })
 		}
+		
+		function runJob(id) {
+			$.modal.confirm("确认要立即执行吗？", function() {
+// 				$.operate.post(prefix + "/"+id+"/disable", { "userId": userId, "status": 1 });
+				$.operate.post(prefix + "/"+id+"/run", {});
+		    })
+		}		
 		
 		function remove(id) {
 			$.modal.confirm("确认要删除吗？", function() {

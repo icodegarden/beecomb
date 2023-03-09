@@ -14,6 +14,7 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
+import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
@@ -102,6 +103,20 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 		} catch (RejectedExecutionException e) {
 			return Results.of(false, job, null,
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
+		}
+	}
+
+	@Override
+	public boolean run(ExecutableJobBO job) {
+		JobTrigger jobTrigger = jobQueue.getJobTrigger(job.getId());
+		if (jobTrigger == null) {
+			return false;
+		}
+		try {
+			jobTrigger.run();
+			return true;
+		} catch (Exception e) {
+			return false;
 		}
 	}
 

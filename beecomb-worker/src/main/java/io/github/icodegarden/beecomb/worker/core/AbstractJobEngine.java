@@ -203,8 +203,11 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 			this.jobId = jobId;
 		}
 
+		/**
+		 * IMPT sync用于立即执行和调度触发的并发控制，这是每个job级别的不影响性能
+		 */
 		@Override
-		public void run() {
+		public synchronized void run() {
 			running = true;
 			try {
 				ExecutableJobBO job = jobService.findOneExecutableJob(jobId);
