@@ -118,6 +118,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 			 * 任务被removedQueue时需要更新为null，因为关系到重新进队列的时间计算
 			 */
 			updateJobMainDTO.setNextTrigAtNull(true);
+			updateJobMainDTO.setQueued(!removedQueue);
 		}
 		if (updateJobMainDTO.shouldUpdate()) {
 			update = jobMainManager.update(updateJobMainDTO);

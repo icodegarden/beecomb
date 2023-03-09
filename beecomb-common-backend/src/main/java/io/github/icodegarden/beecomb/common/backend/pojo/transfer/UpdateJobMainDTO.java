@@ -40,6 +40,7 @@ public class UpdateJobMainDTO implements Validateable {
 	@Min(2)
 	@Max(64)
 	private Integer maxParallelShards;
+	private Boolean queued;// bit NOT NULL default 0,
 	@Min(JobConstants.MIN_EXECUTE_TIMEOUT)
 	@Max(JobConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
@@ -47,6 +48,7 @@ public class UpdateJobMainDTO implements Validateable {
 	 * 
 	 */
 	private Boolean nextTrigAtNull;
+	private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
 
 	@Override
 	public void validate() throws IllegalArgumentException {

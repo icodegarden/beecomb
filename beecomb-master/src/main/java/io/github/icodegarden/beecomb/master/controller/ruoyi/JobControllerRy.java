@@ -40,7 +40,7 @@ import io.github.icodegarden.beecomb.master.service.JobLocalService;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.commons.lang.query.BaseQuery;
 import io.github.icodegarden.commons.lang.result.Result2;
-import io.github.icodegarden.commons.lang.spec.response.ClientBizErrorCodeException;
+import io.github.icodegarden.commons.lang.spec.response.ClientErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -148,12 +148,12 @@ public class JobControllerRy extends BaseControllerRy {
 			/**
 			 * 参数错误（包括唯一约束）400等
 			 */
-			return (ResponseEntity) ResponseEntity.status(400).body(e.getMessage());
+			return ResponseEntity.ok(AjaxResult.error(e.getMessage()));
 		} catch (ErrorCodeException e) {
 			/**
 			 * 参数错误（包括唯一约束）400等
 			 */
-			return (ResponseEntity) ResponseEntity.status(e.httpStatus()).body(e.getMessage());
+			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
 		}
 	}
 
@@ -193,18 +193,37 @@ public class JobControllerRy extends BaseControllerRy {
 		} else {
 			ErrorCodeException errorCodeException = result2.getT2();
 			log.error("ex on createjob by web", errorCodeException);
-			return (ResponseEntity) ResponseEntity.status(errorCodeException.httpStatus())
-					.body(errorCodeException.getMessage());
+			return ResponseEntity.ok(AjaxResult.error(errorCodeException.getSub_msg()));
 		}
 	}
 
 	@PostMapping("api/job/{id}/delete")
 	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
-		boolean delete = jobLocalService.delete(id);
-		if (!delete) {
-			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "FORBIDDEN");
+		try {
+			boolean delete = jobLocalService.delete(id);
+			if (!delete) {
+				return ResponseEntity.ok(AjaxResult.error("FORBIDDEN"));
+			}
+		} catch (ErrorCodeException e) {
+			/**
+			 * ruoyi只认message字段
+			 */
+			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
 		}
 
+		return ResponseEntity.ok(success());
+	}
+
+	@PostMapping("api/job/{id}/reEnQueue")
+	public ResponseEntity<AjaxResult> reEnQueueJob(@PathVariable Long id) {
+		try {
+			jobLocalService.reEnQueue(id);
+		} catch (ErrorCodeException e) {
+			/**
+			 * ruoyi只认message字段
+			 */
+			return ResponseEntity.ok(AjaxResult.error(e.getSub_msg()));
+		}
 		return ResponseEntity.ok(success());
 	}
 }

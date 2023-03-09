@@ -28,6 +28,9 @@ public class JobLocalService {
 	@Autowired
 	private WorkerRemoteService jobRemoteService;
 
+	/**
+	 * 任务被api更新<br>
+	 */
 	public boolean updateByApi(UpdateJobDTO dto) throws ErrorCodeException {
 		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(dto.getId());
 
@@ -41,7 +44,11 @@ public class JobLocalService {
 			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
 		}
 
-		boolean doRemoved = false;
+		if (job.getEnd()) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
+		}
+
+		boolean removed = false;
 		/**
 		 * 如果处于队列中需要先移除
 		 */
@@ -56,16 +63,16 @@ public class JobLocalService {
 				throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN,
 						"job remove queue failed");
 			}
-			doRemoved = true;
+			removed = true;
 		}
 		/**
-		 * 事务从这里开始，避免了远程执行增加事务时间
+		 * 事务从这里开始，避免了远程执行增加事务时间和这条数据的死锁
 		 */
-		boolean update = jobFacadeManager.update(dto, doRemoved);
+		boolean update = jobFacadeManager.update(dto, removed);
 		/**
 		 * 移除后需要重新进
 		 */
-		if (doRemoved) {
+		if (removed) {
 			try {
 				ExecutableJobBO executableJobBO = jobFacadeManager.findOneExecutableJob(dto.getId());
 				jobRemoteService.enQueue(executableJobBO);
@@ -114,6 +121,59 @@ public class JobLocalService {
 			return remove;
 		} catch (ExchangeException e) {
 			throw new ServerErrorCodeException("deleteJob", e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * 任务重进队列<br>
+	 */
+	public void reEnQueue(Long id) throws ErrorCodeException {
+		ExecutableJobBO job = jobFacadeManager.findOneExecutableJob(id);
+
+		if (job == null) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.NOT_FOUND, "Job Not Found");
+		}
+		/**
+		 * 校验归属权
+		 */
+		if (!SecurityUtils.getUsername().equals(job.getCreatedBy())) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Ownership");
+		}
+
+		if (job.getEnd()) {
+			throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN, "Job Was End");
+		}
+
+		/**
+		 * 如果处于队列中需要先移除
+		 */
+		if (job.getQueued()) {
+			boolean remove;
+			try {
+				remove = jobRemoteService.removeQueue(job);
+			} catch (ExchangeException e) {
+				throw new ServerErrorCodeException("remove on reEnQueue", e.getMessage(), e);
+			}
+			if (!remove) {
+				throw new ClientBizErrorCodeException(ClientBizErrorCodeException.SubCode.FORBIDDEN,
+						"job remove queue failed");
+			}
+
+			UpdateJobDTO dto = new UpdateJobDTO();
+			dto.setId(id);
+			/**
+			 * 事务从这里开始，避免了远程执行增加事务时间和这条数据的死锁
+			 */
+			jobFacadeManager.update(dto, true);
+		}
+
+		/**
+		 * 重新进
+		 */
+		try {
+			jobRemoteService.enQueue(job);
+		} catch (ExchangeException e) {
+			throw new ServerErrorCodeException("enQueue on reEnQueue", e.getMessage(), e);
 		}
 	}
 

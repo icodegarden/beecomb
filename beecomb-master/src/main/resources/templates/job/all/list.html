@@ -248,21 +248,44 @@
 // 		                }
 
 		            	var actions = [];
-		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-search"></i>明细</a> ');
-		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.modal.openTab(\'任务执行记录列表\',\'/view/jobExecuteRecord/list?jobId=' + row.id + '\')"><i class="fa fa-search"></i>任务执行记录</a> ');
-		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.modal.openTab(\'任务恢复记录列表\',\'/view/jobRecoveryRecord/list?jobId=' + row.id + '\')"><i class="fa fa-search"></i>任务恢复明细</a> ');
-		                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
-		                actions.push('<a class="btn btn-success btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
-// 		                actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
-// 		                actions.push("<a class='btn btn-default btn-xs " + resetPwdFlag + "' href='javascript:void(0)' onclick='resetPwd(" + row.id + ")'><i class='fa fa-key'></i>修改密码</a> ");
-// 		                var more = [];
-// 		                actions.push('<a tabindex="0" class="btn btn-info btn-xs" role="button" data-container="body" data-placement="left" data-toggle="popover" data-html="true" data-trigger="hover" data-content="' + more.join('') + '"><i class="fa fa-chevron-circle-right"></i>更多操作</a>');
+		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-search"></i>详情</a> ');
+// 		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.modal.openTab(\'任务执行记录列表\',\'/view/jobExecuteRecord/list?jobId=' + row.id + '\')"><i class="fa fa-search"></i>任务执行记录</a> ');
+// 		                actions.push('<a class="btn btn-info btn-xs" href="#" onclick="$.modal.openTab(\'任务恢复记录列表\',\'/view/jobRecoveryRecord/list?jobId=' + row.id + '\')"><i class="fa fa-search"></i>任务恢复明细</a> ');
+// 		                actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+// 		                actions.push('<a class="btn btn-success btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+		                
+		                var more = [];
+		                more.push("<a class='btn btn-info btn-xs " + editFlag + "' href='javascript:void(0)' onclick='execRecord(" + row.id + ")'><i class='fa fa-search'></i>任务执行记录</a> ");
+		                more.push("<a class='btn btn-info btn-xs " + editFlag + "' href='javascript:void(0)' onclick='recoveryRecord(" + row.id + ")'><i class='fa fa-search'></i>任务恢复记录</a> ");
+		                
+		                if(!row.end){
+		                	more.push("<a class='btn btn-success btn-xs " + editFlag + "' href='javascript:void(0)' onclick='$.operate.editTab(" + row.id + ")'><i class='fa fa-edit'></i>修改</a> ");
+			                more.push("<a class='btn btn-success btn-xs " + editFlag + "' href='javascript:void(0)' onclick='reEnQueue(" + row.id + ")'><i class='fa fa-key'></i>重进队列</a> ");
+			                more.push("<a class='btn btn-danger btn-xs " + removeFlag + "' href='javascript:void(0)' onclick='remove(" + row.id + ")'><i class='fa fa-remove'></i>删除</a> ");	
+		                }
+		                
+		                actions.push('<a tabindex="0" class="btn btn-default btn-xs" role="button" data-container="body" data-placement="left" data-toggle="popover" data-html="true" data-trigger="hover" data-content="' + more.join('') + '"><i class="fa fa-chevron-circle-right"></i>更多</a>');
 		                return actions.join('');
 		            }
 		        }
 		        ]
 		    };
 		    $.table.init(options);
+		}
+		
+		function execRecord(id) {
+			$.modal.openTab('任务执行记录列表','/view/jobExecuteRecord/list?jobId=' + id);
+		}
+		
+		function recoveryRecord(id) {
+			$.modal.openTab('任务恢复记录列表','/view/jobRecoveryRecord/list?jobId=' + id);
+		}
+		
+		function reEnQueue(id) {
+			$.modal.confirm("确认要重进队列吗？", function() {
+// 				$.operate.post(prefix + "/"+id+"/disable", { "userId": userId, "status": 1 });
+				$.operate.post(prefix + "/"+id+"/reEnQueue", {});
+		    })
 		}
 		
 		function remove(id) {
