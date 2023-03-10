@@ -198,26 +198,26 @@ public class BeansConfiguration {
 			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage) throws Exception {
 		DelayJobEngine jobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
 				instanceProperties);
-		/**
-		 * TODO remove
-		 */
-		if(System.getProperty("executor.serializer.kryo") != null) {
-			log.warn("executor use serializer of kryo");
-			
-			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
-				ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector.openNew(NodeRole.Worker.getRoleName());
-				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
-				nioClient.setSerializerType(SerializerType.Kryo);
-				return nioClient;
-			});
-			NioProtocol protocol = new NioProtocol(nioClientPool);
-			
-			Field field = AbstractJobEngine.class.getDeclaredField("protocol");
-			boolean accessible = field.isAccessible();
-			field.setAccessible(true);
-			field.set(jobEngine, protocol);
-			field.setAccessible(accessible);
-		}
+//		/**
+//		 * TODO remove
+//		 */
+//		if(System.getProperty("executor.serializer.kryo") != null) {
+//			log.warn("executor use serializer of kryo");
+//			
+//			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
+//				ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector.openNew(NodeRole.Worker.getRoleName());
+//				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
+//				nioClient.setSerializerType(SerializerType.Kryo);
+//				return nioClient;
+//			});
+//			NioProtocol protocol = new NioProtocol(nioClientPool);
+//			
+//			Field field = AbstractJobEngine.class.getDeclaredField("protocol");
+//			boolean accessible = field.isAccessible();
+//			field.setAccessible(true);
+//			field.set(jobEngine, protocol);
+//			field.setAccessible(accessible);
+//		}
 		
 		return jobEngine;
 	}
@@ -227,26 +227,26 @@ public class BeansConfiguration {
 			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage) throws Exception {
 		ScheduleJobEngine jobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, scheduleJobStorage,
 				instanceProperties);
-		/**
-		 * TODO remove
-		 */
-		if(System.getProperty("executor.serializer.kryo") != null) {
-			log.warn("executor use serializer of kryo");
-			
-			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
-				ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector.openNew(NodeRole.Worker.getRoleName());
-				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
-				nioClient.setSerializerType(SerializerType.Kryo);
-				return nioClient;
-			});
-			NioProtocol protocol = new NioProtocol(nioClientPool);
-			
-			Field field = AbstractJobEngine.class.getDeclaredField("protocol");
-			boolean accessible = field.isAccessible();
-			field.setAccessible(true);
-			field.set(jobEngine, protocol);
-			field.setAccessible(accessible);
-		}
+//		/**
+//		 * TODO remove
+//		 */
+//		if(System.getProperty("executor.serializer.kryo") != null) {
+//			log.warn("executor use serializer of kryo");
+//			
+//			NioClientPool nioClientPool = NioClientPool.newPool(NodeRole.Worker.getRoleName(), (ip, port) -> {
+//				ClientNioSelector CLIENT_NIO_SELECTOR = ClientNioSelector.openNew(NodeRole.Worker.getRoleName());
+//				JavaNioClient nioClient = new JavaNioClient(new InetSocketAddress(ip, port), CLIENT_NIO_SELECTOR);
+//				nioClient.setSerializerType(SerializerType.Kryo);
+//				return nioClient;
+//			});
+//			NioProtocol protocol = new NioProtocol(nioClientPool);
+//			
+//			Field field = AbstractJobEngine.class.getDeclaredField("protocol");
+//			boolean accessible = field.isAccessible();
+//			field.setAccessible(true);
+//			field.set(jobEngine, protocol);
+//			field.setAccessible(accessible);
+//		}
 		
 		return jobEngine;
 	}

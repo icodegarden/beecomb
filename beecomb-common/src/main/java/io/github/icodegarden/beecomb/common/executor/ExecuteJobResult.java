@@ -24,7 +24,8 @@ public class ExecuteJobResult implements Serializable {
 	/**
 	 * 是否在并行任务的所有分片都成功时执行回调
 	 */
-	private transient/*TODO remove*/ boolean onParallelSuccessCallback;
+//	private transient/*TODO remove*/ boolean onParallelSuccessCallback;
+	private boolean onParallelSuccessCallback;
 
 	public String getExecuteReturns() {
 		return executeReturns;

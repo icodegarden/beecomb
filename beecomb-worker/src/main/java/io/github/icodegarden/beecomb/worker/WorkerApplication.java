@@ -21,15 +21,6 @@ import io.github.icodegarden.commons.lang.serialization.KryoSerializer;
 public class WorkerApplication {
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		/**
-		 * TODO remove
-		 */
-//		KryoSerializer.AbstractKryoFactory.configKryoFactoryCustom(kryo -> {
-//			FieldSerializer<?> fieldSerializer = new FieldSerializer<>(kryo, ExecuteJobResult.class);
-//			fieldSerializer.removeField("onParallelSuccessCallback");
-//			kryo.register(ExecuteJobResult.class, fieldSerializer);
-//		});
-
 		SpringApplication.run(WorkerApplication.class, args);
 	}
 }
