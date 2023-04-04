@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.Job;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
-import io.github.icodegarden.beecomb.executor.registry.zookeeper.ZooKeeperJobHandlerRegistry;
 import io.github.icodegarden.beecomb.test.ZookeeperBuilder4Test;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
 
@@ -32,7 +31,7 @@ class ZooKeeperJobHandlerRegistryTests extends ZookeeperBuilder4Test {
 	@BeforeEach
 	void init() {
 		zooKeeperInstanceRegistry = new ZooKeeperInstanceRegistry(zkh, "/beecomb", "executor", 10001);
-		zooKeeperJobHandlerRegistry = new ZooKeeperJobHandlerRegistry("myExecutorName", zkh, zooKeeperInstanceRegistry);
+		zooKeeperJobHandlerRegistry = new ZooKeeperJobHandlerRegistry(null, "myExecutorName", zkh, zooKeeperInstanceRegistry);
 
 		h1 = new MyJobHandler("h1");
 		h2 = new MyJobHandler("h2");

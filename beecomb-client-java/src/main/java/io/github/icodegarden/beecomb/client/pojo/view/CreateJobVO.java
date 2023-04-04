@@ -10,6 +10,9 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 public class CreateJobVO {
 
 	private Job job;
+	/**
+	 * 当任务进队列失败时有
+	 */
 	private String dispatchException;
 
 	public Job getJob() {

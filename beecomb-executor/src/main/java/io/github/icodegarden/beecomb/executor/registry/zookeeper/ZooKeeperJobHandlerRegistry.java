@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.executor.registry.zookeeper;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,11 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +18,10 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.JobHandlerRegistration;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
+import io.github.icodegarden.commons.lang.annotation.Nullable;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import io.github.icodegarden.commons.zookeeper.NewZooKeeperListener;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.exception.ExceedExpectedZooKeeperException;
-import io.github.icodegarden.commons.zookeeper.exception.InvalidDataSizeZooKeeperException;
 import io.github.icodegarden.commons.zookeeper.exception.ZooKeeperException;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
 import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
@@ -38,17 +34,16 @@ import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInsta
 public class ZooKeeperJobHandlerRegistry implements JobHandlerRegistry, NewZooKeeperListener {
 	private static final Logger log = LoggerFactory.getLogger(ZooKeeperJobHandlerRegistry.class);
 
-	private AtomicInteger versionRef = new AtomicInteger();
 	private Map<String/* name */, JobHandler> name_jobHandlers;
 
+	private final String namespace;
 	private final String executorName;
-	private final ZooKeeperHolder zooKeeperHolder;
 	private final ZooKeeperInstanceRegistry zooKeeperInstanceRegistry;
 
-	public ZooKeeperJobHandlerRegistry(String executorName, ZooKeeperHolder zooKeeperHolder,
+	public ZooKeeperJobHandlerRegistry(@Nullable String namespace, String executorName, ZooKeeperHolder zooKeeperHolder,
 			ZooKeeperInstanceRegistry zooKeeperInstanceRegistry) {
+		this.namespace = namespace;
 		this.executorName = executorName;
-		this.zooKeeperHolder = zooKeeperHolder;
 		this.zooKeeperInstanceRegistry = zooKeeperInstanceRegistry;
 
 		zooKeeperHolder.addNewZooKeeperListener(this);
@@ -120,6 +115,7 @@ public class ZooKeeperJobHandlerRegistry implements JobHandlerRegistry, NewZooKe
 		final String nodeName = instance.getZnode();
 
 		JobHandlerRegistrationBean jobHandlerRegistrationBean = new JobHandlerRegistrationBean();
+		jobHandlerRegistrationBean.setNamespace(namespace);
 		jobHandlerRegistrationBean.setExecutorName(executorName);
 		Set<JobHandlerRegistration> jobHandlerRegistrations = jobHandlers.stream().map(jobHandler -> {
 			JobHandlerRegistration jobHandlerRegistration = new JobHandlerRegistrationBean.JobHandlerRegistration();
@@ -129,42 +125,10 @@ public class ZooKeeperJobHandlerRegistry implements JobHandlerRegistry, NewZooKe
 		jobHandlerRegistrationBean.setJobHandlerRegistrations(jobHandlerRegistrations);
 
 		String json = JsonUtils.serialize(jobHandlerRegistrationBean);
-		byte[] data = null;
-		try {
-			data = json.getBytes("utf-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException(e);
-		}
-		if (data.length >= InvalidDataSizeZooKeeperException.MAX_DATA_SIZE) {
-			throw new InvalidDataSizeZooKeeperException(data.length);
-		}
-		try {
-			zooKeeperHolder.getConnectedZK().setData(instance.getZnode(), data, versionRef.getAndIncrement());
-			name_jobHandlers = jobHandlers.stream().collect(Collectors.toMap(JobHandler::name, i -> i));
-		} catch (KeeperException.NoNodeException ignore) {
-			zooKeeperInstanceRegistry.deregister();
-			ZooKeeperRegisteredInstance newInstance = zooKeeperInstanceRegistry.registerIfNot();
-			try {
-				Stat stat = zooKeeperHolder.getConnectedZK().exists(newInstance.getZnode(), false);
-				versionRef.set(stat.getVersion());
-				zooKeeperHolder.getConnectedZK().setData(newInstance.getZnode(), data, versionRef.getAndIncrement());
-			} catch (KeeperException | InterruptedException e) {
-				throw new ExceedExpectedZooKeeperException(
-						String.format("ex on register jobHandlers after NoNodeException, znode [%s]", nodeName), e);
-			}
-		} catch (KeeperException.BadVersionException ignore) {
-			try {
-				Stat stat = zooKeeperHolder.getConnectedZK().exists(instance.getZnode(), false);
-				versionRef.set(stat.getVersion());
-				zooKeeperHolder.getConnectedZK().setData(instance.getZnode(), data, stat.getVersion());
-			} catch (ZooKeeperException | KeeperException | InterruptedException e) {
-				throw new ExceedExpectedZooKeeperException(
-						String.format("ex on register jobHandlers znode [%s]", nodeName), e);
-			}
-		} catch (KeeperException | InterruptedException e) {
-			throw new ExceedExpectedZooKeeperException(String.format("ex on register jobHandlers znode [%s]", nodeName),
-					e);
-		}
+		byte[] data = json.getBytes(StandardCharsets.UTF_8);
+		zooKeeperInstanceRegistry.setData(data);
+
+		name_jobHandlers = jobHandlers.stream().collect(Collectors.toMap(JobHandler::name, i -> i));
 	}
 
 	@Override

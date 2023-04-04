@@ -118,7 +118,7 @@ public class ExecutorServer implements GracefullyShutdown {
 
 	private JobHandlerRegistry prepareJobHandlerRegistry(String executorName, ZooKeeperHolder zooKeeperHolder,
 			ZooKeeperInstanceRegistry zooKeeperInstanceRegistry) {
-		return new ZooKeeperJobHandlerRegistry(executorName, zooKeeperHolder, zooKeeperInstanceRegistry);
+		return new ZooKeeperJobHandlerRegistry(null, executorName, zooKeeperHolder, zooKeeperInstanceRegistry);
 	}
 
 	private JobsMetricsOverload prepareJobOverload(ZooKeeperSupportInstanceProperties instanceProperties,
