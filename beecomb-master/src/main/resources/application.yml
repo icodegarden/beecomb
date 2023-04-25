@@ -25,6 +25,8 @@ spring:
   
 
 commons:
+  web.exceptionHandler.apiResponse.enabled: false
+  web.exceptionHandler.nativeRestApi.enabled: true
   mybatis:
     mapperScan:
       basePackages: io.github.icodegarden.beecomb.common.backend.mapper,io.github.icodegarden.beecomb.master.mapper

@@ -14,7 +14,6 @@ import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
 import io.github.icodegarden.commons.lang.spec.response.ClientLimitedErrorCodeException;
-import io.github.icodegarden.commons.lang.spec.response.ClientParameterInvalidErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.commons.lang.spec.response.ServerErrorCodeException;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
@@ -48,14 +47,7 @@ public class JobReceiver {
 	 * @return 成功时，也可能有ErrorCodeException，此时说明dispatch失败；失败时的ErrorCodeException是整个失败原因
 	 */
 	public Result2<ExecutableJobBO, ErrorCodeException> receive(CreateJobDTO dto) {
-		ExecutableJobBO job;
-		try {
-			job = jobFacadeManager.create(dto);
-		} catch (IllegalArgumentException e) {
-			// 这个catch目前没有也会正确处理了
-			return Results.of(false, null,
-					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
-		}
+		ExecutableJobBO job = jobFacadeManager.create(dto);
 
 		try {
 			MetricsInstance instance = jobRemoteService.enQueue(job);
@@ -85,10 +77,8 @@ public class JobReceiver {
 		ExecutableJobBO job;
 		try {
 			job = jobFacadeManager.create(dto);
-		} catch (IllegalArgumentException e) {
-			// 这个catch目前没有也会正确处理了
-			return Results.of(false, null,
-					new ClientParameterInvalidErrorCodeException("client.invalid-parameter", e.getMessage()));
+		} catch (Exception e) {
+			return Results.of(false, null, new ServerErrorCodeException("create.job.error", e));
 		}
 
 		try {
