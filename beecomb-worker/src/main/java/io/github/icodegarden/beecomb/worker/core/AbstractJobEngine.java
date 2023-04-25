@@ -102,7 +102,7 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 		Result3<ExecutableJobBO, JobTrigger, JobEngineException> enQueueResult = doEnQueue(job);
 		if (!enQueueResult.isSuccess()) {
 			JobEngineException exception = enQueueResult.getT3();
-			log.warn("job doEnQueue not success, reason:{}, job:{}", exception.getReason(), job);
+			log.warn("job doEnQueue failed, reason:{}, job:{}", exception.getReason(), job);
 			metricsOverload.decrementOverload(job);
 			return enQueueResult;
 		}

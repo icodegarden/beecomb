@@ -384,13 +384,13 @@ public class ExecutableJobBO implements OverloadCalc, Serializable {
 		this.schedule = schedule;
 	}
 
-	public String toStringSimple() {
+	@Override
+	public String toString() {
 		return "[id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName=" + executorName
 				+ ", jobHandlerName=" + jobHandlerName + ", parallel=" + parallel + "]";
 	}
 
-	@Override
-	public String toString() {
+	public String toStringFull() {
 		return "ExecutableJobBO [id=" + id + ", uuid=" + uuid + ", name=" + name + ", type=" + type + ", executorName="
 				+ executorName + ", jobHandlerName=" + jobHandlerName + ", priority=" + priority + ", weight=" + weight
 				+ ", parallel=" + parallel + ", maxParallelShards=" + maxParallelShards + ", queued=" + queued
