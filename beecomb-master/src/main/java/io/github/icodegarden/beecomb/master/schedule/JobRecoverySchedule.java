@@ -102,7 +102,7 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 					remoteService.enQueue(job);
 					
 					try {
-						Thread.sleep(100);//FIXME 避免有大批的任务需要恢复时，Executor被瞬间压力？ 
+						Thread.sleep(20);//FIXME 避免有大批的任务需要恢复时，Executor被瞬间压力？ 
 					} catch (InterruptedException e) {
 					}
 
