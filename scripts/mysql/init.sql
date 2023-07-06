@@ -13,7 +13,7 @@ CREATE TABLE `job_main` (
   `executor_name` varchar(30) NOT NULL,
   `job_handler_name` varchar(30) NOT NULL,
   `priority` tinyint NOT NULL default 5 comment '1-10仅当任务恢复时起作用,越大越优先',
-  `weight` tinyint NOT NULL default 1 comment '任务重量等级1-5',
+  `weight` tinyint NOT NULL default 1 comment '任务重量等级',
   `is_parallel` bit NOT NULL default 0 comment '是否并行任务',
   `max_parallel_shards` smallint NOT NULL default 8 comment '最大并行数，2-64',
   `is_queued` bit NOT NULL default 0,

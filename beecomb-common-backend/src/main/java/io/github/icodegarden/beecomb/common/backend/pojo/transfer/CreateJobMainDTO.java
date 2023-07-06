@@ -27,7 +27,7 @@ public class CreateJobMainDTO implements Validateable {
 	private String executorName;// varchar(30) NOT NULL,
 	private String jobHandlerName;// varchar(30) NOT NULL,
 	private Integer priority;// tinyint NOT NULL default 5 comment '1-10仅当资源不足时起作用',
-	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级1-5',
+	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级',
 	private Boolean parallel;
 	private Integer maxParallelShards;
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',

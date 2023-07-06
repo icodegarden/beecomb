@@ -32,8 +32,8 @@ public class UpdateJobApiDTO implements Validateable {
 	@Max(10)
 	private Integer priority;// tinyint NOT NULL default 5 comment '1-10仅当资源不足时起作用',
 	@Min(1)
-	@Max(5)
-	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级1-5',
+	@Max(Integer.MAX_VALUE)
+	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级',
 	@Min(2)
 	@Max(64)
 	private Integer maxParallelShards;

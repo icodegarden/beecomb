@@ -205,7 +205,7 @@ body参数
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
-|weight   |int   |N   |1-5   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务   |1   |
+|weight   |int   |N   |1-N   |任务的重量，默认1，该值对负载压力的计算起作用，例如Executor配置的overload.jobs.max是10000，则Executor能负载10000个重量是1、执行频率是1秒1次的任务，或负载4000个重量是5、执行频频率2秒1次的任务   |1   |
 |parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
 |maxParallelShards   |int   |N   |2-64   |最大并行分片数，默认8，当合格的Executor数大于等于该值时，按该值分片，小于时按实际Executor数分片   |8   |
 |executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认10000   |10000   |
@@ -245,7 +245,7 @@ scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
 |name   |string   |Y   |1-30   |任务名   |jname   |
 |type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
 |priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
-|weight   |int   |N   |1-5   |任务的重量   |1   |
+|weight   |int   |N   |1-N   |任务的重量   |1   |
 |queued   |boolean   |Y   |1   |任务是否已队列   |true   |
 |queuedAtInstance   |string   |N   |1-N   |任务已队列时对应的地址   |145.23.12.3:19898   |
 
@@ -267,7 +267,7 @@ path参数
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |Y   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级   |5   |
-|weight   |int   |N   |1-5   |任务的重量   |1   |
+|weight   |int   |N   |1-N   |任务的重量   |1   |
 |parallel   |boolean   |N   |1   |是否并行任务，默认false   |false   |
 |maxParallelShards   |int   |N   |2-64   |最大并行分片数   |8   |
 |queued   |boolean   |Y   |1   |任务是否已队列   |true   |
@@ -352,7 +352,7 @@ body参数
 |executorName   |string   |N   |1-30   |任务由哪个Executor执行   |e1   |
 |jobHandlerName   |string   |N   |1-30   |任务由哪个JobHandler执行   |j1   |
 |priority   |int   |N   |1-10   |任务的优先级   |5   |
-|weight   |int   |N   |1-5   |任务的重量   |1   |
+|weight   |int   |N   |1-N   |任务的重量   |1   |
 |maxParallelShards   |int   |N   |2-64   |最大并行分片数   |8   |
 |executeTimeout   |int   |N   |1000-3600000    |任务执行超时毫秒，默认1000   |1000   |
 |params   |string   |N   |65535   |任务执行的参数   |id=100   |

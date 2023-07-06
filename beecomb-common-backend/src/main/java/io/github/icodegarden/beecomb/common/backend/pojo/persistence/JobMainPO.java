@@ -24,8 +24,8 @@ public class JobMainPO {
 	private JobType type;// tinyint NOT NULL comment '任务类型 0延时 1调度',
 	private String executorName;// varchar(30) NOT NULL,
 	private String jobHandlerName;// varchar(30) NOT NULL,
-	private Integer priority;// tinyint NOT NULL default 3 comment '1-5仅当资源不足时起作用',
-	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级1-5',
+	private Integer priority;// tinyint NOT NULL default 3 comment '1-10仅当任务恢复时起作用,越大越优先',
+	private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级',
 	private Boolean parallel;
 	private Integer maxParallelShards;
 	private Boolean queued;// bit NOT NULL default 0,
@@ -51,8 +51,8 @@ public class JobMainPO {
 		private String name;// varchar(30) NOT NULL,
 		private String executorName;// varchar(30) NOT NULL,
 		private String jobHandlerName;// varchar(30) NOT NULL,
-		private Integer priority;// tinyint NOT NULL default 3 comment '1-5仅当资源不足时起作用',
-		private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级1-5',
+		private Integer priority;// tinyint NOT NULL default 3 comment '1-10仅当任务恢复时起作用,越大越优先',
+		private Integer weight;// tinyint NOT NULL default 1 comment '任务重量等级',
 		private Boolean parallel;
 		private Integer maxParallelShards;
 		private Boolean queued;// bit NOT NULL default 0,
