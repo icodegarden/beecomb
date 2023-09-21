@@ -16,6 +16,7 @@ import io.github.icodegarden.beecomb.executor.InstanceProperties.Server;
 import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.registry.zookeeper.ZooKeeperJobHandlerRegistry;
+import io.github.icodegarden.commons.exchange.nio.EntryMessageHandler;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
 import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
@@ -155,7 +156,7 @@ public class ExecutorServer implements GracefullyShutdown {
 	private void startNioServer(ZooKeeperSupportInstanceProperties config) throws IOException {
 		Server server = config.getServer();
 
-		this.entryMessageHandler = new EntryMessageHandler(dispatcherHandler);
+		this.entryMessageHandler = new EntryMessageHandler(new ExecutorMessageHandler(dispatcherHandler));
 
 		JavaNioServer javaNioServer = new JavaNioServer("Executor-NioServer",
 				new InetSocketAddress(server.getExecutorIp(), server.getExecutorPort()), entryMessageHandler);

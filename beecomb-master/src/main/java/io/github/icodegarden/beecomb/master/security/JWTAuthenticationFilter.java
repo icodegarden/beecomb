@@ -128,7 +128,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 	private String getJwtFromCookie(HttpServletRequest request) {
 		Cookie[] cookies = request.getCookies();
 		for (Cookie cookie : cookies) {
-			if (WebUtils.AUTHORIZATION_HEADER.equals(cookie.getName())) {
+			if (WebUtils.HEADER_AUTHORIZATION.equals(cookie.getName())) {
 				String value = cookie.getValue();
 				return WebUtils.resolveBearerToken(value, "_");
 			}

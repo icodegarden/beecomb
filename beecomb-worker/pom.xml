@@ -55,7 +55,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-springboot_2.5.5</artifactId>
+			<artifactId>commons-springboot2</artifactId>
 			<version>${commons.version}</version>
 		</dependency>
 

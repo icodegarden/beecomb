@@ -42,7 +42,7 @@ public class JobRecoveryScheduleTests {
 				.listJobsShouldRecovery(0, 10);// 第一次获取到有需要恢复的，第二次没有了
 
 		JobRecoverySchedule jobRecovery = new JobRecoverySchedule(lock, jobFacadeManager, jobRemoteService, jobRecoveryRecordService);
-		boolean start = jobRecovery.start(1000, 1000);
+		boolean start = jobRecovery.scheduleWithFixedDelay(1000, 1000);
 
 		Assertions.assertThat(start).isTrue();
 
@@ -57,7 +57,7 @@ public class JobRecoveryScheduleTests {
 		verify(jobRecoveryRecordService, times(1)).createOrUpdate(any());
 
 		// ------------------------------------------
-		start = jobRecovery.start(1000, 1000);
+		start = jobRecovery.scheduleWithFixedDelay(1000, 1000);
 		Assertions.assertThat(start).isFalse();// 再start无效
 
 		jobRecovery.close();

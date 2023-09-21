@@ -13,10 +13,9 @@ import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.github.icodegarden.commons.lang.dao.Database;
-import io.github.icodegarden.commons.lang.dao.MysqlJdbcDatabase;
-import io.github.icodegarden.commons.lang.dao.OptimizeTableResults;
-import io.github.icodegarden.commons.lang.dao.OptimizeTableResults.Result;
+import io.github.icodegarden.commons.lang.repository.Database;
+import io.github.icodegarden.commons.lang.repository.MysqlJdbcDatabase;
+import io.github.icodegarden.commons.lang.repository.OptimizeTableResults;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.shardingsphere.util.DataSourceUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +105,7 @@ public class TableManager {
 
 	private String optimizeTable(DataSource dataSource, String tableName) {
 		Database database = new MysqlJdbcDatabase(dataSource);
-		OptimizeTableResults<Result> results = database.optimizeTable(tableName);
+		OptimizeTableResults<OptimizeTableResults.Result> results = database.optimizeTable(tableName);
 		if (results.isErrorInMysql()) {
 			throw new IllegalStateException(results.getDesc());
 		}

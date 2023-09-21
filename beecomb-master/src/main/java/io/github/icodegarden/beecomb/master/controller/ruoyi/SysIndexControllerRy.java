@@ -110,7 +110,7 @@ public class SysIndexControllerRy
 		Cookie[] cookies = request.getCookies();
 		if(cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (WebUtils.AUTHORIZATION_HEADER.equals(cookie.getName())) {
+				if (WebUtils.HEADER_AUTHORIZATION.equals(cookie.getName())) {
 					String value = cookie.getValue();
 					return WebUtils.resolveBearerToken(value, "_");
 				}

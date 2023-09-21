@@ -2,12 +2,14 @@ package io.github.icodegarden.beecomb.common.pojo.transfer;
 
 import java.io.Serializable;
 
+import io.github.icodegarden.commons.lang.BodyObject;
+
 /**
  * 
  * @author Fangfang.Xu
  *
  */
-public class RequestExecutorDTO implements Serializable {
+public class RequestExecutorDTO implements BodyObject<Object>, Serializable {
 	private static final long serialVersionUID = 36827620108902360L;
 	
 	public static final String METHOD_RECEIVEJOB = "receiveJob";
