@@ -3,6 +3,7 @@ package io.github.icodegarden.beecomb.executor.server;
 import java.lang.reflect.Method;
 
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
+import io.github.icodegarden.commons.exchange.ReasonExchangeResult;
 import io.github.icodegarden.commons.exchange.exception.ExchangeFailedReason;
 import io.github.icodegarden.commons.lang.BodyObject;
 import io.github.icodegarden.commons.lang.result.Result2;
@@ -13,8 +14,7 @@ import io.github.icodegarden.commons.nio.MessageHandler;
  * @author Fangfang.Xu
  *
  */
-public class ExecutorMessageHandler
-		implements MessageHandler<BodyObject, Result2<Object, ExchangeFailedReason>> {
+public class ExecutorMessageHandler implements MessageHandler<BodyObject, ReasonExchangeResult> {
 
 	private final DispatcherHandler dispatcherHandler;
 
@@ -23,7 +23,7 @@ public class ExecutorMessageHandler
 	}
 
 	@Override
-	public Result2<Object, ExchangeFailedReason> reply(BodyObject bodyObject) {
+	public ReasonExchangeResult reply(BodyObject bodyObject) {
 		RequestExecutorDTO dto = (RequestExecutorDTO) bodyObject;
 
 		Result2<Object, ExchangeFailedReason> result2 = null;
@@ -40,7 +40,7 @@ public class ExecutorMessageHandler
 				result2 = (Result2<Object, ExchangeFailedReason>) method.invoke(dispatcherHandler);
 			}
 
-			return result2;
+			return new ReasonExchangeResult(result2.isSuccess(), result2.getT1(), result2.getT2());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
