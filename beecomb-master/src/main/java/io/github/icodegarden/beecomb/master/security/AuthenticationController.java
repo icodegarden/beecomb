@@ -20,7 +20,7 @@ import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Sec
 import io.github.icodegarden.beecomb.master.pojo.view.UserVO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
-import io.github.icodegarden.commons.springboot.web.util.WebUtils;
+import io.github.icodegarden.commons.springboot.web.util.ServletWebUtils;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,7 +57,7 @@ public class AuthenticationController {
 					jwtConfig.getTokenExpireSeconds()));
 			String jwt = jwtCreator.createJWT(authentication);
 
-			WebUtils.responseJWT(jwt, response);
+			ServletWebUtils.responseJWT(jwt, response);
 
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 			return ResponseEntity.ok(new UserVO(userDetails.getUser()));

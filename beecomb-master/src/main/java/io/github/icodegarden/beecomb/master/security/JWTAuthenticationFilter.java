@@ -27,6 +27,7 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
+import io.github.icodegarden.commons.springboot.web.util.ServletWebUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
@@ -91,7 +92,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 							&& jwtResolver.getExpiresAt().isBefore(LocalDateTime.now().plusMinutes(15))) {
 						JWTCreator jwtCreator = new JWTCreator(jwtProperties);
 						jwt = jwtCreator.createJWT(authentication);
-						WebUtils.responseJWT(jwt, response);
+						ServletWebUtils.responseJWT(jwt, response);
 					}
 
 //					WebUtils.setJWT(jwt);
@@ -99,19 +100,19 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 					/**
 					 * 过期
 					 */
-					WebUtils.responseWrite(401, null, "Not Authenticated, Token Expired", response);
+					ServletWebUtils.responseWrite(401, null, "Not Authenticated, Token Expired", response);
 					return;
 				} catch (JWTDecodeException | SignatureVerificationException e) {
 					/**
 					 * jwt token不合法
 					 */
-					WebUtils.responseWrite(401, null, "Not Authenticated, Token Invalid", response);
+					ServletWebUtils.responseWrite(401, null, "Not Authenticated, Token Invalid", response);
 					return;
 				} catch (JWTVerificationException e) {
 					/**
 					 * 算法或字段设置有问题
 					 */
-					WebUtils.responseWrite(500, null, "Verification Token Error", response);
+					ServletWebUtils.responseWrite(500, null, "Verification Token Error", response);
 					return;
 				}
 				

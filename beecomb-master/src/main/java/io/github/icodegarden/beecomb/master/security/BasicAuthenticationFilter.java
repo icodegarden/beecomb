@@ -35,6 +35,7 @@ import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
 import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
+import io.github.icodegarden.commons.springboot.web.util.ServletWebUtils;
 import io.github.icodegarden.commons.springboot.web.util.WebUtils;
 
 /**
@@ -105,7 +106,7 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 					/**
 					 * 解码失败401
 					 */
-					WebUtils.responseWrite(401, null, "Access Denied, Unauthorized, Bad Token", response);
+					ServletWebUtils.responseWrite(401, null, "Access Denied, Unauthorized, Bad Token", response);
 					return;
 				}
 
@@ -137,16 +138,16 @@ public class BasicAuthenticationFilter extends GenericFilterBean {
 				}
 
 				if (user == null) {
-					WebUtils.responseWrite(401, null, "Access Denied, Bad Credentials", response);
+					ServletWebUtils.responseWrite(401, null, "Access Denied, Bad Credentials", response);
 					return;
 				}
 				if (!user.getActived()) {
-					WebUtils.responseWrite(401, null, "Access Denied, Not Activated", response);
+					ServletWebUtils.responseWrite(401, null, "Access Denied, Not Activated", response);
 					return;
 				}
 				boolean matches = userService.matchesPassword(password, user.getPassword());
 				if (!matches) {
-					WebUtils.responseWrite(401, null, "Access Denied, Bad Credentials", response);
+					ServletWebUtils.responseWrite(401, null, "Access Denied, Bad Credentials", response);
 					return;
 				}
 
