@@ -12,9 +12,9 @@ import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZnodePatternZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperRegisteredInstance;
 import lombok.extern.slf4j.Slf4j;
 
 /**

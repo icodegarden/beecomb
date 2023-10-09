@@ -21,13 +21,13 @@ import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.exception.RequesterRejectedExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
-import io.github.icodegarden.commons.lang.metrics.Metrics;
-import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
-import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceDiscovery;
+import io.github.icodegarden.commons.lang.metricsregistry.Metrics;
+import io.github.icodegarden.commons.lang.metricsregistry.Metrics.DimensionName;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
 import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperRegisteredInstance;
 import lombok.extern.slf4j.Slf4j;
 
 /**

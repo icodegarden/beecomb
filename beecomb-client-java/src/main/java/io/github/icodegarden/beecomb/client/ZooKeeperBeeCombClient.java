@@ -10,11 +10,11 @@ import io.github.icodegarden.commons.exchange.Protocol;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.RoundRobinInstanceLoadBalance;
-import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
-import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceDiscovery;
+import io.github.icodegarden.commons.lang.metricsregistry.RegisteredInstance;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
-import io.github.icodegarden.commons.zookeeper.registry.ZnodePatternZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZnodePatternZooKeeperInstanceDiscovery;
 
 /**
  * 

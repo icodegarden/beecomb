@@ -14,7 +14,7 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.JobHandlerRegistration;
 import io.github.icodegarden.beecomb.test.ZookeeperBuilder4Test;
 import io.github.icodegarden.commons.lang.util.JsonUtils;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceRegistry;
 
 /**
  * 

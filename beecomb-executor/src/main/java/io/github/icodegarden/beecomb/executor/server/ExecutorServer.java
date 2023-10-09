@@ -20,10 +20,10 @@ import io.github.icodegarden.commons.exchange.nio.EntryMessageHandler;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
 import io.github.icodegarden.commons.lang.endpoint.CloseableGracefullyShutdown;
 import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
-import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
-import io.github.icodegarden.commons.lang.metrics.Metrics;
-import io.github.icodegarden.commons.lang.registry.InstanceRegistry;
-import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceMetrics;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceRegistry;
+import io.github.icodegarden.commons.lang.metricsregistry.Metrics;
+import io.github.icodegarden.commons.lang.metricsregistry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
 import io.github.icodegarden.commons.lang.tuple.NullableTuples;
 import io.github.icodegarden.commons.lang.tuple.Tuple2;
@@ -31,9 +31,9 @@ import io.github.icodegarden.commons.lang.tuple.Tuples;
 import io.github.icodegarden.commons.nio.NioServer;
 import io.github.icodegarden.commons.nio.java.JavaNioServer;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.metrics.ZnodeDataZooKeeperInstanceMetrics;
-import io.github.icodegarden.commons.zookeeper.metrics.ZooKeeperInstanceMetrics;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZnodeDataZooKeeperInstanceMetrics;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceMetrics;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceRegistry;
 
 /**
  * 

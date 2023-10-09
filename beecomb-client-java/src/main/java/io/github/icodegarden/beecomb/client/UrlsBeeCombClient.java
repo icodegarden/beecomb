@@ -12,8 +12,8 @@ import io.github.icodegarden.commons.exchange.Protocol;
 import io.github.icodegarden.commons.exchange.ShardExchangeResult;
 import io.github.icodegarden.commons.exchange.loadbalance.DefaultMetricsInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
-import io.github.icodegarden.commons.lang.registry.DefaultRegisteredInstance;
-import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
+import io.github.icodegarden.commons.lang.metricsregistry.DefaultRegisteredInstance;
+import io.github.icodegarden.commons.lang.metricsregistry.RegisteredInstance;
 
 /**
  * 

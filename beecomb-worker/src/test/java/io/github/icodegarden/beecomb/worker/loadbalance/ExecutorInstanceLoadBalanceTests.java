@@ -21,9 +21,9 @@ import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean.JobHandlerRegistration;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
-import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
-import io.github.icodegarden.commons.lang.metrics.Metrics;
-import io.github.icodegarden.commons.lang.metrics.Metrics.DimensionName;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceMetrics;
+import io.github.icodegarden.commons.lang.metricsregistry.Metrics;
+import io.github.icodegarden.commons.lang.metricsregistry.Metrics.DimensionName;
 
 /**
  * 

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.commons.lang.annotation.NotNull;
-import io.github.icodegarden.commons.lang.metrics.OverloadCalc;
+import io.github.icodegarden.commons.lang.metricsregistry.OverloadCalc;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

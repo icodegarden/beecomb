@@ -9,8 +9,8 @@ import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
 import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
-import io.github.icodegarden.commons.lang.metrics.InstanceMetrics;
-import io.github.icodegarden.commons.lang.registry.FilterableInstanceDiscovery;
+import io.github.icodegarden.commons.lang.metricsregistry.FilterableInstanceDiscovery;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceMetrics;
 
 /**
  * 

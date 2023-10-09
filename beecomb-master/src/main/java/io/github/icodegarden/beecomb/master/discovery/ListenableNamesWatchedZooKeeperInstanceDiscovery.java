@@ -5,9 +5,9 @@ import java.util.List;
 import org.apache.zookeeper.WatchedEvent;
 
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.registry.NamesWatchedZooKeeperInstanceDiscovery;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceDiscovery;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.NamesWatchedZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperRegisteredInstance;
 import lombok.extern.slf4j.Slf4j;
 
 /**

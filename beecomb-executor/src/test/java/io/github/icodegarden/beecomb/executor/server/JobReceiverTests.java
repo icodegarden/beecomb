@@ -14,7 +14,7 @@ import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.server.JobReceiver;
 import io.github.icodegarden.commons.exchange.exception.ExchangeFailedReason;
-import io.github.icodegarden.commons.lang.metrics.MetricsOverload;
+import io.github.icodegarden.commons.lang.metricsregistry.MetricsOverload;
 import io.github.icodegarden.commons.lang.result.Result2;
 
 /**

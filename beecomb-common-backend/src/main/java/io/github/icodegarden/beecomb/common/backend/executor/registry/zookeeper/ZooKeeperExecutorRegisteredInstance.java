@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.common.backend.executor.registry.zookeeper
 
 import io.github.icodegarden.beecomb.common.backend.executor.registry.DefaultExecutorRegisteredInstance;
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperRegisteredInstance;
 
 /**
  * 

@@ -23,8 +23,8 @@ import io.github.icodegarden.commons.lang.util.JsonUtils;
 import io.github.icodegarden.commons.zookeeper.NewZooKeeperListener;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
 import io.github.icodegarden.commons.zookeeper.exception.ZooKeeperException;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperInstanceRegistry;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceRegistry;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperRegisteredInstance;
 
 /**
  * 

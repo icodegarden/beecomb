@@ -8,7 +8,7 @@ import java.time.temporal.ChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.metrics.OverloadCalc;
+import io.github.icodegarden.commons.lang.metricsregistry.OverloadCalc;
 import io.github.icodegarden.commons.lang.util.SystemUtils;
 
 /**

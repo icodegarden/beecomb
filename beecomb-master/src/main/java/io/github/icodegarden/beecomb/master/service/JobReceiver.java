@@ -10,7 +10,7 @@ import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.commons.exchange.exception.ExchangeException;
 import io.github.icodegarden.commons.exchange.loadbalance.MetricsInstance;
 import io.github.icodegarden.commons.lang.concurrent.NamedThreadFactory;
-import io.github.icodegarden.commons.lang.registry.RegisteredInstance;
+import io.github.icodegarden.commons.lang.metricsregistry.RegisteredInstance;
 import io.github.icodegarden.commons.lang.result.Result2;
 import io.github.icodegarden.commons.lang.result.Results;
 import io.github.icodegarden.commons.lang.spec.response.ClientLimitedErrorCodeException;

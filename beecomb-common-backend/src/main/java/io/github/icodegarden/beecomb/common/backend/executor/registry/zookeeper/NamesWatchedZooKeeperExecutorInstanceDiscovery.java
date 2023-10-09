@@ -6,10 +6,10 @@ import java.util.List;
 
 import io.github.icodegarden.beecomb.common.backend.executor.registry.ExecutorInstanceDiscovery;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
-import io.github.icodegarden.commons.lang.registry.InstanceDiscovery;
+import io.github.icodegarden.commons.lang.metricsregistry.InstanceDiscovery;
 import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.registry.NamesWatchedZooKeeperInstanceDiscovery;
-import io.github.icodegarden.commons.zookeeper.registry.ZooKeeperRegisteredInstance;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.NamesWatchedZooKeeperInstanceDiscovery;
+import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperRegisteredInstance;
 
 /**
  * 
