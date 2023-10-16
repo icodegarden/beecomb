@@ -20,7 +20,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExe
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordCountVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordVO;
 import io.github.icodegarden.beecomb.common.backend.util.TableDataCountUtils;
-import io.github.icodegarden.commons.lang.util.PageHelperUtils;
+import io.github.icodegarden.nutrient.mybatis.util.PageHelperUtils;
 
 /**
  * 

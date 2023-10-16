@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.worker.pojo.transfer;
 
 import java.time.LocalDateTime;
 
-import io.github.icodegarden.commons.exchange.exception.NoQualifiedInstanceExchangeException;
+import io.github.icodegarden.nutrient.exchange.exception.NoQualifiedInstanceExchangeException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;

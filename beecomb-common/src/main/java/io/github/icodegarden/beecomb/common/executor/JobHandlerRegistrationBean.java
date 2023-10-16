@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.Set;
 
-import io.github.icodegarden.commons.lang.annotation.Nullable;
+import io.github.icodegarden.nutrient.lang.annotation.Nullable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

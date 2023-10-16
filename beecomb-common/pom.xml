@@ -21,8 +21,8 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>${commons.version}</version>
+			<artifactId>nutrient-lang</artifactId>
+			<version>${nutrient.version}</version>
 		</dependency>
 		
 		<dependency>

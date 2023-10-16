@@ -11,7 +11,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobDetai
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobMainDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.springboot.SpringContext;
+import io.github.icodegarden.nursery.springboot.SpringContext;
 
 /**
  * 

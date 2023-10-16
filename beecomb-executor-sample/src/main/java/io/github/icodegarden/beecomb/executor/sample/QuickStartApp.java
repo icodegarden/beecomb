@@ -17,7 +17,7 @@ import io.github.icodegarden.beecomb.executor.BeeCombExecutor;
 import io.github.icodegarden.beecomb.executor.ZooKeeperSupportInstanceProperties;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.sample.handler.QuickStartJobHandler;
-import io.github.icodegarden.commons.exchange.exception.ExchangeException;
+import io.github.icodegarden.nutrient.exchange.exception.ExchangeException;
 import lombok.extern.slf4j.Slf4j;
 
 /**

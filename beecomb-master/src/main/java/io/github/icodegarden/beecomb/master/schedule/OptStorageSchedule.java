@@ -1,8 +1,8 @@
 package io.github.icodegarden.beecomb.master.schedule;
 
 import io.github.icodegarden.beecomb.master.manager.TableManager;
-import io.github.icodegarden.commons.lang.concurrent.lock.DistributedLock;
-import io.github.icodegarden.commons.lang.schedule.LockSupportSchedule;
+import io.github.icodegarden.nutrient.lang.concurrent.lock.DistributedLock;
+import io.github.icodegarden.nutrient.lang.schedule.LockSupportSchedule;
 import lombok.extern.slf4j.Slf4j;
 
 /**

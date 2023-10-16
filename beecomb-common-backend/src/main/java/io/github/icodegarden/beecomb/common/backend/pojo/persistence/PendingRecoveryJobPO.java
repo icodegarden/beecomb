@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.common.backend.pojo.persistence;
 
 import java.time.LocalDateTime;
 
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;

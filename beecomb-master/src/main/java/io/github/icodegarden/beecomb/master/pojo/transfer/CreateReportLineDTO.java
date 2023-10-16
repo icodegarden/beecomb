@@ -1,9 +1,8 @@
 package io.github.icodegarden.beecomb.master.pojo.transfer;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
 import io.github.icodegarden.beecomb.master.pojo.persistence.ReportLinePO;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**

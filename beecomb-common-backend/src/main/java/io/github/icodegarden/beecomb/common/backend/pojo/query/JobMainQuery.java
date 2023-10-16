@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.query.BaseQuery;
+import io.github.icodegarden.nutrient.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;

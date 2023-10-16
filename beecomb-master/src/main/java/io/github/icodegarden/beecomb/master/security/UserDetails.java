@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.springframework.security.core.GrantedAuthority;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.commons.springboot.security.SpringUser;
+import io.github.icodegarden.nursery.springboot.security.SpringUser;
 
 /**
  * @author Fangfang.Xu

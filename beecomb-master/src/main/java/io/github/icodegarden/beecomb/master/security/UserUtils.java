@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.master.security;
 
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
 
 /**
  * 

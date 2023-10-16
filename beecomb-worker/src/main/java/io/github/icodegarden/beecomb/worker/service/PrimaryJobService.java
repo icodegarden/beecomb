@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
-import io.github.icodegarden.commons.lang.result.Result1;
-import io.github.icodegarden.commons.lang.result.Result2;
+import io.github.icodegarden.nutrient.lang.result.Result1;
+import io.github.icodegarden.nutrient.lang.result.Result2;
 
 /**
  * 

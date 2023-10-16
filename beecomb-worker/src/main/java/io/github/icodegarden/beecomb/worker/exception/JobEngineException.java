@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.worker.exception;
 
 import java.util.Objects;
 
-import io.github.icodegarden.commons.lang.annotation.NotNull;
+import io.github.icodegarden.nutrient.lang.annotation.NotNull;
 
 /**
  * 

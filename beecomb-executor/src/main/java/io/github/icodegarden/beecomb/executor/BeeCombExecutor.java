@@ -7,8 +7,8 @@ import io.github.icodegarden.beecomb.executor.registry.JobHandler;
 import io.github.icodegarden.beecomb.executor.registry.JobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.registry.zookeeper.ZooKeeperJobHandlerRegistry;
 import io.github.icodegarden.beecomb.executor.server.ExecutorServer;
-import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
-import io.github.icodegarden.commons.zookeeper.metricsregistry.ZooKeeperInstanceRegistry;
+import io.github.icodegarden.nutrient.lang.lifecycle.GracefullyShutdown;
+import io.github.icodegarden.nutrient.zookeeper.metricsregistry.ZooKeeperInstanceRegistry;
 
 /**
  * Executor需要：<br>

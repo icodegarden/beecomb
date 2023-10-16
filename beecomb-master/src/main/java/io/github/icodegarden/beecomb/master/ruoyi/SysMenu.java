@@ -3,8 +3,8 @@ package io.github.icodegarden.beecomb.master.ruoyi;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /**
  * 菜单权限表 sys_menu

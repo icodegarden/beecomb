@@ -16,8 +16,8 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExe
 import io.github.icodegarden.beecomb.common.backend.service.AbstractBackendJobService;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
-import io.github.icodegarden.commons.exchange.exception.ExchangeException;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.exchange.exception.ExchangeException;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 
 /**
  * 

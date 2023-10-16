@@ -9,7 +9,7 @@ import io.github.icodegarden.beecomb.worker.core.JobEngine;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.WorkerException;
 import io.github.icodegarden.beecomb.worker.service.JobService;
-import io.github.icodegarden.commons.lang.result.Result3;
+import io.github.icodegarden.nutrient.lang.result.Result3;
 import lombok.extern.slf4j.Slf4j;
 
 /**

@@ -2,8 +2,8 @@ package io.github.icodegarden.beecomb.common.backend.util;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
-import io.github.icodegarden.commons.lang.query.TableDataCountManager;
-import io.github.icodegarden.commons.springboot.SpringContext;
+import io.github.icodegarden.nursery.springboot.SpringContext;
+import io.github.icodegarden.nutrient.lang.query.TableDataCountManager;
 
 /**
  * 

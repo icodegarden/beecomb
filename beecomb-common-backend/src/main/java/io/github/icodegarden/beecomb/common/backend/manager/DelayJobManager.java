@@ -14,7 +14,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.query.DelayJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateDelayJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
-import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
+import io.github.icodegarden.nursery.springboot.exception.SQLConstraintException;
 
 /**
  * 

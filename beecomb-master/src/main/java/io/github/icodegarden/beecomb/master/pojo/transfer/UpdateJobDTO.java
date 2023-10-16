@@ -1,14 +1,13 @@
 package io.github.icodegarden.beecomb.master.pojo.transfer;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.Length;
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
 import io.github.icodegarden.beecomb.common.constant.JobConstants;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

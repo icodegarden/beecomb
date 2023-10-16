@@ -4,7 +4,7 @@ import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
 import io.github.icodegarden.beecomb.common.constant.JobConstants;
-import io.github.icodegarden.commons.lang.util.CronUtils;
+import io.github.icodegarden.nutrient.lang.util.CronUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

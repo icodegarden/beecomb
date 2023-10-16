@@ -2,8 +2,8 @@ package io.github.icodegarden.beecomb.master.security;
 
 import org.junit.jupiter.api.Test;
 
-import io.github.icodegarden.commons.springboot.security.SecurityUtils;
-import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
+import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
+import io.github.icodegarden.nursery.springboot.security.SpringAuthentication;
 
 /**
  * 

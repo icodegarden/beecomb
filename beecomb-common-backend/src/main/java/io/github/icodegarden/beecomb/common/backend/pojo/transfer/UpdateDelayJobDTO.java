@@ -2,13 +2,12 @@ package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
 import java.util.Arrays;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.beecomb.common.Validateable;
 import io.github.icodegarden.beecomb.common.constant.JobConstants;
 import io.github.icodegarden.beecomb.common.util.ClassUtils;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**

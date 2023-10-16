@@ -8,8 +8,8 @@ import java.time.temporal.ChronoUnit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.metricsregistry.OverloadCalc;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.metricsregistry.OverloadCalc;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 
 /**
  * 对Executable来说，这里的所有字段只要数据库有值，就要构造进来的

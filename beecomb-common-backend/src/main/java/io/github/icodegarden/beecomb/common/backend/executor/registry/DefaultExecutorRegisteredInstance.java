@@ -1,7 +1,7 @@
 package io.github.icodegarden.beecomb.common.backend.executor.registry;
 
 import io.github.icodegarden.beecomb.common.executor.JobHandlerRegistrationBean;
-import io.github.icodegarden.commons.lang.metricsregistry.DefaultRegisteredInstance;
+import io.github.icodegarden.nutrient.lang.metricsregistry.DefaultRegisteredInstance;
 
 /**
  * 

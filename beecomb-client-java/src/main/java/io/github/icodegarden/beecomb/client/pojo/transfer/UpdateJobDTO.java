@@ -2,8 +2,8 @@ package io.github.icodegarden.beecomb.client.pojo.transfer;
 
 import org.springframework.util.Assert;
 
-import io.github.icodegarden.commons.lang.annotation.Length;
-import io.github.icodegarden.commons.lang.annotation.NotNull;
+import io.github.icodegarden.nutrient.lang.annotation.Length;
+import io.github.icodegarden.nutrient.lang.annotation.NotNull;
 
 /**
  * 

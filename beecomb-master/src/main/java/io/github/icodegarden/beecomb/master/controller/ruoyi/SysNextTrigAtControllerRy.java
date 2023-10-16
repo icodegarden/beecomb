@@ -1,7 +1,5 @@
 package io.github.icodegarden.beecomb.master.controller.ruoyi;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -12,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import io.github.icodegarden.beecomb.master.mapper.UpdateNextTrigAtMapper;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

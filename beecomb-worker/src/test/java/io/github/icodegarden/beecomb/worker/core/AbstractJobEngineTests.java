@@ -21,9 +21,9 @@ import io.github.icodegarden.beecomb.test.Properties4Test;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
-import io.github.icodegarden.commons.lang.metricsregistry.MetricsOverload;
-import io.github.icodegarden.commons.lang.result.Result3;
-import io.github.icodegarden.commons.lang.result.Results;
+import io.github.icodegarden.nutrient.lang.metricsregistry.MetricsOverload;
+import io.github.icodegarden.nutrient.lang.result.Result3;
+import io.github.icodegarden.nutrient.lang.result.Results;
 
 /**
  * 

@@ -1,8 +1,5 @@
 package io.github.icodegarden.beecomb.master.security;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.NotEmpty;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,9 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
 import io.github.icodegarden.beecomb.master.pojo.view.UserVO;
-import io.github.icodegarden.commons.springboot.security.SecurityUtils;
-import io.github.icodegarden.commons.springboot.security.SpringAuthentication;
-import io.github.icodegarden.commons.springboot.web.util.ServletWebUtils;
+import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
+import io.github.icodegarden.nursery.springboot.security.SpringAuthentication;
+import io.github.icodegarden.nursery.springboot.web.servlet.util.ServletWebUtils;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

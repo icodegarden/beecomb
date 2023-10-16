@@ -1,8 +1,8 @@
 package io.github.icodegarden.beecomb.client.pojo.transfer;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.annotation.NotEmpty;
-import io.github.icodegarden.commons.lang.annotation.NotNull;
+import io.github.icodegarden.nutrient.lang.annotation.NotEmpty;
+import io.github.icodegarden.nutrient.lang.annotation.NotNull;
 
 /**
  * 

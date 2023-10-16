@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.annotation.NotNull;
-import io.github.icodegarden.commons.lang.metricsregistry.OverloadCalc;
+import io.github.icodegarden.nutrient.lang.annotation.NotNull;
+import io.github.icodegarden.nutrient.lang.metricsregistry.OverloadCalc;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

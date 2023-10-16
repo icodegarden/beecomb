@@ -30,36 +30,33 @@
 			<version>1.2.0</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-mybatis</artifactId>
-			<version>${commons.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-exchange</artifactId>
-			<version>${commons.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-nio-netty</artifactId>
-			<version>${commons.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-zookeeper</artifactId>
-			<version>${commons.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-springboot2</artifactId>
-			<version>${commons.version}</version>
-		</dependency>
 		
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>nursery-spring-boot-starter-web-servlet</artifactId>
+			<version>${nursery.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>nursery-spring-boot-starter-mybatis</artifactId>
+			<version>${nursery.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>nutrient-exchange</artifactId>
+			<version>${nutrient.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>nutrient-nio-netty</artifactId>
+			<version>${nutrient.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.icodegarden</groupId>
+			<artifactId>nursery-spring-boot-starter-zookeeper</artifactId>
+			<version>${nursery.version}</version>
+		</dependency>
+		
 		<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -90,20 +87,12 @@
 		    <artifactId>java-jwt</artifactId>
 		    <version>3.18.3</version>
 		</dependency>
-		<dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
 
 		<dependency>
-			<groupId>com.github.pagehelper</groupId>
-			<artifactId>pagehelper-spring-boot-starter</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-		</dependency>
+	      	<groupId>com.mysql</groupId>
+	      	<artifactId>mysql-connector-j</artifactId>
+	      	<scope>runtime</scope>
+	    </dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -114,18 +103,11 @@
 	</dependencies>
 	
 	<dependencyManagement>
-<!-- 	<parent> -->
-<!-- 		<groupId>org.springframework.boot</groupId> -->
-<!-- 		<artifactId>spring-boot-starter-parent</artifactId> -->
-<!-- 		<version>2.5.5</version> -->
-<!-- 		<relativePath /> -->
-<!-- 	</parent> -->
    	 	<dependencies>
 	        <dependency>
-	            <!-- Import dependency management from Spring Boot -->
-	            <groupId>org.springframework.boot</groupId>
-	            <artifactId>spring-boot-dependencies</artifactId>
-	            <version>2.5.5</version>
+	            <groupId>io.github.icodegarden</groupId>
+	            <artifactId>nursery-spring-boot-dependencies</artifactId>
+	            <version>${nursery.version}</version>
 	            <type>pom</type>
 	            <scope>import</scope>
 	        </dependency>

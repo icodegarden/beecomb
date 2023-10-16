@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.worker.exception;
 
-import io.github.icodegarden.commons.lang.metricsregistry.Metrics;
+import io.github.icodegarden.nutrient.lang.metricsregistry.Metrics;
 
 /**
  * 

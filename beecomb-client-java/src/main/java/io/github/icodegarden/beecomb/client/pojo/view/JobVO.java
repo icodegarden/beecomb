@@ -3,7 +3,7 @@ package io.github.icodegarden.beecomb.client.pojo.view;
 import java.time.LocalDateTime;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
-import io.github.icodegarden.commons.lang.annotation.NotNull;
+import io.github.icodegarden.nutrient.lang.annotation.NotNull;
 
 /**
  * 

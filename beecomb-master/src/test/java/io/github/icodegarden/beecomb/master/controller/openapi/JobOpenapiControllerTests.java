@@ -33,7 +33,7 @@ import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
-import io.github.icodegarden.commons.lang.util.JsonUtils;
+import io.github.icodegarden.nutrient.lang.util.JsonUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

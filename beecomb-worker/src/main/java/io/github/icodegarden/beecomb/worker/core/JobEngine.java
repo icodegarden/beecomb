@@ -2,8 +2,8 @@ package io.github.icodegarden.beecomb.worker.core;
 
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
-import io.github.icodegarden.commons.lang.endpoint.GracefullyShutdown;
-import io.github.icodegarden.commons.lang.result.Result3;
+import io.github.icodegarden.nutrient.lang.lifecycle.GracefullyShutdown;
+import io.github.icodegarden.nutrient.lang.result.Result3;
 
 /**
  * 

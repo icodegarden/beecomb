@@ -14,7 +14,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.query.ScheduleJobQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateScheduleJobDTO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.ScheduleJobVO;
-import io.github.icodegarden.commons.springboot.exception.SQLConstraintException;
+import io.github.icodegarden.nursery.springboot.exception.SQLConstraintException;
 
 /**
  * 

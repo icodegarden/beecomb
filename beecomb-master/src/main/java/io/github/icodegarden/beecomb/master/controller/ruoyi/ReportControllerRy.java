@@ -16,8 +16,8 @@ import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.security.UserUtils;
 import io.github.icodegarden.beecomb.master.service.ReportService;
-import io.github.icodegarden.commons.lang.util.JsonUtils;
-import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
+import io.github.icodegarden.nutrient.lang.util.JsonUtils;
 
 /**
  * 

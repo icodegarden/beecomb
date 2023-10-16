@@ -1,8 +1,5 @@
 package io.github.icodegarden.beecomb.master.controller.ruoyi;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.Max;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,7 +15,9 @@ import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordMana
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.commons.lang.query.BaseQuery;
+import io.github.icodegarden.nutrient.lang.query.BaseQuery;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Max;
 
 /**
  * 

@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.icodegarden.beecomb.common.executor.DelayJob;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 /**
  * 
  * @author Fangfang.Xu

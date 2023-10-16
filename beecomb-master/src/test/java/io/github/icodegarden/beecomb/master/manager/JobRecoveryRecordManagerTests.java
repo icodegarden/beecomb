@@ -18,7 +18,7 @@ import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery.With;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 
 /**
  * 

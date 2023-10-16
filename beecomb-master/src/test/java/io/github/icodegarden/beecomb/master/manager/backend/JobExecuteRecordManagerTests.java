@@ -13,7 +13,7 @@ import io.github.icodegarden.beecomb.common.backend.mapper.JobExecuteRecordMappe
 import io.github.icodegarden.beecomb.common.backend.pojo.data.JobExecuteRecordDO;
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.transfer.CreateJobExecuteRecordDTO;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 
 /**
  * 

@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
-import io.github.icodegarden.commons.lang.tuple.NullableTuple2;
-import io.github.icodegarden.commons.lang.tuple.NullableTuples;
+import io.github.icodegarden.nutrient.lang.tuple.NullableTuple2;
+import io.github.icodegarden.nutrient.lang.tuple.NullableTuples;
 
 @Service
 public class ISysMenuService {

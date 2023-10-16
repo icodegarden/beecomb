@@ -10,8 +10,8 @@ import org.springframework.beans.BeanUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.icodegarden.beecomb.common.executor.ScheduleJob;
-import io.github.icodegarden.commons.lang.util.CronUtils;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.CronUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 
 /**
  * 

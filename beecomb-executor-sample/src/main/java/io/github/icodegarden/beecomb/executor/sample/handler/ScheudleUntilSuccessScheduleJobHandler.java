@@ -8,7 +8,7 @@ import org.springframework.util.Assert;
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
 import io.github.icodegarden.beecomb.common.executor.Job;
 import io.github.icodegarden.beecomb.executor.registry.JobHandler;
-import io.github.icodegarden.commons.lang.util.JsonUtils;
+import io.github.icodegarden.nutrient.lang.util.JsonUtils;
 import lombok.Data;
 
 /**

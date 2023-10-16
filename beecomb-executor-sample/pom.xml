@@ -15,8 +15,6 @@
 	<name>${project.artifactId}</name>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.package.skip>true</maven.package.skip> 
 		<maven.install.skip>true</maven.install.skip>
 		<maven.deploy.skip>true</maven.deploy.skip> 
@@ -33,11 +31,6 @@
 			<artifactId>beecomb-client-java</artifactId>
 			<version>1.2.0</version>
 		</dependency>
-		<dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.20</version> 
-        </dependency>
 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import io.github.icodegarden.beecomb.common.enums.JobType;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.CreateJobOpenapiDTO;
-import io.github.icodegarden.commons.exchange.loadbalance.DefaultMetricsInstance;
+import io.github.icodegarden.nutrient.exchange.loadbalance.DefaultMetricsInstance;
 
 /**
  * 

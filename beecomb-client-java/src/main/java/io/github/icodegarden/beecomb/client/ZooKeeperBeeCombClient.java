@@ -4,17 +4,16 @@ import java.io.IOException;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
-import io.github.icodegarden.commons.exchange.CandidatesSwitchableLoadBalanceExchanger;
-import io.github.icodegarden.commons.exchange.Exchanger;
-import io.github.icodegarden.commons.exchange.Protocol;
-import io.github.icodegarden.commons.exchange.ShardExchangeResult;
-import io.github.icodegarden.commons.exchange.loadbalance.InstanceLoadBalance;
-import io.github.icodegarden.commons.exchange.loadbalance.RoundRobinInstanceLoadBalance;
-import io.github.icodegarden.commons.lang.metricsregistry.InstanceDiscovery;
-import io.github.icodegarden.commons.lang.metricsregistry.RegisteredInstance;
-import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
-import io.github.icodegarden.commons.zookeeper.metricsregistry.ZnodePatternZooKeeperInstanceDiscovery;
+import io.github.icodegarden.nutrient.exchange.CandidatesSwitchableLoadBalanceExchanger;
+import io.github.icodegarden.nutrient.exchange.Exchanger;
+import io.github.icodegarden.nutrient.exchange.Protocol;
+import io.github.icodegarden.nutrient.exchange.ShardExchangeResult;
+import io.github.icodegarden.nutrient.exchange.loadbalance.InstanceLoadBalance;
+import io.github.icodegarden.nutrient.exchange.loadbalance.RoundRobinInstanceLoadBalance;
+import io.github.icodegarden.nutrient.lang.metricsregistry.InstanceDiscovery;
+import io.github.icodegarden.nutrient.lang.metricsregistry.RegisteredInstance;
+import io.github.icodegarden.nutrient.zookeeper.ZooKeeperHolder;
+import io.github.icodegarden.nutrient.zookeeper.metricsregistry.ZnodePatternZooKeeperInstanceDiscovery;
 
 /**
  * 
@@ -33,7 +32,7 @@ public class ZooKeeperBeeCombClient extends AbstractBeeCombClient {
 		this.clientProperties = clientProperties;
 
 		ZooKeeper zookeeper = clientProperties.getZookeeper();
-		Config config = new ZooKeeperHolder.Config(zookeeper.getConnectString(), zookeeper.getSessionTimeout(),
+		ZooKeeperHolder.Config config = new ZooKeeperHolder.Config(zookeeper.getConnectString(), zookeeper.getSessionTimeout(),
 				zookeeper.getConnectTimeout());
 		config.setAclAuth(zookeeper.getAclAuth());
 		

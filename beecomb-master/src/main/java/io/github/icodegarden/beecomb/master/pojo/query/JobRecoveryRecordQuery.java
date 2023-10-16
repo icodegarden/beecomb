@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.pojo.query;
 
-import io.github.icodegarden.commons.lang.query.BaseQuery;
+import io.github.icodegarden.nutrient.lang.query.BaseQuery;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;

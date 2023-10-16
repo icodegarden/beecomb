@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
 
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
-import io.github.icodegarden.commons.lang.query.BaseQuery;
+import io.github.icodegarden.nutrient.lang.query.BaseQuery;
 
 /**
  * web层通用数据处理

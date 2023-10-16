@@ -3,11 +3,14 @@ package io.github.icodegarden.beecomb.master.ruoyi;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import javax.validation.constraints.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.github.icodegarden.beecomb.master.ruoyi.Excel.ColumnType;
 import io.github.icodegarden.beecomb.master.ruoyi.Excel.Type;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /**
  * 用户对象 sys_user

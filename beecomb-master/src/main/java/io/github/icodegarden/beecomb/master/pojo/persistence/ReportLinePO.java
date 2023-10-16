@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.util.StringUtils;
 
-import io.github.icodegarden.commons.lang.annotation.Nullable;
-import io.github.icodegarden.commons.lang.util.JsonUtils;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.annotation.Nullable;
+import io.github.icodegarden.nutrient.lang.util.JsonUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;

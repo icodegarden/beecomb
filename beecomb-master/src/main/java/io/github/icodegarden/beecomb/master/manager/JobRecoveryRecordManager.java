@@ -15,7 +15,7 @@ import io.github.icodegarden.beecomb.master.pojo.persistence.JobRecoveryRecordPO
 import io.github.icodegarden.beecomb.master.pojo.query.JobRecoveryRecordQuery;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateOrUpdateJobRecoveryRecordDTO;
 import io.github.icodegarden.beecomb.master.pojo.view.JobRecoveryRecordVO;
-import io.github.icodegarden.commons.lang.util.PageHelperUtils;
+import io.github.icodegarden.nutrient.mybatis.util.PageHelperUtils;
 
 /**
  * 

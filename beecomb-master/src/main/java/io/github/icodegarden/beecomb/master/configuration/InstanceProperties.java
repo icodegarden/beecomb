@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.master.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

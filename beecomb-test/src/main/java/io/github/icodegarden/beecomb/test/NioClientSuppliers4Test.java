@@ -8,11 +8,11 @@ import static org.mockito.Mockito.mock;
 import java.util.List;
 
 import io.github.icodegarden.beecomb.common.executor.ExecuteJobResult;
-import io.github.icodegarden.commons.exchange.InstanceExchangeResult;
-import io.github.icodegarden.commons.lang.tuple.Tuple2;
-import io.github.icodegarden.commons.lang.tuple.Tuples;
-import io.github.icodegarden.commons.nio.NioClient;
-import io.github.icodegarden.commons.nio.pool.NioClientSupplier;
+import io.github.icodegarden.nutrient.exchange.InstanceExchangeResult;
+import io.github.icodegarden.nutrient.lang.tuple.Tuple2;
+import io.github.icodegarden.nutrient.lang.tuple.Tuples;
+import io.github.icodegarden.nutrient.nio.NioClient;
+import io.github.icodegarden.nutrient.nio.pool.NioClientSupplier;
 
 /**
  * 

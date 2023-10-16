@@ -1,10 +1,9 @@
 package io.github.icodegarden.beecomb.master.pojo.transfer.api;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO.PlatformRole;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**

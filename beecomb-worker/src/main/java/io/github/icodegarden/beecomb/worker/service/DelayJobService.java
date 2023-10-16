@@ -17,11 +17,11 @@ import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
-import io.github.icodegarden.commons.exchange.exception.ExchangeException;
-import io.github.icodegarden.commons.lang.result.Result1;
-import io.github.icodegarden.commons.lang.result.Result2;
-import io.github.icodegarden.commons.lang.result.Results;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.exchange.exception.ExchangeException;
+import io.github.icodegarden.nutrient.lang.result.Result1;
+import io.github.icodegarden.nutrient.lang.result.Result2;
+import io.github.icodegarden.nutrient.lang.result.Results;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 import lombok.extern.slf4j.Slf4j;
 
 /**

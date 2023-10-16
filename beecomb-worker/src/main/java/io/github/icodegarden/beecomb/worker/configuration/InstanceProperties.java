@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 
 import io.github.icodegarden.beecomb.common.properties.ZooKeeper;
-import io.github.icodegarden.commons.lang.util.SystemUtils;
+import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

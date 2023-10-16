@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.client.security;
 
-import io.github.icodegarden.commons.lang.tuple.Tuple2;
+import io.github.icodegarden.nutrient.lang.tuple.Tuple2;
 
 /**
  * 

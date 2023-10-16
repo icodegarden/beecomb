@@ -3,8 +3,8 @@ package io.github.icodegarden.beecomb.client.security;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
-import io.github.icodegarden.commons.lang.tuple.Tuple2;
-import io.github.icodegarden.commons.lang.tuple.Tuples;
+import io.github.icodegarden.nutrient.lang.tuple.Tuple2;
+import io.github.icodegarden.nutrient.lang.tuple.Tuples;
 
 /**
  * 

@@ -1,6 +1,6 @@
 package io.github.icodegarden.beecomb.master.discovery;
 
-import io.github.icodegarden.commons.lang.metricsregistry.RegisteredInstance;
+import io.github.icodegarden.nutrient.lang.metricsregistry.RegisteredInstance;
 
 /**
  * 

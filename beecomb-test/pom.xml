@@ -27,15 +27,16 @@
 			<artifactId>beecomb-common-backend</artifactId>
 			<version>1.2.0</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-exchange</artifactId>
-			<version>${commons.version}</version>
+			<artifactId>nutrient-exchange</artifactId>
+			<version>${nutrient.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
-			<artifactId>commons-zookeeper</artifactId>
-			<version>${commons.version}</version>
+			<artifactId>nutrient-zookeeper</artifactId>
+			<version>${nutrient.version}</version>
 		</dependency>
 		
 		<dependency>

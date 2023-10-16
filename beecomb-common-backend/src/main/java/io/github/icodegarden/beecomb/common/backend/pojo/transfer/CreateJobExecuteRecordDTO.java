@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.common.backend.pojo.transfer;
 
 import java.time.LocalDateTime;
 
-import io.github.icodegarden.commons.lang.annotation.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**

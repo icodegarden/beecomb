@@ -2,7 +2,7 @@ package io.github.icodegarden.beecomb.common.pojo.transfer;
 
 import java.io.Serializable;
 
-import io.github.icodegarden.commons.lang.BodyObject;
+import io.github.icodegarden.nutrient.lang.BodyObject;
 
 /**
  * 

@@ -3,8 +3,7 @@ package io.github.icodegarden.beecomb.test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder;
-import io.github.icodegarden.commons.zookeeper.ZooKeeperHolder.Config;
+import io.github.icodegarden.nutrient.zookeeper.ZooKeeperHolder;
 
 /**
  * 
@@ -17,7 +16,7 @@ public abstract class ZookeeperBuilder4Test extends Properties4Test {
 
 	@BeforeEach
 	void initZK() throws Exception {
-		Config config = new ZooKeeperHolder.Config(zkConnectString, 30000, 10000);
+		ZooKeeperHolder.Config config = new ZooKeeperHolder.Config(zkConnectString, 30000, 10000);
 		config.setAclAuth("beecomb:beecomb");
 		zkh = new ZooKeeperHolder(config);
 	}

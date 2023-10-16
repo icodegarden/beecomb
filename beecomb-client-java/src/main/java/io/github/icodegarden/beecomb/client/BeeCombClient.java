@@ -10,7 +10,7 @@ import io.github.icodegarden.beecomb.client.pojo.view.DeleteJobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.JobVO;
 import io.github.icodegarden.beecomb.client.pojo.view.PageVO;
 import io.github.icodegarden.beecomb.client.pojo.view.UpdateJobVO;
-import io.github.icodegarden.commons.exchange.exception.ExchangeException;
+import io.github.icodegarden.nutrient.exchange.exception.ExchangeException;
 
 /**
  * 
