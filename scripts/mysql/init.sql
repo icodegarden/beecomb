@@ -7,7 +7,7 @@
 DROP TABLE IF EXISTS `job_main`;
 CREATE TABLE `job_main` (
   `id` bigint unsigned NOT NULL,
-  `uuid` varchar(64) comment '用户可以指定,默认null',
+  `uuid` varchar(64) NOT NULL,
   `name` varchar(30) NOT NULL,
   `type` enum('Delay','Schedule') NOT NULL,
   `executor_name` varchar(30) NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `job_main` (
   `updated_by` varchar(30) comment 'user.username',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  INDEX `idx_uuid`(`uuid`(20)), -- uuid不约束唯一，是否需要唯一由用户自己保障
+  UNIQUE `uk_uuid_created_by`(`uuid`(32),`created_by`),
   INDEX `idx_name`(`name`(20)),
   INDEX `idx_recovery_by_scan`(`next_trig_at`,`is_end`), -- 扫描检测重置任务未队列需要
   INDEX `idx_recovery_by_instance`(`queued_at_instance`,`is_end`) -- 监听检测重置任务未队列需要

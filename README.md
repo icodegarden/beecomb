@@ -199,7 +199,7 @@ path参数
 body参数
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
-|uuid   |string   |N   |0-64   |任务的uuid，注意beecomb并不会保证该值唯一性，而是由用户自己决定，uuid可以重复   |j21ccde2334   |
+|uuid   |string   |N   |0-64   |任务的uuid，用户指定或自动生成   |j21ccde2334   |
 |name   |string   |Y   |1-30   |任务名   |jname   |
 |type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
@@ -241,7 +241,7 @@ scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
 |id   |long   |Y   |1-N   |任务的唯一序列   |1   |
-|uuid   |string   |N   |0-64   |任务的uuid，如果创建时没有提供则为null   |j21ccde2334   |
+|uuid   |string   |N   |0-64   |任务的uuid，如果创建时没有提供则自动生成   |j21ccde2334   |
 |name   |string   |Y   |1-30   |任务名   |jname   |
 |type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
 |priority   |int   |N   |1-10   |任务的优先级，默认5，仅在任务恢复时起作用   |5   |
@@ -261,7 +261,7 @@ path参数
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
 |id   |long   |Y   |1-N   |任务的唯一序列   |1   |
-|uuid   |string   |N   |0-64   |任务的uuid，如果创建时没有提供则为null   |j21ccde2334   |
+|uuid   |string   |N   |0-64   |任务的uuid，如果创建时没有提供则自动生成   |j21ccde2334   |
 |name   |string   |Y   |1-30   |任务名   |jname   |
 |type   |string   |Y   |枚举Delay, Schedule   |任务类型   |Delay   |
 |executorName   |string   |Y   |1-30   |任务由哪个Executor执行   |e1   |
@@ -314,7 +314,7 @@ scheduleFixRate、scheduleFixDelay、sheduleCron必选其一
 path参数
 |参数   |类型   |是否必填   |长度   |描述   |示例值   |
 |---|---|---|---|---|---|
-|uuid   |string   |Y   |1-N   |使用uuid查询任务，uuid由用户自己控制唯一性，如果不是唯一的也只返回1条   |j21ccde2334   |
+|uuid   |string   |Y   |1-N   |使用uuid查询任务   |j21ccde2334   |
 
 响应参数，同 查询任务（id）
 

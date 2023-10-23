@@ -24,13 +24,18 @@ spring:
     cache: false
   
 
-commons:
-  web.exceptionHandler.apiResponse.enabled: false
-  web.exceptionHandler.nativeRestApi.enabled: true
-  mybatis:
-    mapperScan:
-      basePackages: io.github.icodegarden.beecomb.common.backend.mapper,io.github.icodegarden.beecomb.master.mapper
-  endpoint:
-    readiness:
-      enabled: true  
+icodegarden:
+  nursery:
+    web:
+      exceptionHandler:
+        apiResponse:
+          enabled: false
+        nativeRestApi:
+          enabled: true
+    mybatis:
+      mapperScan:
+        basePackages: io.github.icodegarden.beecomb.common.backend.mapper,io.github.icodegarden.beecomb.master.mapper
+    endpoint:
+      readiness:
+        enabled: true  
   

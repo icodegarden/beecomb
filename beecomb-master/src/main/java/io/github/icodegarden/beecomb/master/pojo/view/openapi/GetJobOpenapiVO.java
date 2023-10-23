@@ -24,7 +24,7 @@ public class GetJobOpenapiVO {
 	 * main
 	 */
 	private Long id;// bigint NOT NULL AUTO_INCREMENT,
-	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
+	private String uuid;
 	private String name;// varchar(30) NOT NULL,
 	private JobType type;// tinyint NOT NULL comment '任务类型 0延时 1调度',
 

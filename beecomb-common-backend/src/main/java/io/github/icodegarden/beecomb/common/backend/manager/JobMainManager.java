@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -50,6 +51,9 @@ public class JobMainManager {
 		JobMainPO po = new JobMainPO();
 		BeanUtils.copyProperties(dto, po);
 
+		if(!StringUtils.hasText(po.getUuid())) {			po.setUuid(io.github.icodegarden.nutrient.lang.util.StringUtils.uuid());
+		}
+		
 		po.setCreatedBy(SecurityUtils.getUsername());
 		po.setCreatedAt(SystemUtils.now());
 		po.setUpdatedAt(po.getCreatedAt());// 防止时差

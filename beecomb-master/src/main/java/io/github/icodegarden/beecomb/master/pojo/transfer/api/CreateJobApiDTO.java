@@ -20,7 +20,7 @@ import lombok.Data;
 @Data
 public class CreateJobApiDTO implements Validateable {
 
-	private String uuid;// varchar(64) UNIQUE comment '用户可以指定,默认null',
+	private String uuid;
 	@NotEmpty
 	@Length(max = 30)
 	private String name;// varchar(30) NOT NULL,

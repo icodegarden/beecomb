@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
@@ -85,6 +87,11 @@ public class BeansConfiguration {
 	@Autowired
 	private InstanceProperties instanceProperties;
 
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+	
 	@Bean
 	public TableDataCountManager mysqlTableDataCountManager(DataSource shardingSphereDataSource) {
 		DataSource dataSource = DataSourceUtils.firstDataSource((ShardingSphereDataSource) shardingSphereDataSource);
