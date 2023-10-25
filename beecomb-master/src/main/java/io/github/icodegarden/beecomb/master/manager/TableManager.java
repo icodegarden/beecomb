@@ -93,7 +93,7 @@ public class TableManager {
 				return ptmt.executeUpdate();
 			}
 		} catch (SQLException e) {
-			throw new IllegalStateException(String.format("delete from error, job_execute_record"), e);
+			throw new IllegalStateException("delete from job_execute_record error", e);
 		}
 
 	}
