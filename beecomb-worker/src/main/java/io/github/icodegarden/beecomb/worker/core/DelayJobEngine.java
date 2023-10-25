@@ -132,8 +132,8 @@ public class DelayJobEngine extends AbstractJobEngine {
 
 	void runJob(ExecutableJobBO executableJobBO) {
 		LocalDateTime trigAt = SystemUtils.now();
-		if (log.isInfoEnabled()) {
-			log.info("run delay job:{}", executableJobBO);
+		if (log.isDebugEnabled()) {
+			log.debug("run delay job:{}", executableJobBO);
 		}
 
 		try {
