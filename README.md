@@ -141,7 +141,7 @@ CreateJobVO response = beeCombClient.createJob(job);
 <dependency>
 	<groupId>io.github.icodegarden</groupId>
 	<artifactId>beecomb-executor</artifactId>
-	<version>最新版本可在maven中央仓库找到</version>
+	<version>2.0.0</version>
 </dependency>
 ```
 
