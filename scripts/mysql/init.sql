@@ -9,6 +9,7 @@ CREATE TABLE `job_main` (
   `id` bigint unsigned NOT NULL,
   `uuid` varchar(64) NOT NULL,
   `name` varchar(30) NOT NULL,
+  `label` varchar(30) DEFAULT NULL,
   `type` enum('Delay','Schedule') NOT NULL,
   `executor_name` varchar(30) NOT NULL,
   `job_handler_name` varchar(30) NOT NULL,
@@ -32,6 +33,7 @@ CREATE TABLE `job_main` (
   PRIMARY KEY (`id`),
   UNIQUE `uk_uuid_created_by`(`uuid`(32),`created_by`),
   INDEX `idx_name`(`name`(20)),
+  INDEX `idx_label`(`label`(20)),
   INDEX `idx_recovery_by_scan`(`next_trig_at`,`is_end`), -- 扫描检测重置任务未队列需要
   INDEX `idx_recovery_by_instance`(`queued_at_instance`,`is_end`) -- 监听检测重置任务未队列需要
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

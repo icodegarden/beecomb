@@ -106,6 +106,19 @@
                     </div>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">标签：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input name="label" class="form-control" type="text" maxlength="30" th:field="${job.label}" required>
+                            	<span class="input-group-addon"><i class="fa fa-search"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <span th:if="${job.type.toString() == 'Delay'}">
             <h4 class="form-header h4">delay任务信息</h4>

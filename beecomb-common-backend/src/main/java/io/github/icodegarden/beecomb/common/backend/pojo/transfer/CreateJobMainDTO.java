@@ -31,6 +31,7 @@ public class CreateJobMainDTO implements Validateable {
 	private Boolean parallel;
 	private Integer maxParallelShards;
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
+	private String label;
 
 	/**
 	 * 因createdBy只有具有security的才给的出，因此作为入参

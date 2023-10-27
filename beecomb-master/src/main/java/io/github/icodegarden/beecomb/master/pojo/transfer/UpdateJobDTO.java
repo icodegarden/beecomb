@@ -45,6 +45,8 @@ public class UpdateJobDTO implements Validateable {
 	@Max(JobConstants.MAX_EXECUTE_TIMEOUT)
 	private Integer executeTimeout;// int NOT NULL default 10000 comment 'ms',
 	private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
+	@Length(max = 30)
+	private String label;
 	@Length(max = 65535)
 	private String params;// TEXT comment '任务参数',
 	@Length(max = 200)

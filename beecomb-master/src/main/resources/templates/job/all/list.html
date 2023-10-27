@@ -59,6 +59,9 @@
 										<option th:text="否" th:value="false"></option>
 									</select>
 								</li>
+								<li>
+									标签：<input type="text" name="labelLike" title="左前匹配"/>
+								</li>
 <!-- 								<li class="select-time"> -->
 <!-- 									<label>创建时间： </label> -->
 <!-- 									<input type="text" class="form-control" id="laydate-demo-3" name="createdAtGte" placeholder="开始时间"> -->
@@ -205,13 +208,13 @@
 		        	}
 		        },
 		        {
-		        	title: '最后一次执行成功',
+		        	title: '最后执行',
 		        	align: 'center',
 		        	formatter: function (value, row, index) {
-		        		if(row.lastExecuteSuccess == null){
+		        		if(row.lastExecuteSuccess == null || row.lastTrigAt == null){
 		        			return '-';
 		        		}
-		        		return row.lastExecuteSuccess ? '<span style="color:green;">是</span>':'<span style="color:red;">否</span>';
+		        		return row.lastExecuteSuccess ? '<span style="color:green;">成功</span>':'<span style="color:red;">失败</span>';
 		        	}
 		        },
 		        {

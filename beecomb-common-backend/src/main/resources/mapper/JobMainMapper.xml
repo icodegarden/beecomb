@@ -22,6 +22,7 @@
 		<result property="executeTimeout" column="execute_timeout" />
 		<result property="nextTrigAt" column="next_trig_at" />
 		<result property="end" column="is_end" />
+		<result property="label" column="label" />
 		<result property="createdBy" column="created_by" />
 		<result property="createdAt" column="created_at" />
 		<result property="updatedAt" column="updated_at" />
@@ -63,6 +64,7 @@
 		<if test="executeTimeout != null">`execute_timeout`,</if>
 		<if test="nextTrigAt != null">`next_trig_at`,</if>
 		<if test="end != null">`is_end`,</if>
+		<if test="label != null">`label`,</if>
 		<if test="updatedAt != null">`updated_at`,</if>
 		<if test="createdAt != null">`created_at`,</if>
 		`created_by`
@@ -87,6 +89,7 @@
 		<if test="executeTimeout != null">#{executeTimeout},</if>
 		<if test="nextTrigAt != null">#{nextTrigAt},</if>
 		<if test="end != null">#{end},</if>
+		<if test="label != null">#{label},</if>
 		<if test="updatedAt != null">#{updatedAt},</if>
 		<if test="createdAt != null">#{createdAt},</if>
 		#{createdBy}
@@ -110,6 +113,7 @@
 			a.`execute_timeout` as execute_timeout,
 			a.`next_trig_at` as next_trig_at,
 			a.`is_end` as is_end,
+			a.`label` as label,
 			a.`is_last_execute_success` as is_last_execute_success
 			<if test="with != null">
 				<trim prefix="," suffixOverrides=",">
@@ -185,6 +189,9 @@
 			</if>
 			<if test="nameLike != null">
 				and a.name LIKE CONCAT(#{nameLike},'%')
+			</if>
+			<if test="labelLike != null">
+				and a.label LIKE CONCAT(#{labelLike},'%')
 			</if>
 			<if test="type != null">
 				and a.type = #{type}
@@ -265,6 +272,7 @@
 			<if test="executeTimeout != null">execute_timeout = #{executeTimeout},</if>
 			<if test="nextTrigAt != null">next_trig_at = #{nextTrigAt},</if>
 			<if test="end != null">is_end = #{end},</if>
+			<if test="label != null">label = #{label},</if>
 			<if test="updatedBy != null">updated_by = #{updatedBy},</if>
 			<if test="updatedAt != null">updated_at = #{updatedAt},</if>
 			<if test="nextTrigAtNull != null and nextTrigAtNull == true">next_trig_at = null,</if>

@@ -65,30 +65,29 @@ public class JobControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = { "api/job/list" })
-	public ResponseEntity<TableDataInfo> pageJobs(@RequestParam(required = false) Long id,
-			@RequestParam(required = false) String uuid, @RequestParam(required = false) String nameLike,
-			@RequestParam(required = false) JobType type, @RequestParam(required = false) Boolean parallel,
-			@RequestParam(required = false) Boolean lastExecuteSuccess,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAtGte,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAtLte,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime lastTrigAtGte,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime lastTrigAtLte,
-			@RequestParam(required = false) Boolean queued, @RequestParam(required = false) Boolean end,
-			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
-			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize, /**
-																							 * with
-																							 */
-			@RequestParam(required = false) boolean withQueuedAt,
-			@RequestParam(required = false) boolean withQueuedAtInstance,
-			@RequestParam(required = false) boolean withLastTrigResult,
-			@RequestParam(required = false) boolean withLastExecuteExecutor,
-			@RequestParam(required = false) boolean withLastExecuteReturns,
-			@RequestParam(required = false) boolean withCreatedBy,
-			@RequestParam(required = false) boolean withCreatedAt, @RequestParam(required = false) boolean withParams,
-			@RequestParam(required = false) boolean withDesc, @RequestParam(required = false) boolean withDelay,
-			@RequestParam(required = false) boolean withSchedule
-
-	) {
+	public ResponseEntity<TableDataInfo> pageJobs(//
+			@RequestParam(required = false) Long id, @RequestParam(required = false) String uuid, //
+			@RequestParam(required = false) String nameLike, @RequestParam(required = false) String labelLike, //
+			@RequestParam(required = false) JobType type, @RequestParam(required = false) Boolean parallel, //
+			@RequestParam(required = false) Boolean lastExecuteSuccess, //
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAtGte, //
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime createdAtLte, //
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime lastTrigAtGte, //
+			@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime lastTrigAtLte, //
+			@RequestParam(required = false) Boolean queued, @RequestParam(required = false) Boolean end, //
+			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum, //
+			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize, //
+			@RequestParam(required = false) boolean withQueuedAt, //
+			@RequestParam(required = false) boolean withQueuedAtInstance, //
+			@RequestParam(required = false) boolean withLastTrigResult, //
+			@RequestParam(required = false) boolean withLastExecuteExecutor, //
+			@RequestParam(required = false) boolean withLastExecuteReturns, //
+			@RequestParam(required = false) boolean withCreatedBy, //
+			@RequestParam(required = false) boolean withCreatedAt, //
+			@RequestParam(required = false) boolean withParams, //
+			@RequestParam(required = false) boolean withDesc, //
+			@RequestParam(required = false) boolean withDelay, //
+			@RequestParam(required = false) boolean withSchedule) {
 		String username = SecurityUtils.getUsername();
 
 		/**
@@ -102,10 +101,10 @@ public class JobControllerRy extends BaseControllerRy {
 				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
 				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 
-		JobMainQuery query = JobMainQuery.builder().id(id).uuid(uuid).nameLike(nameLike).type(type).parallel(parallel)
-				.lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte).createdAtLte(createdAtLte)
-				.lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued).end(end).createdBy(username)
-				.page(pageNum).size(pageSize).orderBy("a.id desc").with(with).build();
+		JobMainQuery query = JobMainQuery.builder().id(id).uuid(uuid).nameLike(nameLike).labelLike(labelLike).type(type)
+				.parallel(parallel).lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte)
+				.createdAtLte(createdAtLte).lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued)
+				.end(end).createdBy(username).page(pageNum).size(pageSize).orderBy("a.id desc").with(with).build();
 
 		Page<JobMainVO> p = jobMainManager.page(query);
 
@@ -120,7 +119,7 @@ public class JobControllerRy extends BaseControllerRy {
 	}
 
 	@GetMapping("view/job/{id}/update")
-	public String jobUpdate(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
+	public String updateJobView(HttpServletRequest request, ModelMap mmap, @PathVariable Long id) {
 		JobMainVO vo = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 		mmap.addAttribute("job", vo);
 		return "job/all/update";
@@ -156,7 +155,7 @@ public class JobControllerRy extends BaseControllerRy {
 	}
 
 	@GetMapping("view/job/create")
-	public String userCreate(HttpServletRequest request, ModelMap mmap) {
+	public String createJobView(HttpServletRequest request, ModelMap mmap) {
 		return "job/all/create";
 	}
 
@@ -207,7 +206,7 @@ public class JobControllerRy extends BaseControllerRy {
 		}
 		return ResponseEntity.ok(success());
 	}
-	
+
 	@PostMapping("api/job/{id}/run")
 	public ResponseEntity<AjaxResult> runJob(@PathVariable Long id) {
 		try {
@@ -220,7 +219,7 @@ public class JobControllerRy extends BaseControllerRy {
 		}
 		return ResponseEntity.ok(success());
 	}
-	
+
 	@PostMapping("api/job/{id}/delete")
 	public ResponseEntity<AjaxResult> deleteJob(@PathVariable Long id) {
 		try {

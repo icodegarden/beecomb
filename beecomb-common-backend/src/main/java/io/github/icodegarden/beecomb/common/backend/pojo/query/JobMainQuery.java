@@ -24,6 +24,7 @@ public class JobMainQuery extends BaseQuery {
 	private Boolean end;
 	private String createdBy;
 	private String nameLike;
+	private String labelLike;
 	private JobType type;
 	private Boolean parallel;
 	private Boolean lastExecuteSuccess;
@@ -41,10 +42,11 @@ public class JobMainQuery extends BaseQuery {
 	private With with;
 
 	@Builder
-	public JobMainQuery(int page, int size, String orderBy, Long id, String uuid, Boolean queued,
-			Boolean end, String createdBy, String nameLike, JobType type, Boolean parallel, Boolean lastExecuteSuccess,
-			LocalDateTime createdAtGte, LocalDateTime createdAtLte, LocalDateTime lastTrigAtGte,
-			LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, List<Long> jobIds, With with) {
+	public JobMainQuery(int page, int size, String orderBy, Long id, String uuid, Boolean queued, Boolean end,
+			String createdBy, String nameLike, String labelLike, JobType type, Boolean parallel,
+			Boolean lastExecuteSuccess, LocalDateTime createdAtGte, LocalDateTime createdAtLte,
+			LocalDateTime lastTrigAtGte, LocalDateTime lastTrigAtLte, LocalDateTime nextTrigAtLt, List<Long> jobIds,
+			With with) {
 		super(page, size, orderBy);
 		this.id = id;
 		this.uuid = uuid;
@@ -52,6 +54,7 @@ public class JobMainQuery extends BaseQuery {
 		this.end = end;
 		this.createdBy = createdBy;
 		this.nameLike = nameLike;
+		this.labelLike = labelLike;
 		this.type = type;
 		this.parallel = parallel;
 		this.lastExecuteSuccess = lastExecuteSuccess;

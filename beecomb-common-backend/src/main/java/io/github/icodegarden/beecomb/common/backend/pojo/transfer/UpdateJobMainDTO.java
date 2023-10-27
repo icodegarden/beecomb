@@ -48,6 +48,7 @@ public class UpdateJobMainDTO implements Validateable {
 	 */
 	private Boolean nextTrigAtNull;
 	private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
+	private String label;
 
 	@Override
 	public void validate() throws IllegalArgumentException {

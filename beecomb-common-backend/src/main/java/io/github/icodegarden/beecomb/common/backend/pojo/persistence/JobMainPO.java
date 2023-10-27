@@ -37,6 +37,7 @@ public class JobMainPO {
 	private Integer executeTimeout;// int comment 'ms',
 	private LocalDateTime nextTrigAt;// timestamp comment '下次触发时间,初始是null',
 	private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
+	private String label;
 	private String createdBy;// varchar(30) comment '租户名',
 	private LocalDateTime createdAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	private String updatedBy;// varchar(30) comment '租户名',
@@ -64,6 +65,7 @@ public class JobMainPO {
 		private Integer executeTimeout;// int comment 'ms',
 		private LocalDateTime nextTrigAt;// timestamp comment '下次触发时间,初始是null',
 		private Boolean end;// bit NOT NULL default 0 comment '是否已结束',
+		private String label;
 		private String updatedBy;// varchar(30) comment '租户名',
 		private LocalDateTime updatedAt;// timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
