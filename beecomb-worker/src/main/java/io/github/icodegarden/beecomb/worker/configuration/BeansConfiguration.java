@@ -105,7 +105,7 @@ public class BeansConfiguration {
 
 		ZooKeeperInstanceRegistry zooKeeperInstanceRegistry = new ZooKeeperInstanceRegistry(zooKeeperHolder,
 				instanceProperties.getZookeeper().getRoot(), NodeRole.Worker.getRoleName(), bindIp, port);
-		zooKeeperInstanceRegistry.registerIfNot();
+//		zooKeeperInstanceRegistry.registerIfNot();在服务完全启动后再注册
 
 		/**
 		 * 从注册中心下线，让客户端的服务发现没有该实例
@@ -185,9 +185,10 @@ public class BeansConfiguration {
 
 	@Bean("delay")
 	public JobEngine delayJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage) throws Exception {
-		DelayJobEngine jobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, delayJobStorage,
-				instanceProperties);
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, DelayJobService delayJobStorage)
+			throws Exception {
+		DelayJobEngine jobEngine = new DelayJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
+				delayJobStorage, instanceProperties);
 //		/**
 //		 * TODO remove
 //		 */
@@ -208,15 +209,16 @@ public class BeansConfiguration {
 //			field.set(jobEngine, protocol);
 //			field.setAccessible(accessible);
 //		}
-		
+
 		return jobEngine;
 	}
 
 	@Bean("schedule")
 	public JobEngine scheduleJobEngine(ExecutorInstanceDiscovery executorInstanceDiscovery,
-			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage) throws Exception {
-		ScheduleJobEngine jobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload, scheduleJobStorage,
-				instanceProperties);
+			InstanceMetrics instanceMetrics, MetricsOverload jobOverload, ScheduleJobService scheduleJobStorage)
+			throws Exception {
+		ScheduleJobEngine jobEngine = new ScheduleJobEngine(executorInstanceDiscovery, instanceMetrics, jobOverload,
+				scheduleJobStorage, instanceProperties);
 //		/**
 //		 * TODO remove
 //		 */
@@ -237,18 +239,18 @@ public class BeansConfiguration {
 //			field.set(jobEngine, protocol);
 //			field.setAccessible(accessible);
 //		}
-		
+
 		return jobEngine;
 	}
 
 	@Bean
-	public JobRequestReceiver jobReceiver(JobService jobStorage, JobEngine jobEngine) {
-		return new JobRequestReceiver(jobStorage, jobEngine);
+	public JobRequestReceiver jobReceiver(JobService jobService, JobEngine jobEngine) {
+		return new JobRequestReceiver(jobService, jobEngine);
 	}
 
 	@Bean
-	public DispatcherHandler dispatcherHandler(JobRequestReceiver jobReceiver, JobEngine jobEngine) {
-		return new DispatcherHandler(jobReceiver, jobEngine);
+	public DispatcherHandler dispatcherHandler(JobRequestReceiver jobRequestReceiver, JobEngine jobEngine) {
+		return new DispatcherHandler(jobRequestReceiver, jobEngine);
 	}
 
 	/**
@@ -259,5 +261,4 @@ public class BeansConfiguration {
 	public WorkerServer workerServer(DispatcherHandler dispatcherHandler) {
 		return new WorkerServer(instanceProperties, dispatcherHandler);
 	}
-
 }
