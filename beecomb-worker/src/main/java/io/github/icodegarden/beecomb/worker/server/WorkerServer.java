@@ -61,8 +61,8 @@ public class WorkerServer implements GracefullyShutdown {
 
 			@Override
 			public Object reply(Object obj) {
-				if (log.isInfoEnabled()) {
-					log.info("Worker server receive a reply obj {}", obj);
+				if (log.isDebugEnabled()) {
+					log.debug("Worker server receive a reply obj {}", obj);
 				}
 
 				if (!(obj instanceof RequestWorkerDTO)) {
