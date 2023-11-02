@@ -5,12 +5,10 @@ import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManager;
+import org.springframework.security.authentication.ReactiveAuthenticationManagerAdapter;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -41,8 +39,8 @@ public class SecurityConfiguration {
 	private InstanceProperties instanceProperties;
 
 	@Bean
-	public AuthenticationManager authenticationManager(//ObjectPostProcessor<Object> objectPostProcessor,
-			PasswordEncoder passwordEncoder) throws Exception {
+	public ReactiveAuthenticationManager reactiveAuthenticationManager(PasswordEncoder passwordEncoder)
+			throws Exception {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setPasswordEncoder(passwordEncoder);
 		authenticationProvider.setUserDetailsService(userDetailsService);
@@ -53,8 +51,8 @@ public class SecurityConfiguration {
 //		auth.authenticationEventPublisher(eventPublisher);
 //		auth.authenticationProvider(authenticationProvider);
 //		return auth.build();
-		
-		return new ProviderManager(authenticationProvider);
+
+		return new ReactiveAuthenticationManagerAdapter(new ProviderManager(authenticationProvider));
 	}
 
 //	@Autowired
@@ -80,8 +78,8 @@ public class SecurityConfiguration {
 		return http//
 //				.sessionManagement()//
 //				.sessionCreationPolicy(SessionCreationPolicy.NEVER)//
-				// .maximumSessions(32) // maximum number of concurrent sessions for one user
-				// .sessionRegistry(sessionRegistry)
+		// .maximumSessions(32) // maximum number of concurrent sessions for one user
+		// .sessionRegistry(sessionRegistry)
 //				.and()//
 				.exceptionHandling()//
 				.authenticationEntryPoint(new ReactiveNativeRestApiAuthenticationEntryPoint())//

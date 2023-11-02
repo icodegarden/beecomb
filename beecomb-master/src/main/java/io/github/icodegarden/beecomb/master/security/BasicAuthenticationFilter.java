@@ -32,6 +32,7 @@ import org.springframework.web.server.WebFilterChain;
 import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
 import io.github.icodegarden.beecomb.master.pojo.query.UserQuery;
+import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
 import io.github.icodegarden.nursery.springboot.security.SpringAuthentication;
 import io.github.icodegarden.nursery.springboot.web.reactive.security.ReactiveNativeRestApiAuthenticationEntryPoint;
 import io.github.icodegarden.nursery.springboot.web.reactive.util.ReactiveWebUtils;
@@ -200,9 +201,13 @@ public class BasicAuthenticationFilter implements WebFilter {
 			WebFilterChain chain = webFilterExchange.getChain();
 			ServerWebExchange exchange = webFilterExchange.getExchange();
 			
-			exchange.getAttributes().put("authentication", new SpringAuthentication(authentication));
+			SpringAuthentication springAuthentication = new SpringAuthentication(authentication);
+
+			exchange.getAttributes().put("authentication", springAuthentication);
+
+			SecurityUtils.setAuthentication(springAuthentication);
 			
-			return chain.filter(exchange);
+			return chain.filter(exchange).doFinally(s -> SecurityUtils.setAuthentication(null));
 		}
 	}
 

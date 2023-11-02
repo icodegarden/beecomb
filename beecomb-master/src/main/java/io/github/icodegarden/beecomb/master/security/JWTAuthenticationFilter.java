@@ -97,7 +97,7 @@ public class JWTAuthenticationFilter implements WebFilter {
 				 * 此时ReactiveWebUtils还没有exchange，需要先设置一下才能使用
 				 */
 				ReactiveWebUtils.setExchange(exchange);
-				
+
 				String jwt = ReactiveWebUtils.getJWT();
 
 				if (cookieEnable && !StringUtils.hasText(jwt)) {
@@ -141,10 +141,14 @@ public class JWTAuthenticationFilter implements WebFilter {
 		public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
 			WebFilterChain chain = webFilterExchange.getChain();
 			ServerWebExchange exchange = webFilterExchange.getExchange();
-			
-			exchange.getAttributes().put("authentication", new SpringAuthentication(authentication));
-			
-			return chain.filter(exchange);
+
+			SpringAuthentication springAuthentication = new SpringAuthentication(authentication);
+
+			exchange.getAttributes().put("authentication", springAuthentication);
+
+			SecurityUtils.setAuthentication(springAuthentication);
+
+			return chain.filter(exchange).doFinally(s -> SecurityUtils.setAuthentication(null));
 		}
 	}
 
