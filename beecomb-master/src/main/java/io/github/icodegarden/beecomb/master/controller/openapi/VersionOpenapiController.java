@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 
 /**
  * 
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class VersionOpenapiController {
 
 	@GetMapping("openapi/v1/version")
-	public ResponseEntity<String> getVersion() throws IOException {
+	public ResponseEntity<String> getVersion(ServerWebExchange exchange) throws IOException {
 		try (InputStream ins = ClassLoader.getSystemResourceAsStream("META-INF/MANIFEST.MF")) {
 			Properties prop = new Properties();
 			prop.load(ins);

@@ -104,7 +104,7 @@ public class InstanceProperties {
 		public static class Jwt {
 			private String issuer = "beecomb";
 			private String secretKey = "beecomb_jwt@icodegarden";
-			private int tokenExpireSeconds = 3600;
+			private int tokenExpireSeconds = 7*24*3600;
 		}
 
 		@Setter

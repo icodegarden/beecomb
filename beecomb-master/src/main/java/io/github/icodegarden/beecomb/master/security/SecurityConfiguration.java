@@ -7,29 +7,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.SecurityWebFilterChain;
 
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
 import io.github.icodegarden.beecomb.master.manager.UserManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.UserPO;
-import io.github.icodegarden.nursery.springboot.web.servlet.security.ServletNativeRestApiAccessDeniedHandler;
-import io.github.icodegarden.nursery.springboot.web.servlet.security.ServletNativeRestApiAuthenticationEntryPoint;
+import io.github.icodegarden.nursery.springboot.web.reactive.security.ReactiveNativeRestApiAccessDeniedHandler;
+import io.github.icodegarden.nursery.springboot.web.reactive.security.ReactiveNativeRestApiAuthenticationEntryPoint;
 
 /**
  * @author Fangfang.Xu
  */
 @Configuration
-@EnableWebSecurity
+@EnableWebFluxSecurity
 //@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration {
 
@@ -41,18 +41,20 @@ public class SecurityConfiguration {
 	private InstanceProperties instanceProperties;
 
 	@Bean
-	public AuthenticationManager authenticationManager(ObjectPostProcessor<Object> objectPostProcessor,
+	public AuthenticationManager authenticationManager(//ObjectPostProcessor<Object> objectPostProcessor,
 			PasswordEncoder passwordEncoder) throws Exception {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setPasswordEncoder(passwordEncoder);
 		authenticationProvider.setUserDetailsService(userDetailsService);
 
-		DefaultAuthenticationEventPublisher eventPublisher = objectPostProcessor
-				.postProcess(new DefaultAuthenticationEventPublisher());
-		AuthenticationManagerBuilder auth = new AuthenticationManagerBuilder(objectPostProcessor);
-		auth.authenticationEventPublisher(eventPublisher);
-		auth.authenticationProvider(authenticationProvider);
-		return auth.build();
+//		DefaultAuthenticationEventPublisher eventPublisher = objectPostProcessor
+//				.postProcess(new DefaultAuthenticationEventPublisher());
+//		AuthenticationManagerBuilder auth = new AuthenticationManagerBuilder(objectPostProcessor);
+//		auth.authenticationEventPublisher(eventPublisher);
+//		auth.authenticationProvider(authenticationProvider);
+//		return auth.build();
+		
+		return new ProviderManager(authenticationProvider);
 	}
 
 //	@Autowired
@@ -70,20 +72,20 @@ public class SecurityConfiguration {
 //    }
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
 		Jwt jwtConfig = instanceProperties.getSecurity().getJwt();
 		JWTProperties jwtProperties = new JWTProperties(jwtConfig.getIssuer(), jwtConfig.getSecretKey(),
 				jwtConfig.getTokenExpireSeconds());
 
 		return http//
-				.sessionManagement()//
-				.sessionCreationPolicy(SessionCreationPolicy.NEVER)//
+//				.sessionManagement()//
+//				.sessionCreationPolicy(SessionCreationPolicy.NEVER)//
 				// .maximumSessions(32) // maximum number of concurrent sessions for one user
 				// .sessionRegistry(sessionRegistry)
-				.and()//
+//				.and()//
 				.exceptionHandling()//
-				.authenticationEntryPoint(new ServletNativeRestApiAuthenticationEntryPoint())//
-				.accessDeniedHandler(new ServletNativeRestApiAccessDeniedHandler())//
+				.authenticationEntryPoint(new ReactiveNativeRestApiAuthenticationEntryPoint())//
+				.accessDeniedHandler(new ReactiveNativeRestApiAccessDeniedHandler())//
 				.and()//
 				.csrf()//
 				.disable()//
@@ -91,23 +93,23 @@ public class SecurityConfiguration {
 				.frameOptions()//
 				.disable()//
 				.and()//
-				.authorizeHttpRequests()//
-//          	.requestMatchers("/swagger-ui/index.html").permitAll()//
-				.requestMatchers("/openapi/*/version").permitAll()//
-				.requestMatchers("/view/**").authenticated()//
-				.requestMatchers("/api/user/**").hasAuthority(UserPO.PlatformRole.Admin.name())// 用户管理模块只对管理员开放
-				.requestMatchers("/api/**").authenticated()//
-				.requestMatchers("/openapi/**").authenticated()//
-				.anyRequest().permitAll()//
+				.authorizeExchange()
+//          	.pathMatchers("/swagger-ui/index.html").permitAll()//
+				.pathMatchers("/openapi/*/version").permitAll()//
+				.pathMatchers("/view/**").authenticated()//
+				.pathMatchers("/api/user/**").hasAuthority(UserPO.PlatformRole.Admin.name())// 用户管理模块只对管理员开放
+				.pathMatchers("/api/**").authenticated()//
+				.pathMatchers("/openapi/**").authenticated()//
+				.anyExchange().permitAll()//
 				.and()//
 				.addFilterBefore(new JWTAuthenticationFilter(jwtProperties,
 						Arrays.asList("/api/**", "/view/**", "/system/main"/* main页面需要用户信息 */)).setCookieEnable(true),
-						UsernamePasswordAuthenticationFilter.class)//
+						SecurityWebFiltersOrder.AUTHENTICATION)//
 				.addFilterBefore(
 						new BasicAuthenticationFilter(userService,
 								new BasicAuthenticationFilter.Config(Arrays.asList("/openapi/**"),
 										instanceProperties.getSecurity().getBasicAuth().getMaxUserCacheSeconds())),
-						UsernamePasswordAuthenticationFilter.class)//
+						SecurityWebFiltersOrder.AUTHENTICATION)//
 				.build();
 	}
 }

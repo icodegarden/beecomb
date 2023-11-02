@@ -26,7 +26,7 @@ CREATE TABLE `job_main` (
   `execute_timeout` int NOT NULL default 10000 comment 'ms',
   `next_trig_at` datetime NULL comment '下次触发时间,初始是null',
   `is_end` bit NOT NULL default 0 comment '是否已结束',
-  `created_by` varchar(30) comment 'user.username',
+  `created_by` varchar(30) NOT NULL comment 'user.username',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_by` varchar(30) comment 'user.username',
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,

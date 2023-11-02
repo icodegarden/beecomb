@@ -3,11 +3,14 @@ package io.github.icodegarden.beecomb.master.controller.ruoyi;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.ConcurrentModel;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.server.ServerWebExchange;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -23,8 +26,6 @@ import io.github.icodegarden.beecomb.master.security.JWTResolver;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
 import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
 import io.github.icodegarden.nursery.springboot.web.util.WebUtils;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 首页 业务处理
@@ -32,23 +33,21 @@ import jakarta.servlet.http.HttpServletRequest;
  * @author ruoyi
  */
 @Controller
-public class SysIndexControllerRy 
-{
+public class SysIndexControllerRy {
 	@Autowired
 	private InstanceProperties instanceProperties;
-    @Autowired
-    private ISysMenuService menuService;
+	@Autowired
+	private ISysMenuService menuService;
 
-    // 系统首页
+	// 系统首页
 	@GetMapping({ "/index", "/" })
-    public String index(HttpServletRequest request,ModelMap mmap)
-    {
-    	Jwt jwtConfig = instanceProperties.getSecurity().getJwt();
+	public String index(ServerWebExchange exchange, ConcurrentModel mmap) {
+		Jwt jwtConfig = instanceProperties.getSecurity().getJwt();
 		JWTProperties jwtProperties = new JWTProperties(jwtConfig.getIssuer(), jwtConfig.getSecretKey(),
 				jwtConfig.getTokenExpireSeconds());
-    	
-    	Authentication authentication = null;
-		String jwt = getJwtFromCookie(request);
+
+		Authentication authentication = null;
+		String jwt = getJwtFromCookie(exchange);
 		if (StringUtils.hasText(jwt)) {
 			try {
 				JWTResolver jwtResolver = new JWTResolver(jwtProperties, jwt);
@@ -56,35 +55,35 @@ public class SysIndexControllerRy
 			} catch (TokenExpiredException e) {
 			} catch (JWTVerificationException e) {
 			}
-		} 
-    	
-    	if(authentication == null) {
-    		return "redirect:login";
-    	}
-    	
-    	UserDetails userDetails = null;
+		}
+
+		if (authentication == null) {
+			return "redirect:login";
+		}
+
+		UserDetails userDetails = null;
 		Object principal = authentication.getPrincipal();
 		userDetails = (UserDetails) principal;
-    	
-        // 取身份信息
-        UserPO user = userDetails.getUser();
-        
-        // 根据用户id取出菜单
-        List<SysMenu> menus = menuService.selectMenusByUser(userDetails);
-        mmap.put("menus", menus);
-        mmap.put("user", of(user));
-        mmap.put("sideTheme", "theme-dark");
-        mmap.put("skinName", "skin-blue");
-        Boolean footer = true;
-        Boolean tagsView = true;
-        mmap.put("footer", footer);
-        mmap.put("tagsView", tagsView);
-        mmap.put("mainClass", "");
-        mmap.put("copyrightYear", 2021);
-        mmap.put("demoEnabled", false);//是否显示demo页
-        mmap.put("isDefaultModifyPwd", false);
-        mmap.put("isPasswordExpired", false);
-        mmap.put("isMobile", false);
+
+		// 取身份信息
+		UserPO user = userDetails.getUser();
+
+		// 根据用户id取出菜单
+		List<SysMenu> menus = menuService.selectMenusByUser(userDetails);
+		mmap.put("menus", menus);
+		mmap.put("user", of(user));
+		mmap.put("sideTheme", "theme-dark");
+		mmap.put("skinName", "skin-blue");
+		Boolean footer = true;
+		Boolean tagsView = true;
+		mmap.put("footer", footer);
+		mmap.put("tagsView", tagsView);
+		mmap.put("mainClass", "");
+		mmap.put("copyrightYear", 2021);
+		mmap.put("demoEnabled", false);// 是否显示demo页
+		mmap.put("isDefaultModifyPwd", false);
+		mmap.put("isPasswordExpired", false);
+		mmap.put("isMobile", false);
 
 //        // 菜单导航显示风格
 //        String menuStyle = configService.selectConfigByKey("sys.index.menuStyle");
@@ -102,35 +101,46 @@ public class SysIndexControllerRy
 //            }
 //        }
 //        String webIndex = "topnav".equalsIgnoreCase(indexStyle) ? "index-topnav" : "index";
-        return "index";
-    }
-    
-    private String getJwtFromCookie(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		if(cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (WebUtils.HEADER_AUTHORIZATION.equals(cookie.getName())) {
-					String value = cookie.getValue();
-					return WebUtils.resolveBearerToken(value, "_");
-				}
-			}
+		return "index";
+	}
+
+//    private String getJwtFromCookie(ServerWebExchange exchange) {
+//		Cookie[] cookies = request.getCookies();
+//		if(cookies != null) {
+//			for (Cookie cookie : cookies) {
+//				if (WebUtils.HEADER_AUTHORIZATION.equals(cookie.getName())) {
+//					String value = cookie.getValue();
+//					return WebUtils.resolveBearerToken(value, "_");
+//				}
+//			}
+//		}
+//		
+//		return null;
+//	}
+
+	private String getJwtFromCookie(ServerWebExchange exchange) {
+		MultiValueMap<String, HttpCookie> cookies = exchange.getRequest().getCookies();
+
+		List<HttpCookie> list = cookies.get(WebUtils.HEADER_AUTHORIZATION);
+		if (list != null && !list.isEmpty()) {
+			HttpCookie cookie = list.get(0);
+			String value = cookie.getValue();
+			return WebUtils.resolveBearerToken(value, "_");
 		}
-		
 		return null;
 	}
-    
-    private SysUser of(UserPO user) {
-    	SysUser sysUser = new SysUser();
-        sysUser.setAvatar(null);
-        sysUser.setEmail(user.getEmail());
-        sysUser.setLoginName(user.getUsername());
-        sysUser.setPhonenumber(user.getPhone());
-        sysUser.setUserId(user.getId());
-        sysUser.setUserName(user.getName());
+
+	private SysUser of(UserPO user) {
+		SysUser sysUser = new SysUser();
+		sysUser.setAvatar(null);
+		sysUser.setEmail(user.getEmail());
+		sysUser.setLoginName(user.getUsername());
+		sysUser.setPhonenumber(user.getPhone());
+		sysUser.setUserId(user.getId());
+		sysUser.setUserName(user.getName());
 //        sysUser.setUserType(userType);
-        return sysUser;
-    }
-    
+		return sysUser;
+	}
 
 //    // 锁定屏幕
 //    @GetMapping("/lockscreen")
@@ -159,12 +169,11 @@ public class SysIndexControllerRy
 //        return AjaxResult.error("密码不正确，请重新输入。");
 //    }
 
-    // 切换主题
-    @GetMapping("/system/switchSkin")
-    public String switchSkin()
-    {
-        return "skin";
-    }
+	// 切换主题
+	@GetMapping("/system/switchSkin")
+	public String switchSkin(ServerWebExchange exchange) {
+		return "skin";
+	}
 
 //    // 切换菜单
 //    @GetMapping("/system/menuStyle/{style}")
@@ -173,14 +182,13 @@ public class SysIndexControllerRy
 //        CookieUtils.setCookie(response, "nav-style", style);
 //    }
 
-    // 系统介绍
-    @GetMapping("/system/main")
-    public String main(ModelMap mmap)
-    {
-        mmap.put("version", "v1");
-        mmap.put("user", SecurityUtils.getAuthenticatedUser());
-        return "main";
-    }
+	// 系统介绍
+	@GetMapping("/system/main")
+	public String main(ServerWebExchange exchange, ConcurrentModel mmap) {
+		mmap.put("version", "v1");
+		mmap.put("user", SecurityUtils.getAuthenticatedUser());
+		return "main";
+	}
 
 //    // content-main class
 //    public String contentMainClass(Boolean footer, Boolean tagsView)

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.server.ServerWebExchange;
 
 import io.github.icodegarden.beecomb.master.manager.ReportLineManager;
 import io.github.icodegarden.beecomb.master.pojo.persistence.ReportLinePO;
@@ -33,7 +34,8 @@ public class ReportControllerRy extends BaseControllerRy {
 	private ReportLineManager reportLineManager;
 
 	@PostMapping(value = "api/report/type/{type}/detail")
-	public ResponseEntity<ReportLinePO> getReportByType(@PathVariable ReportLinePO.Type type) {
+	public ResponseEntity<ReportLinePO> getReportByType(ServerWebExchange exchange,
+			@PathVariable ReportLinePO.Type type) {
 		ReportLinePO line = reportLineManager.findOneByType(type, null);
 
 		if (line != null) {
@@ -66,7 +68,7 @@ public class ReportControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = "api/report/update")
-	public ResponseEntity<AjaxResult> updateReport() {
+	public ResponseEntity<AjaxResult> updateReport(ServerWebExchange exchange) {
 		reportService.update();
 		return ResponseEntity.ok(success());
 	}

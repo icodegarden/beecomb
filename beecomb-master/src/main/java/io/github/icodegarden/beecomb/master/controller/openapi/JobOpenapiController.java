@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 
 import com.github.pagehelper.Page;
 
@@ -65,8 +66,8 @@ public class JobOpenapiController {
 	private JobLocalService jobLocalService;
 
 	@PostMapping(value = { "openapi/v1/jobs" })
-	public ResponseEntity<CreateJobOpenapiVO> createJob(@RequestParam(defaultValue = "true") boolean async,
-			@RequestBody @Validated CreateJobOpenapiDTO dto) {
+	public ResponseEntity<CreateJobOpenapiVO> createJob(ServerWebExchange exchange,
+			@RequestParam(defaultValue = "true") boolean async, @RequestBody @Validated CreateJobOpenapiDTO dto) {
 		dto.validate();
 
 		Result2<ExecutableJobBO, ErrorCodeException> result2;
@@ -93,9 +94,9 @@ public class JobOpenapiController {
 	}
 
 	@GetMapping(value = { "openapi/v1/jobs" })
-	public ResponseEntity<List<PageJobsOpenapiVO>> pageJobs(@RequestParam(required = false) String uuid,
-			@RequestParam(required = false) String nameLike, @RequestParam(required = false) JobType type,
-			@RequestParam(required = false) Boolean parallel,
+	public ResponseEntity<List<PageJobsOpenapiVO>> pageJobs(ServerWebExchange exchange,
+			@RequestParam(required = false) String uuid, @RequestParam(required = false) String nameLike,
+			@RequestParam(required = false) JobType type, @RequestParam(required = false) Boolean parallel,
 			@RequestParam(required = false) Boolean lastExecuteSuccess,
 			@RequestParam(required = false) LocalDateTime createdAtGte,
 			@RequestParam(required = false) LocalDateTime createdAtLte,
@@ -146,7 +147,7 @@ public class JobOpenapiController {
 	}
 
 	@GetMapping(value = { "openapi/v1/jobs/{id}" })
-	public ResponseEntity<GetJobOpenapiVO> getJob(@PathVariable Long id) {
+	public ResponseEntity<GetJobOpenapiVO> getJob(ServerWebExchange exchange, @PathVariable Long id) {
 		JobMainVO one = jobMainManager.findOne(id, JobMainQuery.With.WITH_MOST);
 
 		if (one == null) {
@@ -165,7 +166,7 @@ public class JobOpenapiController {
 	}
 
 	@GetMapping(value = { "openapi/v1/jobs/uuid/{uuid}" })
-	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(@PathVariable String uuid) {
+	public ResponseEntity<GetJobOpenapiVO> getJobByUUID(ServerWebExchange exchange, @PathVariable String uuid) {
 		JobMainVO one = jobMainManager.findByUUID(uuid, JobMainQuery.With.WITH_MOST);
 
 		if (one == null) {
@@ -184,7 +185,8 @@ public class JobOpenapiController {
 	}
 
 	@PutMapping(value = { "openapi/v1/jobs" })
-	public ResponseEntity<UpdateJobOpenapiVO> updateJob(@RequestBody @Validated UpdateJobOpenapiDTO dto) {
+	public ResponseEntity<UpdateJobOpenapiVO> updateJob(ServerWebExchange exchange,
+			@RequestBody @Validated UpdateJobOpenapiDTO dto) {
 		dto.validate();
 
 		boolean success = jobLocalService.updateByApi(dto);
@@ -193,7 +195,7 @@ public class JobOpenapiController {
 	}
 
 	@DeleteMapping(value = { "openapi/v1/jobs/{id}" })
-	public ResponseEntity<DeleteJobOpenapiVO> deleteJob(@PathVariable Long id) {
+	public ResponseEntity<DeleteJobOpenapiVO> deleteJob(ServerWebExchange exchange, @PathVariable Long id) {
 		boolean success = jobLocalService.delete(id);
 		DeleteJobOpenapiVO vo = new DeleteJobOpenapiVO(id, success);
 		return ResponseEntity.ok(vo);

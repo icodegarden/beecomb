@@ -33,7 +33,7 @@
 		
 		<dependency>
 			<groupId>io.github.icodegarden</groupId>
-			<artifactId>nursery-spring-boot-starter-web-servlet</artifactId>
+			<artifactId>nursery-spring-boot-starter-web-reactive</artifactId>
 			<version>${nursery.version}</version>
 		</dependency>
 		<dependency>
