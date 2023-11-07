@@ -1,4 +1,5 @@
 #management.server.address: 127.0.0.1
+management.server.port: 9899
 #management.endpoint.shutdown.enabled: true
 management.endpoints.web.exposure.include: health,readiness
 
