@@ -48,7 +48,7 @@ public class AuthenticationController {
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,
 					pwd);
 			Authentication authentication = ReactiveUtils
-					.block(this.authenticationManager.authenticate(authenticationToken));
+					.block(this.authenticationManager.authenticate(authenticationToken), 1000L);
 			SecurityUtils.setAuthentication(new SpringAuthentication(authentication));
 
 			Jwt jwtConfig = instanceProperties.getSecurity().getJwt();
