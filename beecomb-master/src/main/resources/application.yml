@@ -12,6 +12,7 @@ pagehelper.params=count: countSql
 
 
 server:
+  bindIp: localhost #工作环境的局域网自动ip无法访问
   port: 9898
   
 spring:

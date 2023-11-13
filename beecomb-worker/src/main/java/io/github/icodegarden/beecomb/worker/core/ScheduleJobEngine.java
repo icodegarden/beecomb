@@ -1,6 +1,7 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -266,7 +267,19 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
 			ShardExchangeResult result = loadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout());
 
-			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
+			ExecuteJobResult executeJobResult;
+
+			Object responseBody = result.successResult().response();
+			if (responseBody instanceof ExecuteJobResult) {
+				executeJobResult = (ExecuteJobResult) result.successResult().response();
+			} else {
+				/**
+				 * 适配hession2 ClassNotFound TODO 移除
+				 */
+				Map<String, Object> map = (Map) responseBody;
+				executeJobResult = (ExecuteJobResult) map.get("response");
+			}
+
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
 			LocalDateTime nextTrigAt = executableJobBO.getSchedule().calcNextTrigAtOnTriggered(trigAt,
@@ -275,11 +288,12 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					.jobId(executableJobBO.getId())//
 					.executorIp(instance.getIp())//
 					.executorPort(instance.getPort())//
-					.lastExecuteReturns(executeJobResult.getExecuteReturns())//
-					.end(executeJobResult.isEnd())//
+					.lastExecuteReturns(executeJobResult != null ? executeJobResult.getExecuteReturns() : null)//
+					.end(executeJobResult != null ? executeJobResult.isEnd() : null)//
 					.lastTrigAt(trigAt)//
 					.nextTrigAt(nextTrigAt)//
 					.build();
+
 			return update;
 		}
 	}

@@ -53,6 +53,7 @@
 
     <logger name="org.springframework" level="INFO"></logger>
     <logger name="io.github.icodegarden" level="INFO"></logger>
+    <logger name="com.caucho.hessian.io" level="ERROR"></logger>
 
     <root level="WARN">
         <appender-ref ref="StdoutAppender"/>

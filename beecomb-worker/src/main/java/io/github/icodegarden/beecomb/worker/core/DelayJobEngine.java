@@ -1,6 +1,7 @@
 package io.github.icodegarden.beecomb.worker.core;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -104,7 +105,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 					new ExceedOverloadJobEngineException("Pool Rejected", metricsOverload.getLocalMetrics()));
 		}
 	}
-	
+
 	@Override
 	public boolean run(ExecutableJobBO job) {
 		/**
@@ -224,14 +225,26 @@ public class DelayJobEngine extends AbstractJobEngine {
 			RequestExecutorDTO dto = new RequestExecutorDTO(RequestExecutorDTO.METHOD_RECEIVEJOB, job);
 			ShardExchangeResult result = loadBalanceExchanger.exchange(dto, executableJobBO.getExecuteTimeout());
 
-			ExecuteJobResult executeJobResult = (ExecuteJobResult) result.successResult().response();
+			ExecuteJobResult executeJobResult;
+
+			Object responseBody = result.successResult().response();
+			if (responseBody instanceof ExecuteJobResult) {
+				executeJobResult = (ExecuteJobResult) result.successResult().response();
+			} else {
+				/**
+				 * 适配hession2 ClassNotFound TODO 移除
+				 */
+				Map<String, Object> map = (Map) responseBody;
+				executeJobResult = (ExecuteJobResult) map.get("response");
+			}
+
 			RegisteredInstance instance = result.successResult().instance().getAvailable();
 
 			UpdateOnExecuteSuccessDTO update = UpdateOnExecuteSuccessDTO.builder()//
 					.jobId(executableJobBO.getId())//
 					.executorIp(instance.getIp())//
 					.executorPort(instance.getPort())//
-					.lastExecuteReturns(executeJobResult.getExecuteReturns())//
+					.lastExecuteReturns(executeJobResult != null ? executeJobResult.getExecuteReturns() : null)//
 					.lastTrigAt(trigAt)//
 					.build();
 
