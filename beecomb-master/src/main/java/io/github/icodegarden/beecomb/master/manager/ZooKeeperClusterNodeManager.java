@@ -71,13 +71,25 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 		public Page<ClusterNodeVO> pageNodes(ClusterNodeQuery query) {
 			List<? extends RegisteredInstance> allInstances = getInstanceDiscovery()
 					.listInstances(query.getServiceName());
-			if (allInstances.isEmpty()) {
-				return new Page<ClusterNodeVO>(query.getPage(), query.getSize());
-			}
 			if (StringUtils.hasText(query.getIp())) {
 				allInstances = allInstances.stream().filter(instance -> instance.getIp().contains(query.getIp()))
 						.collect(Collectors.toList());
 			}
+			if (StringUtils.hasText(query.getExecutorName())) {
+				allInstances = allInstances.stream().filter(item -> {
+					ExecutorRegisteredInstance instance = (ExecutorRegisteredInstance) item;
+					JobHandlerRegistrationBean jobHandlerRegistrationBean = instance.getJobHandlerRegistrationBean();
+					return jobHandlerRegistrationBean != null
+							&& jobHandlerRegistrationBean.getExecutorName().contains(query.getExecutorName());
+				}).collect(Collectors.toList());
+			}
+			if (allInstances.isEmpty()) {
+				return new Page<ClusterNodeVO>(query.getPage(), query.getSize());
+			}
+
+			List<? extends Metrics> metrics = instanceMetrics.listMetrics(query.getServiceName());
+			Map<String, ? extends Metrics> metricsMap = metrics.stream()
+					.collect(Collectors.toMap(Metrics::getInstanceName, v -> v));
 
 			// 总数量
 			final int total = allInstances.size();
@@ -86,10 +98,6 @@ public class ZooKeeperClusterNodeManager implements ClusterNodeManager {
 
 			List<? extends RegisteredInstance> pageInstances = CollectionUtils.subSafely(allInstances,
 					(query.getPage() - 1) * query.getSize(), query.getSize());
-
-			List<? extends Metrics> metrics = instanceMetrics.listMetrics(query.getServiceName());
-			Map<String, ? extends Metrics> metricsMap = metrics.stream()
-					.collect(Collectors.toMap(Metrics::getInstanceName, v -> v));
 
 			List<ClusterNodeVO> resultList = convertInstances(pageInstances, metricsMap);
 

@@ -48,12 +48,15 @@ public class ClusterNodeControllerRy extends BaseControllerRy {
 		String serviceName = StringUtils.hasText(multiValueMap.getFirst("serviceName"))
 				? multiValueMap.getFirst("serviceName")
 				: null;
+		String executorName = StringUtils.hasText(multiValueMap.getFirst("executorName"))
+				? multiValueMap.getFirst("executorName")
+				: null;
 		String ip = StringUtils.hasText(multiValueMap.getFirst("ip")) ? multiValueMap.getFirst("ip") : null;
 		int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
 		int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
 
-		ClusterNodeQuery query = ClusterNodeQuery.builder().page(pageNum).size(pageSize).serviceName(serviceName).ip(ip)
-				.build();
+		ClusterNodeQuery query = ClusterNodeQuery.builder().page(pageNum).size(pageSize).serviceName(serviceName)
+				.executorName(executorName).ip(ip).build();
 		Page<ClusterNodeVO> p = clusterNodeService.pageNodes(query);
 
 		return ResponseEntity.ok(getDataTable(p));

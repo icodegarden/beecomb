@@ -16,11 +16,15 @@
 						<div class="select-list">
 							<ul>
 								<li>
-									节点名：<select name="serviceName">
+									节点名：
+									<select id="typeSelect" name="serviceName">
 										<option th:text="Master" th:value="master" selected></option>
 										<option th:text="Worker" th:value="worker"></option>
 										<option th:text="Executor" th:value="executor"></option>
 									</select>
+								</li>
+								<li id="executorName" hidden="true">
+									Executor：<input type="text" name="executorName"/>
 								</li>
 								<li>
 									ip：<input type="text" name="ip"/>
@@ -57,6 +61,16 @@
 	<th:block th:include="include :: layout-latest-js" />
 	<th:block th:include="include :: ztree-js" />
 	<script th:inline="javascript">
+		$("#typeSelect").change(function() {
+			var v = $('#typeSelect').val();
+			if(v == 'executor'){
+				$("#executorName").show();
+			}else{
+				$("#executorName").hide();
+			}
+		});
+		//--------------------------------------	
+	
 		var editFlag = true;
 		var removeFlag = true;
 		var resetPwdFlag = true;

@@ -17,12 +17,14 @@ import lombok.ToString;
 public class ClusterNodeQuery extends BaseQuery {
 
 	private String serviceName;
+	private String executorName;
 	private String ip;
 
 	@Builder
-	public ClusterNodeQuery(int page, int size, String orderBy, String serviceName, String ip) {
+	public ClusterNodeQuery(int page, int size, String orderBy, String serviceName, String executorName, String ip) {
 		super(page, size, orderBy);
 		this.serviceName = serviceName;
+		this.executorName = executorName;
 		this.ip = ip;
 	}
 
