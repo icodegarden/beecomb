@@ -15,7 +15,7 @@
 	<name>${project.artifactId}</name>
 
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
 		<maven.package.skip>true</maven.package.skip> 
 		<maven.install.skip>true</maven.install.skip>
 		<maven.deploy.skip>true</maven.deploy.skip> 
