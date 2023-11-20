@@ -6,9 +6,6 @@ pagehelper.reasonable: true
 pagehelper.supportMethodsArguments: true
 pagehelper.params=count: countSql
 
-server:
-  bindIp: localhost #工作环境的局域网自动ip无法访问
-  
 spring:
   application:
     name: beecomb-worker

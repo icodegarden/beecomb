@@ -1,5 +1,5 @@
 #management.server.address: 127.0.0.1
-management.server.port: 9899
+management.server.port: 9897
 #management.endpoint.shutdown.enabled: true
 management.endpoints.web.exposure.include: health,readiness
 
@@ -12,7 +12,6 @@ pagehelper.params=count: countSql
 
 
 server:
-  bindIp: localhost #工作环境的局域网自动ip无法访问
   port: 9898
   
 spring:
