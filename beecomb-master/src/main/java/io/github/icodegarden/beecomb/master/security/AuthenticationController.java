@@ -19,6 +19,7 @@ import io.github.icodegarden.beecomb.master.pojo.view.UserVO;
 import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
 import io.github.icodegarden.nursery.springboot.security.SpringAuthentication;
 import io.github.icodegarden.nursery.springboot.web.reactive.util.ReactiveWebUtils;
+import io.github.icodegarden.nutrient.lang.exception.reactive.ReactiveBlockException;
 import io.github.icodegarden.nutrient.lang.util.ReactiveUtils;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -41,7 +42,8 @@ public class AuthenticationController {
 	private ReactiveAuthenticationManager authenticationManager;
 
 	@PostMapping(value = "authenticate")
-	public ResponseEntity<UserVO> authenticate(@Validated @RequestBody LoginDTO loginDTO, ServerWebExchange exchange) {
+	public ResponseEntity<UserVO> authenticate(@Validated @RequestBody LoginDTO loginDTO, ServerWebExchange exchange)
+			throws Throwable {
 		try {
 			String username = loginDTO.getUsername();
 			String pwd = loginDTO.getPassword();
@@ -62,6 +64,17 @@ public class AuthenticationController {
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 			return ResponseEntity.ok(new UserVO(userDetails.getUser()));
 		} catch (AuthenticationException e) {
+			if (e instanceof AuthenticationServiceException) {
+				log.error("ex on authenticate, username:{}", loginDTO.getUsername(), e);
+				throw e;
+			}
+			return (ResponseEntity) ResponseEntity.status(401).body(e.getMessage());
+		} catch (ReactiveBlockException t) {
+			if (!(t.getCause() instanceof AuthenticationException)) {
+				throw t;
+			}
+			AuthenticationException e = (AuthenticationException) t.getCause();
+
 			if (e instanceof AuthenticationServiceException) {
 				log.error("ex on authenticate, username:{}", loginDTO.getUsername(), e);
 				throw e;

@@ -235,36 +235,40 @@ public class JobControllerRy extends BaseControllerRy {
 
 	@PostMapping(value = "api/job/create")
 	public ResponseEntity<AjaxResult> createJob(ServerWebExchange exchange, @Validated CreateJobApiDTO createJobApiDTO) {
-		createJobApiDTO.validate();
+		try {
+			createJobApiDTO.validate();
 
-		CreateJobDTO dto = new CreateJobDTO();
-		BeanUtils.copyProperties(createJobApiDTO, dto);
-		if (createJobApiDTO.getType() == JobType.Delay) {
-			Delay delay = new CreateJobDTO.Delay();
-			BeanUtils.copyProperties(createJobApiDTO, delay);
-			dto.setDelay(delay);
-		} else if (createJobApiDTO.getType() == JobType.Schedule) {
-			Schedule schedule = new CreateJobDTO.Schedule();
-			BeanUtils.copyProperties(createJobApiDTO, schedule);
-			dto.setSchedule(schedule);
-		} else {
-			throw new RuntimeException("NOT IMPL type:" + createJobApiDTO.getType());
-		}
+			CreateJobDTO dto = new CreateJobDTO();
+			BeanUtils.copyProperties(createJobApiDTO, dto);
+			if (createJobApiDTO.getType() == JobType.Delay) {
+				Delay delay = new CreateJobDTO.Delay();
+				BeanUtils.copyProperties(createJobApiDTO, delay);
+				dto.setDelay(delay);
+			} else if (createJobApiDTO.getType() == JobType.Schedule) {
+				Schedule schedule = new CreateJobDTO.Schedule();
+				BeanUtils.copyProperties(createJobApiDTO, schedule);
+				dto.setSchedule(schedule);
+			} else {
+				throw new RuntimeException("NOT IMPL type:" + createJobApiDTO.getType());
+			}
 
-		Result2<ExecutableJobBO, ErrorCodeException> result2 = jobReceiver.receive(dto);
+			Result2<ExecutableJobBO, ErrorCodeException> result2 = jobReceiver.receive(dto);
 
-		if (result2.isSuccess()) {
-			ExecutableJobBO bo = result2.getT1();
-			ErrorCodeException errorCodeException = result2.getT2();
+			if (result2.isSuccess()) {
+				ExecutableJobBO bo = result2.getT1();
+				ErrorCodeException errorCodeException = result2.getT2();
 
-			CreateJobOpenapiVO vo = CreateJobOpenapiVO.builder().job(CreateJobOpenapiVO.Job.of(bo))
-					.dispatchException(errorCodeException != null ? errorCodeException.getMessage() : null).build();
+				CreateJobOpenapiVO vo = CreateJobOpenapiVO.builder().job(CreateJobOpenapiVO.Job.of(bo))
+						.dispatchException(errorCodeException != null ? errorCodeException.getMessage() : null).build();
 
-			return ResponseEntity.ok(success());
-		} else {
-			ErrorCodeException errorCodeException = result2.getT2();
-			log.error("ex on createjob by web", errorCodeException);
-			return ResponseEntity.ok(AjaxResult.error(errorCodeException.getSub_msg()));
+				return ResponseEntity.ok(success());
+			} else {
+				ErrorCodeException errorCodeException = result2.getT2();
+				log.error("ex on createjob by web", errorCodeException);
+				return ResponseEntity.ok(AjaxResult.error(errorCodeException.getSub_msg()));
+			}
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.ok(AjaxResult.error(e.getMessage()));
 		}
 	}
 
