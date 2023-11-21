@@ -33,12 +33,14 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.UpdateJobDTO;
 import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
+@Slf4j
 @Service
 public class JobFacadeManager extends AbstractBackendJobService {
 
@@ -231,6 +233,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 			List<Long> ids = vos.stream().map(JobMainVO::getId).collect(Collectors.toList());
 			for(PendingRecoveryJobVO one:list) {
 				if(!ids.contains(one.getJobId())) {
+					log.info("delete PendingRecoveryJob because relation job not exist, jobId:{}", one.getJobId());
 					pendingRecoveryJobManager.delete(one.getJobId());
 				}
 			}

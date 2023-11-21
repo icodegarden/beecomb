@@ -293,7 +293,7 @@
 	<update id="updateToNoQueuedByScan">
 		update job_main 
 		set is_queued = 0, queued_at_instance = null
-		where next_trig_at &lt; #{nextTrigAtLt}
+		where next_trig_at &lt; #{nextTrigAtLt} and (is_queued = 1 or queued_at_instance is not null)
 	</update>
 	
 	<!--

@@ -52,20 +52,17 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 	private void doRecovery() {
 		LocalDateTime nextTrigAtLt = SystemUtils.now().minus(JobConstants.MAX_EXECUTE_TIMEOUT + 60 * 1000,
 				ChronoUnit.MILLIS);
-		if (log.isDebugEnabled()) {
-			log.debug("recovery jobs nextTrigAtLt:{}", nextTrigAtLt);
-		}
 		/**
 		 * 探测，可能节省不必要的开支
 		 */
 		boolean has = jobFacadeManager.hasNoQueuedActually(nextTrigAtLt);
-		if (log.isDebugEnabled()) {
-			log.debug("recovery jobs Has No Queued Actually:{}", has);
+		if (log.isInfoEnabled()) {
+			log.info("recovery jobs nextTrigAtLt:{}, Has No Queued Actually:{}", nextTrigAtLt, has);
 		}
 		if (has) {
 			int count = jobFacadeManager.recoveryThatNoQueuedActually(nextTrigAtLt);
-			if (log.isDebugEnabled()) {
-				log.debug("recovery jobs nextTrigAtLt:{} count:{}", nextTrigAtLt, count);
+			if (log.isInfoEnabled()) {
+				log.info("recovery jobs nextTrigAtLt:{} count:{}", nextTrigAtLt, count);
 			}
 		}
 	}
@@ -89,7 +86,7 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 			}
 			List<ExecutableJobBO> jobs = jobFacadeManager.listJobsShouldRecovery(skip, 10);
 			if (log.isInfoEnabled() && !jobs.isEmpty()) {
-				log.info("list Jobs Should Recovery size:{}", jobs.size());
+				log.info("list Jobs Should Recovery, skip:{}, resultSize:{}", skip, jobs.size());
 			}
 			if (jobs.isEmpty()) {
 				return;
