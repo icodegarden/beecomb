@@ -15,6 +15,8 @@ public interface JobEngine extends GracefullyShutdown {
 	@Override
 	String shutdownName();
 
+	boolean isQueued(ExecutableJobBO job);
+	
 	boolean allowEnQueue(ExecutableJobBO job);
 
 	/**

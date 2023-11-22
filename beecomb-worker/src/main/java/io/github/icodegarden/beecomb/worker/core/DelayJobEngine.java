@@ -232,7 +232,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 				executeJobResult = (ExecuteJobResult) result.successResult().response();
 			} else {
 				/**
-				 * 适配hession2 ClassNotFound TODO 移除
+				 * 适配hession2 ClassNotFound
 				 */
 				Map<String, Object> map = (Map) responseBody;
 				executeJobResult = (ExecuteJobResult) map.get("response");

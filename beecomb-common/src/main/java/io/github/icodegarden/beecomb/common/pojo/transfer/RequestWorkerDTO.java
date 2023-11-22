@@ -11,6 +11,7 @@ public class RequestWorkerDTO implements Serializable {
 	private static final long serialVersionUID = 36827620108902360L;
 	
 	public static final String METHOD_RECEIVEJOB = "receiveJob";
+	public static final String METHOD_IDQUEUED = "isQueued";
 	public static final String METHOD_REMOVEJOB = "removeJob";
 	public static final String METHOD_RUNJOB = "runJob";
 	public static final String METHOD_QUEUEDSIZE = "queuedSize";

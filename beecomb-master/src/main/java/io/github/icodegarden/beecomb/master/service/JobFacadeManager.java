@@ -172,7 +172,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 	public boolean hasNoQueuedActually(LocalDateTime nextTrigAtLt) {
 		JobMainQuery query = JobMainQuery.builder().nextTrigAtLt(nextTrigAtLt).end(false).size(1).build();
 		List<JobMainVO> vos = jobMainManager.list(query);
-		return vos.size() >= 1;
+		return !vos.isEmpty();
 	}
 
 	/**

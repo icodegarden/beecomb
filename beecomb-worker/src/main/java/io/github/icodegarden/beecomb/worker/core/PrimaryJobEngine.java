@@ -31,6 +31,12 @@ public class PrimaryJobEngine implements JobEngine {
 	}
 
 	@Override
+	public boolean isQueued(ExecutableJobBO job) {
+		JobEngine jobEngine = getJobEngine(job);
+		return jobEngine.isQueued(job);
+	}
+
+	@Override
 	public boolean allowEnQueue(ExecutableJobBO job) {
 		JobEngine jobEngine = getJobEngine(job);
 		return jobEngine.allowEnQueue(job);
@@ -47,7 +53,7 @@ public class PrimaryJobEngine implements JobEngine {
 		JobEngine jobEngine = getJobEngine(job);
 		return jobEngine.removeQueue(job);
 	}
-	
+
 	@Override
 	public boolean run(ExecutableJobBO job) {
 		JobEngine jobEngine = getJobEngine(job);

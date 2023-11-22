@@ -80,6 +80,12 @@ public abstract class AbstractJobEngine implements JobEngine, GracefullyShutdown
 	}
 
 	@Override
+	public boolean isQueued(ExecutableJobBO job) {
+		JobTrigger jobTrigger = jobQueue.getJobTrigger(job.getId());
+		return jobTrigger != null;
+	}
+
+	@Override
 	public boolean allowEnQueue(ExecutableJobBO job) {
 		return !metricsOverload.willOverload(job);
 	}

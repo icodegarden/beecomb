@@ -6,12 +6,14 @@ import java.util.Objects;
 import org.springframework.util.Assert;
 
 import io.github.icodegarden.nutrient.lang.annotation.Length;
+import lombok.ToString;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
+@ToString
 public class ExecuteJobResult implements Serializable {
 	private static final long serialVersionUID = -6248807678193840548L;
 
@@ -24,7 +26,6 @@ public class ExecuteJobResult implements Serializable {
 	/**
 	 * 是否在并行任务的所有分片都成功时执行回调
 	 */
-//	private transient/*TODO remove*/ boolean onParallelSuccessCallback;
 	private boolean onParallelSuccessCallback;
 
 	public String getExecuteReturns() {
@@ -69,12 +70,6 @@ public class ExecuteJobResult implements Serializable {
 			return false;
 		ExecuteJobResult other = (ExecuteJobResult) obj;
 		return end == other.end && Objects.equals(executeReturns, other.executeReturns);
-	}
-
-	@Override
-	public String toString() {
-		return "ExecuteJobResult [executeReturns=" + executeReturns + ", end=" + end + ", onParallelSuccessCallback="
-				+ onParallelSuccessCallback + "]";
 	}
 
 }

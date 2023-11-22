@@ -30,6 +30,8 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 	private final JobFacadeManager jobFacadeManager;
 	private final WorkerRemoteService remoteService;
 	private final JobRecoveryRecordManager jobRecoveryRecordService;
+	
+	private static final int TIMEOUT_MINUS = 60 * 1000;
 
 	public JobRecoverySchedule(DistributedLock lock, JobFacadeManager jobFacadeManager,
 			WorkerRemoteService remoteService, JobRecoveryRecordManager jobRecoveryRecordService) {
@@ -50,8 +52,15 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 	}
 
 	private void doRecovery() {
-		LocalDateTime nextTrigAtLt = SystemUtils.now().minus(JobConstants.MAX_EXECUTE_TIMEOUT + 60 * 1000,
-				ChronoUnit.MILLIS);
+		/**
+		 * 原来使用nextTrigAtLt=最大执行超时时间+60s的任务
+		 * nextTrigAt没有得到更新则视为不在队列中，优点是检测准确度高，缺点是执行频率高的任务不能及时重新进队列<br>
+		 * 现在使用nextTrigAtLt=60s的任务
+		 * nextTrigAt没有得到更新则视为不在队列中，优点是任务能及时重新进队列，缺点是如果任务的超时时间超过60s则会误判，因此这样的任务在重新进队列前会加一次是否真正在队列中的检测<br>
+		 */
+//		LocalDateTime nextTrigAtLt = SystemUtils.now().minus(JobConstants.MAX_EXECUTE_TIMEOUT + TIMEOUT_MINUS,
+//				ChronoUnit.MILLIS);
+		LocalDateTime nextTrigAtLt = SystemUtils.now().minus(TIMEOUT_MINUS, ChronoUnit.MILLIS);
 		/**
 		 * 探测，可能节省不必要的开支
 		 */
@@ -92,14 +101,25 @@ public class JobRecoverySchedule extends LockSupportSchedule {
 				return;
 			}
 			for (ExecutableJobBO job : jobs) {
+				if(job.getExecuteTimeout() >= TIMEOUT_MINUS) {
+					/**
+					 * 如果任务的超过时间>=60s，则doRecovery阶段对该任务进到pending_recovery_job可能会误判，需要确认是否真的不在队列中
+					 */
+					boolean isQueued = remoteService.isQueued(job);
+					if(isQueued) {
+						skip++;//下一轮要跳过这个
+						continue;
+					}
+				}
+				
 				CreateOrUpdateJobRecoveryRecordDTO dto = new CreateOrUpdateJobRecoveryRecordDTO();
 				dto.setJobId(job.getId());
 				dto.setRecoveryAt(SystemUtils.now());
 				try {
 					remoteService.enQueue(job);
-					
+
 					try {
-						Thread.sleep(20);//FIXME 避免有大批的任务需要恢复时，Executor被瞬间压力？ 
+						Thread.sleep(20);// FIXME 避免有大批的任务需要恢复时，Executor被瞬间压力？
 					} catch (InterruptedException e) {
 					}
 

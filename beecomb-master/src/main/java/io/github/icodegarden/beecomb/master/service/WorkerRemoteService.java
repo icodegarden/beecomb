@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestWorkerDTO;
+import io.github.icodegarden.beecomb.common.pojo.view.IsQueuedVO;
 import io.github.icodegarden.beecomb.common.pojo.view.RemoveQueueVO;
 import io.github.icodegarden.beecomb.common.pojo.view.RunJobVO;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
@@ -59,6 +60,44 @@ public class WorkerRemoteService {
 				instanceRemoteService.getProtocol(), instanceLoadBalance, NodeRole.Worker.getRoleName(),
 				instanceProperties.getLoadBalance().getMaxCandidates());
 		loadBalanceExchanger = new MetricsManagedLoadBalanceExchanger(delegator);
+	}
+
+	/**
+	 * 如果在队列中，执行removeQueue；否则认为已被移除队列
+	 * 
+	 * @param job
+	 * @return
+	 * @throws ExchangeException
+	 */
+	public boolean isQueued(ExecutableJobBO job) throws ExchangeException {
+		if (job.getQueued()) {
+			String ipport = job.getQueuedAtInstance();
+			Tuple2<String, Integer> tuple2 = resolveIpPort(ipport);
+
+			String ip = tuple2.getT1();
+			int port = tuple2.getT2();
+
+			RequestWorkerDTO dto = new RequestWorkerDTO(RequestWorkerDTO.METHOD_IDQUEUED, job);
+			try {
+				IsQueuedVO vo = (IsQueuedVO) instanceRemoteService.exchangeAssignedInstance(ip, port, dto);
+				return vo.getQueued();
+			} catch (ExchangeException e) {
+				/**
+				 * 若Worker不在线且不健康，任务实际已不在队列
+				 */
+				boolean online = isOnline(ipport);
+				if (online) {
+					throw e;
+				}
+				boolean liveness = instanceRemoteService.isLiveness(ip, port);
+				if (liveness) {
+					throw e;
+				}
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -114,7 +153,7 @@ public class WorkerRemoteService {
 
 		return true;
 	}
-	
+
 	public boolean runJob(ExecutableJobBO job) throws ExchangeException {
 		if (log.isInfoEnabled()) {
 			log.info("run job.id:{} that queued:{}", job.getId(), job.getQueued());
@@ -152,7 +191,7 @@ public class WorkerRemoteService {
 
 		return match;
 	}
-	
+
 	private Tuple2<String, Integer> resolveIpPort(String ipport) {
 		String[] split = ipport.split(":");
 
