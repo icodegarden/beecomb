@@ -1,6 +1,8 @@
 package io.github.icodegarden.beecomb.common.backend.manager;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,9 +53,10 @@ public class JobMainManager {
 		JobMainPO po = new JobMainPO();
 		BeanUtils.copyProperties(dto, po);
 
-		if(!StringUtils.hasText(po.getUuid())) {			po.setUuid(io.github.icodegarden.nutrient.lang.util.StringUtils.uuid());
+		if (!StringUtils.hasText(po.getUuid())) {
+			po.setUuid(io.github.icodegarden.nutrient.lang.util.StringUtils.uuid());
 		}
-		
+
 		po.setCreatedBy(SecurityUtils.getUsername());
 		po.setCreatedAt(SystemUtils.now());
 		po.setUpdatedAt(po.getCreatedAt());// 防止时差
@@ -113,9 +116,9 @@ public class JobMainManager {
 		/**
 		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
 		 */
-		if(SecurityUtils.getUsername() != null) {
+		if (SecurityUtils.getUsername() != null) {
 			update.setUpdatedBy(SecurityUtils.getUsername());
-			update.setUpdatedAt(SystemUtils.now());	
+			update.setUpdatedAt(SystemUtils.now());
 		}
 
 		return jobMainMapper.update(update) == 1;
@@ -147,9 +150,9 @@ public class JobMainManager {
 		/**
 		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
 		 */
-		if(SecurityUtils.getUsername() != null) {
+		if (SecurityUtils.getUsername() != null) {
 			update.setUpdatedBy(SecurityUtils.getUsername());
-			update.setUpdatedAt(SystemUtils.now());	
+			update.setUpdatedAt(SystemUtils.now());
 		}
 
 		return jobMainMapper.update(update) == 1;
@@ -163,9 +166,9 @@ public class JobMainManager {
 		/**
 		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
 		 */
-		if(SecurityUtils.getUsername() != null) {
+		if (SecurityUtils.getUsername() != null) {
 			update.setUpdatedBy(SecurityUtils.getUsername());
-			update.setUpdatedAt(SystemUtils.now());	
+			update.setUpdatedAt(SystemUtils.now());
 		}
 
 		/**
@@ -182,9 +185,9 @@ public class JobMainManager {
 		/**
 		 * 被系统更新时不要更新updatedBy,updatedAt。可以用有没有身份来识别<br>
 		 */
-		if(SecurityUtils.getUsername() != null) {
+		if (SecurityUtils.getUsername() != null) {
 			update.setUpdatedBy(SecurityUtils.getUsername());
-			update.setUpdatedAt(SystemUtils.now());	
+			update.setUpdatedAt(SystemUtils.now());
 		}
 
 		update.setQueued(false);
@@ -200,11 +203,19 @@ public class JobMainManager {
 	/**
 	 * EXPLAIN -- 总数 SELECT created_by, type, count( 0 ) AS count FROM job_main
 	 * GROUP BY created_by, type
-	 * 
-	 * @return
 	 */
+	@Deprecated
 	public List<JobMainCountVO> countTotalGroupByTypeAndCreateBy() {
 		JobMainCountQuery query = JobMainCountQuery.builder()
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
+
+	public List<JobMainCountVO> countDayIncrGroupByTypeAndCreateBy() {
+		LocalDateTime createdAtLt = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+		LocalDateTime createdAtGte = createdAtLt.minusDays(1);
+
+		JobMainCountQuery query = JobMainCountQuery.builder().createdAtGte(createdAtGte).createdAtLt(createdAtLt)
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
@@ -239,8 +250,19 @@ public class JobMainManager {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public List<JobMainCountVO> countEndLastExecuteSuccessGroupByTypeAndCreateBy() {
 		JobMainCountQuery query = JobMainCountQuery.builder().end(true).lastExecuteSuccess(true)
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
+
+	public List<JobMainCountVO> countDayIncrEndLastExecuteSuccessGroupByTypeAndCreateBy() {
+		LocalDateTime createdAtLt = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+		LocalDateTime createdAtGte = createdAtLt.minusDays(1);
+
+		JobMainCountQuery query = JobMainCountQuery.builder().end(true).lastExecuteSuccess(true)
+				.createdAtGte(createdAtGte).createdAtLt(createdAtLt)
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}
@@ -251,8 +273,19 @@ public class JobMainManager {
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	public List<JobMainCountVO> countEndLastExecuteFailedGroupByTypeAndCreateBy() {
 		JobMainCountQuery query = JobMainCountQuery.builder().end(true).lastExecuteSuccess(false)
+				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
+		return (List) jobMainMapper.count(query);
+	}
+
+	public List<JobMainCountVO> countDayIncrEndLastExecuteFailedGroupByTypeAndCreateBy() {
+		LocalDateTime createdAtLt = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+		LocalDateTime createdAtGte = createdAtLt.minusDays(1);
+
+		JobMainCountQuery query = JobMainCountQuery.builder().end(true).lastExecuteSuccess(false)
+				.createdAtGte(createdAtGte).createdAtLt(createdAtLt)
 				.groupBy(JobMainCountQuery.GroupBy.builder().createdBy(true).type(true).build()).build();
 		return (List) jobMainMapper.count(query);
 	}

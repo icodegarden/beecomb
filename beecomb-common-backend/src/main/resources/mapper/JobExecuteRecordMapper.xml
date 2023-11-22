@@ -89,9 +89,16 @@
 				</trim>
 			</if>
 		from 
-		`job_execute_record` a 
+		`job_execute_record` a join job_main b on a.job_id = b.id
+		<trim prefix="WHERE" prefixOverrides="AND">
+			<if test="trigAtGte != null">
+				and a.trig_at &gt;= #{trigAtGte}
+			</if>
+			<if test="trigAtLt != null">
+				and a.trig_at &lt;= #{trigAtLt}
+			</if>
+		</trim>
 		<if test="groupBy != null">
-			join job_main b on a.job_id = b.id
 			<trim prefix="group by" prefixOverrides=",">
 				<if test="groupBy.createdBy == true">
 					,created_by

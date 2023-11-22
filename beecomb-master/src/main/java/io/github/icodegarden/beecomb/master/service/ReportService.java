@@ -33,8 +33,10 @@ public class ReportService {
 	 * 更新报表结果
 	 */
 	public void update() {
-		List<JobMainCountVO> countTotalGroupByTypeAndCreateBy = jobMainManager.countTotalGroupByTypeAndCreateBy();
-		updateReportLine(ReportLinePO.Type.JobTotalDayN, countTotalGroupByTypeAndCreateBy);
+//		List<JobMainCountVO> countTotalGroupByTypeAndCreateBy = jobMainManager.countTotalGroupByTypeAndCreateBy();
+//		updateReportLine(ReportLinePO.Type.JobTotalDayN, countTotalGroupByTypeAndCreateBy);
+		List<JobMainCountVO> countDayIncrGroupByTypeAndCreateBy = jobMainManager.countDayIncrGroupByTypeAndCreateBy();
+		updateReportLine(ReportLinePO.Type.JobTotalDayN, countDayIncrGroupByTypeAndCreateBy, true);
 
 		List<JobMainCountVO> countQueuedGroupByTypeAndCreateBy = jobMainManager.countQueuedGroupByTypeAndCreateBy();
 		updateReportLine(ReportLinePO.Type.JobQueuedDayN, countQueuedGroupByTypeAndCreateBy);
@@ -43,34 +45,49 @@ public class ReportService {
 				.countNoQueuedNoEndGroupByTypeAndCreateBy();
 		updateReportLine(ReportLinePO.Type.JobNoQueuedNoEndDayN, countNoQueuedNoEndGroupByTypeAndCreateBy);
 
-		List<JobMainCountVO> countEndLastExecuteSuccessGroupByTypeAndCreateBy = jobMainManager
-				.countEndLastExecuteSuccessGroupByTypeAndCreateBy();
+//		List<JobMainCountVO> countEndLastExecuteSuccessGroupByTypeAndCreateBy = jobMainManager
+//				.countEndLastExecuteSuccessGroupByTypeAndCreateBy();
+//		updateReportLine(ReportLinePO.Type.JobEndLastExecuteSuccessDayN,
+//				countEndLastExecuteSuccessGroupByTypeAndCreateBy);
+		List<JobMainCountVO> countDayIncrEndLastExecuteSuccessGroupByTypeAndCreateBy = jobMainManager
+				.countDayIncrEndLastExecuteSuccessGroupByTypeAndCreateBy();
 		updateReportLine(ReportLinePO.Type.JobEndLastExecuteSuccessDayN,
-				countEndLastExecuteSuccessGroupByTypeAndCreateBy);
+				countDayIncrEndLastExecuteSuccessGroupByTypeAndCreateBy, true);
 
-		List<JobMainCountVO> countEndLastExecuteFailedGroupByTypeAndCreateBy = jobMainManager
-				.countEndLastExecuteFailedGroupByTypeAndCreateBy();
+//		List<JobMainCountVO> countEndLastExecuteFailedGroupByTypeAndCreateBy = jobMainManager
+//				.countEndLastExecuteFailedGroupByTypeAndCreateBy();
+//		updateReportLine(ReportLinePO.Type.JobEndLastExecuteFailedDayN,
+//				countEndLastExecuteFailedGroupByTypeAndCreateBy);
+		List<JobMainCountVO> countDayIncrEndLastExecuteFailedGroupByTypeAndCreateBy = jobMainManager
+				.countDayIncrEndLastExecuteFailedGroupByTypeAndCreateBy();
 		updateReportLine(ReportLinePO.Type.JobEndLastExecuteFailedDayN,
-				countEndLastExecuteFailedGroupByTypeAndCreateBy);
+				countDayIncrEndLastExecuteFailedGroupByTypeAndCreateBy, true);
 
-		List<JobExecuteRecordCountVO> countTotalGroupByTypeAndCreateByAndSuccess = jobExecuteRecordManager
-				.countTotalGroupByTypeAndCreateByAndSuccess();
-		updateReportLine(ReportLinePO.Type.JobExecuteRecordTotalDayN, countTotalGroupByTypeAndCreateByAndSuccess);
+//		List<JobExecuteRecordCountVO> countTotalGroupByTypeAndCreateByAndSuccess = jobExecuteRecordManager
+//				.countTotalGroupByTypeAndCreateByAndSuccess();
+//		updateReportLine(ReportLinePO.Type.JobExecuteRecordTotalDayN, countTotalGroupByTypeAndCreateByAndSuccess);
+		List<JobExecuteRecordCountVO> countDayIncrGroupByTypeAndCreateByAndSuccess = jobExecuteRecordManager
+				.countDayIncrGroupByTypeAndCreateByAndSuccess();
+		updateReportLine(ReportLinePO.Type.JobExecuteRecordTotalDayN, countDayIncrGroupByTypeAndCreateByAndSuccess,
+				true);
 	}
 
-	private void updateReportLine(ReportLinePO.Type type, Object dataOfContent) {
+	private void updateReportLine(ReportLinePO.Type type, List dataOfContent) {
+		updateReportLine(type, dataOfContent, false);
+	}
+
+	private void updateReportLine(ReportLinePO.Type type, List dataOfContent, boolean dayIncr) {
 		ReportLinePO jobTotalDayN = reportLineManager.findOneByType(type, null);
 		if (jobTotalDayN == null) {
 			CreateReportLineDTO dto = new CreateReportLineDTO();
-			dto.setContent(ReportLinePO.contentOfJsonArray(null, dataOfContent, 30));
+			dto.setContent(ReportLinePO.contentOfJsonArray(dayIncr, null, dataOfContent, 30));
 			dto.setType(type);
 			reportLineManager.create(dto);
 		} else {
 			UpdateReportLineDTO dto = new UpdateReportLineDTO();
 			dto.setId(jobTotalDayN.getId());
-			dto.setContent(ReportLinePO.contentOfJsonArray(jobTotalDayN.getContent(), dataOfContent, 30));
+			dto.setContent(ReportLinePO.contentOfJsonArray(dayIncr, jobTotalDayN.getContent(), dataOfContent, 30));
 			reportLineManager.update(dto);
 		}
 	}
-
 }

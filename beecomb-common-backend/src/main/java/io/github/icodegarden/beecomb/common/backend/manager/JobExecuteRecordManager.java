@@ -1,5 +1,8 @@
 package io.github.icodegarden.beecomb.common.backend.manager;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -69,23 +72,25 @@ public class JobExecuteRecordManager {
 	}
 
 	/**
-EXPLAIN 
--- 总数
-SELECT
-	b.created_by,
-	b.type,
-	a.is_success,
-	count( 0 ) AS count 
-FROM
-	job_execute_record a join job_main b on a.job_id=b.id
-GROUP BY
-	b.created_by,
-	b.type	,
-	is_success
+	 * EXPLAIN -- 总数 SELECT b.created_by, b.type, a.is_success, count( 0 ) AS count
+	 * FROM job_execute_record a join job_main b on a.job_id=b.id GROUP BY
+	 * b.created_by, b.type , is_success
+	 * 
 	 * @return
 	 */
+	@Deprecated
 	public List<JobExecuteRecordCountVO> countTotalGroupByTypeAndCreateByAndSuccess() {
 		JobExecuteRecordCountQuery query = JobExecuteRecordCountQuery.builder()
+				.groupBy(JobExecuteRecordCountQuery.GroupBy.builder().createdBy(true).type(true).success(true).build())
+				.build();
+		return (List) jobExecuteRecordMapper.count(query);
+	}
+
+	public List<JobExecuteRecordCountVO> countDayIncrGroupByTypeAndCreateByAndSuccess() {
+		LocalDateTime trigAtLt = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+		LocalDateTime trigAtGte = trigAtLt.minusDays(1);
+
+		JobExecuteRecordCountQuery query = JobExecuteRecordCountQuery.builder().trigAtGte(trigAtGte).trigAtLt(trigAtLt)
 				.groupBy(JobExecuteRecordCountQuery.GroupBy.builder().createdBy(true).type(true).success(true).build())
 				.build();
 		return (List) jobExecuteRecordMapper.count(query);

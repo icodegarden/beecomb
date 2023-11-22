@@ -330,6 +330,12 @@
 			<if test="lastExecuteSuccess != null">
 				and a.is_last_execute_success = #{lastExecuteSuccess}
 			</if>
+			<if test="createdAtGte != null">
+				and a.created_at &gt;= #{createdAtGte}
+			</if>
+			<if test="createdAtLt != null">
+				and a.created_at &lt;= #{createdAtLt}
+			</if>
 		</trim>
 		<if test="groupBy != null">
 			<trim prefix="group by" prefixOverrides=",">

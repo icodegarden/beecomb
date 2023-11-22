@@ -1,5 +1,7 @@
 package io.github.icodegarden.beecomb.common.backend.pojo.query;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,11 +17,16 @@ import lombok.ToString;
 @ToString
 public class JobExecuteRecordCountQuery {
 
+	private LocalDateTime trigAtGte;
+	private LocalDateTime trigAtLt;
+
 	private GroupBy groupBy;
 
 	@Builder
-	public JobExecuteRecordCountQuery(GroupBy groupBy) {
+	public JobExecuteRecordCountQuery(LocalDateTime trigAtLt, LocalDateTime trigAtGte, GroupBy groupBy) {
 		super();
+		this.trigAtLt = trigAtLt;
+		this.trigAtGte = trigAtGte;
 		this.groupBy = groupBy;
 	}
 

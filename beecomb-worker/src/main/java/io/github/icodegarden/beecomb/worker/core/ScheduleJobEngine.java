@@ -289,7 +289,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					.executorIp(instance.getIp())//
 					.executorPort(instance.getPort())//
 					.lastExecuteReturns(executeJobResult != null ? executeJobResult.getExecuteReturns() : null)//
-					.end(executeJobResult != null ? executeJobResult.isEnd() : null)//
+					.end(executeJobResult != null ? executeJobResult.isEnd() : false)//
 					.lastTrigAt(trigAt)//
 					.nextTrigAt(nextTrigAt)//
 					.build();
