@@ -155,6 +155,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 
 	@Transactional
 	public void delete(Long jobId) {
+		pendingRecoveryJobManager.delete(jobId);
 		boolean delete = jobMainManager.delete(jobId);
 		if (delete) {
 			jobDetailManager.delete(jobId);
