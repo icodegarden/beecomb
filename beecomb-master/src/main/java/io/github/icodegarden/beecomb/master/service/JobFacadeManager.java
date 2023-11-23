@@ -33,12 +33,14 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.CreateJobDTO;
 import io.github.icodegarden.beecomb.master.pojo.transfer.openapi.UpdateJobOpenapiDTO;
 import io.github.icodegarden.commons.springboot.security.SecurityUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
  * @author Fangfang.Xu
  *
  */
+@Slf4j
 @Service
 public class JobFacadeManager extends AbstractBackendJobService {
 
@@ -150,6 +152,7 @@ public class JobFacadeManager extends AbstractBackendJobService {
 
 	@Transactional
 	public void delete(Long jobId) {
+		pendingRecoveryJobManager.delete(jobId);
 		boolean delete = jobMainManager.delete(jobId);
 		if (delete) {
 			jobDetailManager.delete(jobId);
@@ -220,6 +223,20 @@ public class JobFacadeManager extends AbstractBackendJobService {
 		JobMainQuery jobQuery = JobMainQuery.builder().jobIds(jobIds).orderBy("a.priority desc")// 此时排序已不重要，但也不影响性能
 				.size(jobIds.size()).with(JobMainQuery.With.WITH_EXECUTABLE).build();
 		List<JobMainVO> vos = jobMainManager.list(jobQuery);
+		
+		/**
+		 * 若size不一样，则说明任务已不存在，删除pending多余部分
+		 */
+		if(vos.size() != list.size()) {
+			List<Long> ids = vos.stream().map(JobMainVO::getId).collect(Collectors.toList());
+			for(PendingRecoveryJobVO one:list) {
+				if(!ids.contains(one.getJobId())) {
+					log.info("delete PendingRecoveryJob because relation job not exist, jobId:{}", one.getJobId());
+					pendingRecoveryJobManager.delete(one.getJobId());
+				}
+			}
+		}
+		
 		if (vos.isEmpty()) {
 			return Collections.emptyList();
 		}
