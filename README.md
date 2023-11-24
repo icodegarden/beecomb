@@ -10,13 +10,15 @@ beecomb也能作为传统定时任务调度系统
 
 # 架构
 
-![Architecture](./imgs/architecture.png)
+![Architecture](./imgs/architecture1.png)
 
 * Registry&Metrics 注册中心、高性能轻量数据读写，使用zookeeper
 * Master 感知Worker的压力，负载均衡分发任务给Worker；任务自动恢复处理；RESTAPI；可视化web
 * Worker 实际的任务调度引擎，管理延迟（delay）任务、调度（schedule）任务；感知Executor的压力，负载均衡决定任务让哪个Executor执行
 * Executor 任务执行器，任务执行代码在这里
 * Application 使用beecomb的业务应用系统，可以使用beecomb client SDK，可以跟Executor是一个应用
+
+![Architecture](./imgs/architecture2.png)
 
 # 特性
 
