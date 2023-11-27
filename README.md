@@ -4,27 +4,27 @@
 
 beecomb是一个大规模、高可靠的任务调度系统，与传统定时任务调度系统不同的是beecomb特别适合大规模的延迟（delay）任务、调度（schedule）任务
 
-如果你有诸如延时退款、抢票平台等面向N个有各自调度对象，或分批处理大批量数据、并行分片处理大数据的任务场景，beecomb或许就是你想要的
-
-beecomb也能作为传统定时任务调度系统
+beecomb适用场景有延时退款、抢票平台等面向N个有各自调度对象，或分批处理大批量数据、并行分片处理大数据的任务场景，也能作为传统定时任务调度系统。
 
 # 架构
 
 ![Architecture](./imgs/architecture1.png)
 
-* Registry&Metrics 注册中心、高性能轻量数据读写，使用zookeeper
-* Master 感知Worker的压力，负载均衡分发任务给Worker；任务自动恢复处理；RESTAPI；可视化web
-* Worker 实际的任务调度引擎，管理延迟（delay）任务、调度（schedule）任务；感知Executor的压力，负载均衡决定任务让哪个Executor执行
-* Executor 任务执行器，任务执行代码在这里
-* Application 使用beecomb的业务应用系统，可以使用beecomb client SDK，可以跟Executor是一个应用
+系统架构角色分为
+
+* Registry&Metrics 注册与度量中心
+* Master 集群Master节点
+* Worker 集群Worker节点
+* Executor 任务执行器，可以与Application是相同应用
+* Application 应用系统
 
 ![Architecture](./imgs/architecture2.png)
 
 # 特性
 
-* 大规模任务，由于beecomb分布式部署水平扩容、数据水平切分、调度与执行器解耦等设计，大规模集群可支持千万级任务（活跃任务）
+* 大规模任务，beecomb集群部署水平扩容、数据水平切分、调度与执行器解耦等设计，大规模集群可支持千万级任务（活跃任务）
 * 高可靠保障，数据持久化，集群实例故障时任务自动恢复
-* 高精度时间，每个任务在什么时间执行是比较精确的
+* 高精度时间，每个任务在什么时间执行是精确的
 * 智能压力负载均衡，任务在集群中将根据调度引擎、执行器的cpu、内存、已分配的任务数量进行负载均衡
 * 分片并行执行任务
 * 多系统支持
