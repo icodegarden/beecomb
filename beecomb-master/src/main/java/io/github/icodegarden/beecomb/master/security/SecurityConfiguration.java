@@ -15,6 +15,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.security.web.server.savedrequest.NoOpServerRequestCache;
 
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.master.configuration.InstanceProperties.Security.Jwt;
@@ -80,7 +81,8 @@ public class SecurityConfiguration {
 //				.sessionCreationPolicy(SessionCreationPolicy.NEVER)//
 		// .maximumSessions(32) // maximum number of concurrent sessions for one user
 		// .sessionRegistry(sessionRegistry)
-//				.and()//
+				.requestCache().requestCache(NoOpServerRequestCache.getInstance())//
+				.and()//
 				.exceptionHandling()//
 				.authenticationEntryPoint(new ReactiveNativeRestApiAuthenticationEntryPoint())//
 				.accessDeniedHandler(new ReactiveNativeRestApiAccessDeniedHandler())//
