@@ -17,15 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.codec.ServerCodecConfigurer;
-import org.springframework.http.codec.json.Jackson2JsonDecoder;
-import org.springframework.http.codec.json.Jackson2JsonEncoder;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.icodegarden.beecomb.common.enums.NodeRole;
 import io.github.icodegarden.beecomb.common.metrics.job.JobsMetricsOverload;
@@ -41,7 +34,6 @@ import io.github.icodegarden.beecomb.master.service.JobFacadeManager;
 import io.github.icodegarden.beecomb.master.service.JobReceiver;
 import io.github.icodegarden.beecomb.master.service.ReportService;
 import io.github.icodegarden.beecomb.master.service.WorkerRemoteService;
-import io.github.icodegarden.nursery.springboot.web.util.MappingJackson2HttpMessageConverters;
 import io.github.icodegarden.nutrient.exchange.loadbalance.InstanceLoadBalance;
 import io.github.icodegarden.nutrient.exchange.loadbalance.MinimumLoadFirstInstanceLoadBalance;
 import io.github.icodegarden.nutrient.lang.concurrent.lock.DistributedLock;
@@ -90,20 +82,8 @@ import lombok.extern.slf4j.Slf4j;
 @EnableConfigurationProperties(InstanceProperties.class)
 @Configuration
 @Slf4j
-public class BeansConfiguration implements WebFluxConfigurer {
+public class BeansConfiguration {
 
-	/**
-	 * MappingJackson2HttpMessageConverter对ReactiveWeb不起作用  TODO remove
-	 */
-	@Override
-	public void configureHttpMessageCodecs(ServerCodecConfigurer configurer) {
-		MappingJackson2HttpMessageConverter converter = MappingJackson2HttpMessageConverters.simple();
-		ObjectMapper om = converter.getObjectMapper();
-
-		configurer.defaultCodecs().jackson2JsonEncoder(new Jackson2JsonEncoder(om));
-		configurer.defaultCodecs().jackson2JsonDecoder(new Jackson2JsonDecoder(om));
-	}
-	
 	@Autowired
 	private InstanceProperties instanceProperties;
 
@@ -111,7 +91,7 @@ public class BeansConfiguration implements WebFluxConfigurer {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	public TableDataCountManager mysqlTableDataCountManager(DataSource shardingSphereDataSource) {
 		DataSource dataSource = DataSourceUtils.firstDataSource((ShardingSphereDataSource) shardingSphereDataSource);
