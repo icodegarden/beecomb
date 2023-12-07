@@ -20,6 +20,7 @@ import io.github.icodegarden.beecomb.common.backend.manager.JobExecuteRecordMana
 import io.github.icodegarden.beecomb.common.backend.pojo.query.JobExecuteRecordQuery;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobExecuteRecordVO;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
+import reactor.core.publisher.Mono;
 
 /**
  * 
@@ -33,34 +34,37 @@ public class JobExecuteRecordControllerRy extends BaseControllerRy {
 	private JobExecuteRecordManager jobExecuteRecordManager;
 
 	@GetMapping("view/jobExecuteRecord/list")
-	public String jobExecuteRecordList(ServerWebExchange exchange, ConcurrentModel mmap, @RequestParam(required = false) Long jobId) {
+	public String jobExecuteRecordList(ServerWebExchange exchange, ConcurrentModel mmap,
+			@RequestParam(required = false) Long jobId) {
 		mmap.put("jobId", jobId);
 		return "job/jobExecuteRecord/list";
 	}
 
 	@PostMapping("api/jobExecuteRecord/list")
-	public ResponseEntity<TableDataInfo> pageJobExecuteRecords(ServerWebExchange exchange
+	public Mono<ResponseEntity<TableDataInfo>> pageJobExecuteRecords(ServerWebExchange exchange
 //			@RequestParam(required = false) Long jobId,
 //			@RequestParam(required = false) Boolean success,
 //			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
 //			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize
 	) {
-		MultiValueMap<String, String> multiValueMap = getFormData(exchange);
+//		MultiValueMap<String, String> multiValueMap = getFormData(exchange);
 
-		Long jobId = StringUtils.hasText(multiValueMap.getFirst("jobId"))
-				? Long.valueOf(multiValueMap.getFirst("jobId"))
-				: null;
-		Boolean success = StringUtils.hasText(multiValueMap.getFirst("success"))
-				? Boolean.valueOf(multiValueMap.getFirst("success"))
-				: null;
-		int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
-		int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
+		return exchange.getFormData().map(multiValueMap -> {
+			Long jobId = StringUtils.hasText(multiValueMap.getFirst("jobId"))
+					? Long.valueOf(multiValueMap.getFirst("jobId"))
+					: null;
+			Boolean success = StringUtils.hasText(multiValueMap.getFirst("success"))
+					? Boolean.valueOf(multiValueMap.getFirst("success"))
+					: null;
+			int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
+			int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
 
-		JobExecuteRecordQuery query = JobExecuteRecordQuery.builder().jobId(jobId).success(success).page(pageNum)
-				.size(pageSize).orderBy("a.id desc").build();
+			JobExecuteRecordQuery query = JobExecuteRecordQuery.builder().jobId(jobId).success(success).page(pageNum)
+					.size(pageSize).orderBy("a.id desc").build();
 
-		Page<JobExecuteRecordVO> p = jobExecuteRecordManager.page(query);
-		return ResponseEntity.ok(getDataTable(p));
+			Page<JobExecuteRecordVO> p = jobExecuteRecordManager.page(query);
+			return ResponseEntity.ok(getDataTable(p));
+		});
 	}
 
 	@GetMapping("view/jobExecuteRecord/{id}/detail")

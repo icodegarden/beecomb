@@ -42,6 +42,7 @@ import io.github.icodegarden.nutrient.lang.result.Result2;
 import io.github.icodegarden.nutrient.lang.spec.response.ErrorCodeException;
 import io.github.icodegarden.nutrient.lang.util.SystemUtils;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 /**
  * 
@@ -65,7 +66,7 @@ public class JobControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping(value = { "api/job/list" })
-	public ResponseEntity<TableDataInfo> pageJobs(//
+	public Mono<ResponseEntity<TableDataInfo>> pageJobs(//
 			ServerWebExchange exchange
 //			@RequestParam(required = false) Long id, @RequestParam(required = false) String uuid, //
 //			@RequestParam(required = false) String nameLike, @RequestParam(required = false) String labelLike, //
@@ -90,99 +91,99 @@ public class JobControllerRy extends BaseControllerRy {
 //			@RequestParam(required = false) boolean withDelay, //
 //			@RequestParam(required = false) boolean withSchedule
 	) {
-		MultiValueMap<String, String> multiValueMap = getFormData(exchange);
+//		MultiValueMap<String, String> multiValueMap = getFormData(exchange);
+		
+		return exchange.getFormData().map(multiValueMap -> {
+			Long id = StringUtils.hasText(multiValueMap.getFirst("id")) ? Long.valueOf(multiValueMap.getFirst("id"))
+					: null;
+			String uuid = StringUtils.hasText(multiValueMap.getFirst("uuid")) ? multiValueMap.getFirst("uuid") : null;
+			String nameLike = StringUtils.hasText(multiValueMap.getFirst("nameLike"))
+					? multiValueMap.getFirst("nameLike")
+					: null;
+			String labelLike = StringUtils.hasText(multiValueMap.getFirst("labelLike"))
+					? multiValueMap.getFirst("labelLike")
+					: null;
+			JobType type = StringUtils.hasText(multiValueMap.getFirst("type"))
+					? JobType.valueOf(multiValueMap.getFirst("type"))
+					: null;
+			Boolean parallel = StringUtils.hasText(multiValueMap.getFirst("parallel"))
+					? Boolean.valueOf(multiValueMap.getFirst("parallel"))
+					: null;
+			Boolean lastExecuteSuccess = StringUtils.hasText(multiValueMap.getFirst("lastExecuteSuccess"))
+					? Boolean.valueOf(multiValueMap.getFirst("lastExecuteSuccess"))
+					: null;
+			LocalDateTime createdAtGte = StringUtils.hasText(multiValueMap.getFirst("createdAtGte")) ? LocalDateTime
+					.parse(multiValueMap.getFirst("createdAtGte"), SystemUtils.STANDARD_DATETIME_FORMATTER) : null;
+			LocalDateTime createdAtLte = StringUtils.hasText(multiValueMap.getFirst("createdAtLte")) ? LocalDateTime
+					.parse(multiValueMap.getFirst("createdAtLte"), SystemUtils.STANDARD_DATETIME_FORMATTER) : null;
+			LocalDateTime lastTrigAtGte = StringUtils.hasText(multiValueMap.getFirst("lastTrigAtGte")) ? LocalDateTime
+					.parse(multiValueMap.getFirst("lastTrigAtGte"), SystemUtils.STANDARD_DATETIME_FORMATTER) : null;
+			LocalDateTime lastTrigAtLte = StringUtils.hasText(multiValueMap.getFirst("lastTrigAtLte")) ? LocalDateTime
+					.parse(multiValueMap.getFirst("lastTrigAtLte"), SystemUtils.STANDARD_DATETIME_FORMATTER) : null;
+			Boolean queued = StringUtils.hasText(multiValueMap.getFirst("queued"))
+					? Boolean.valueOf(multiValueMap.getFirst("queued"))
+					: null;
+			Boolean end = StringUtils.hasText(multiValueMap.getFirst("end"))
+					? Boolean.valueOf(multiValueMap.getFirst("end"))
+					: null;
+			int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
+			int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
+			boolean withQueuedAt = StringUtils.hasText(multiValueMap.getFirst("withQueuedAt"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withQueuedAt"))
+					: false;
+			boolean withQueuedAtInstance = StringUtils.hasText(multiValueMap.getFirst("withQueuedAtInstance"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withQueuedAtInstance"))
+					: false;
+			boolean withLastTrigResult = StringUtils.hasText(multiValueMap.getFirst("withLastTrigResult"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withLastTrigResult"))
+					: false;
+			boolean withLastExecuteExecutor = StringUtils.hasText(multiValueMap.getFirst("withLastExecuteExecutor"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withLastExecuteExecutor"))
+					: false;
+			boolean withLastExecuteReturns = StringUtils.hasText(multiValueMap.getFirst("withLastExecuteReturns"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withLastExecuteReturns"))
+					: false;
+			boolean withCreatedBy = StringUtils.hasText(multiValueMap.getFirst("withCreatedBy"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withCreatedBy"))
+					: false;
+			boolean withCreatedAt = StringUtils.hasText(multiValueMap.getFirst("withCreatedAt"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withCreatedAt"))
+					: false;
+			boolean withParams = StringUtils.hasText(multiValueMap.getFirst("withParams"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withParams"))
+					: false;
+			boolean withDesc = StringUtils.hasText(multiValueMap.getFirst("withDesc"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withDesc"))
+					: false;
+			boolean withDelay = StringUtils.hasText(multiValueMap.getFirst("withDelay"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withDelay"))
+					: false;
+			boolean withSchedule = StringUtils.hasText(multiValueMap.getFirst("withSchedule"))
+					? Boolean.parseBoolean(multiValueMap.getFirst("withSchedule"))
+					: false;
 
-		Long id = StringUtils.hasText(multiValueMap.getFirst("id")) ? Long.valueOf(multiValueMap.getFirst("id")) : null;
-		String uuid = StringUtils.hasText(multiValueMap.getFirst("uuid")) ? multiValueMap.getFirst("uuid") : null;
-		String nameLike = StringUtils.hasText(multiValueMap.getFirst("nameLike")) ? multiValueMap.getFirst("nameLike")
-				: null;
-		String labelLike = StringUtils.hasText(multiValueMap.getFirst("labelLike"))
-				? multiValueMap.getFirst("labelLike")
-				: null;
-		JobType type = StringUtils.hasText(multiValueMap.getFirst("type"))
-				? JobType.valueOf(multiValueMap.getFirst("type"))
-				: null;
-		Boolean parallel = StringUtils.hasText(multiValueMap.getFirst("parallel"))
-				? Boolean.valueOf(multiValueMap.getFirst("parallel"))
-				: null;
-		Boolean lastExecuteSuccess = StringUtils.hasText(multiValueMap.getFirst("lastExecuteSuccess"))
-				? Boolean.valueOf(multiValueMap.getFirst("lastExecuteSuccess"))
-				: null;
-		LocalDateTime createdAtGte = StringUtils.hasText(multiValueMap.getFirst("createdAtGte"))
-				? LocalDateTime.parse(multiValueMap.getFirst("createdAtGte"), SystemUtils.STANDARD_DATETIME_FORMATTER)
-				: null;
-		LocalDateTime createdAtLte = StringUtils.hasText(multiValueMap.getFirst("createdAtLte"))
-				? LocalDateTime.parse(multiValueMap.getFirst("createdAtLte"), SystemUtils.STANDARD_DATETIME_FORMATTER)
-				: null;
-		LocalDateTime lastTrigAtGte = StringUtils.hasText(multiValueMap.getFirst("lastTrigAtGte"))
-				? LocalDateTime.parse(multiValueMap.getFirst("lastTrigAtGte"), SystemUtils.STANDARD_DATETIME_FORMATTER)
-				: null;
-		LocalDateTime lastTrigAtLte = StringUtils.hasText(multiValueMap.getFirst("lastTrigAtLte"))
-				? LocalDateTime.parse(multiValueMap.getFirst("lastTrigAtLte"), SystemUtils.STANDARD_DATETIME_FORMATTER)
-				: null;
-		Boolean queued = StringUtils.hasText(multiValueMap.getFirst("queued"))
-				? Boolean.valueOf(multiValueMap.getFirst("queued"))
-				: null;
-		Boolean end = StringUtils.hasText(multiValueMap.getFirst("end"))
-				? Boolean.valueOf(multiValueMap.getFirst("end"))
-				: null;
-		int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
-		int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
-		boolean withQueuedAt = StringUtils.hasText(multiValueMap.getFirst("withQueuedAt"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withQueuedAt"))
-				: false;
-		boolean withQueuedAtInstance = StringUtils.hasText(multiValueMap.getFirst("withQueuedAtInstance"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withQueuedAtInstance"))
-				: false;
-		boolean withLastTrigResult = StringUtils.hasText(multiValueMap.getFirst("withLastTrigResult"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withLastTrigResult"))
-				: false;
-		boolean withLastExecuteExecutor = StringUtils.hasText(multiValueMap.getFirst("withLastExecuteExecutor"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withLastExecuteExecutor"))
-				: false;
-		boolean withLastExecuteReturns = StringUtils.hasText(multiValueMap.getFirst("withLastExecuteReturns"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withLastExecuteReturns"))
-				: false;
-		boolean withCreatedBy = StringUtils.hasText(multiValueMap.getFirst("withCreatedBy"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withCreatedBy"))
-				: false;
-		boolean withCreatedAt = StringUtils.hasText(multiValueMap.getFirst("withCreatedAt"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withCreatedAt"))
-				: false;
-		boolean withParams = StringUtils.hasText(multiValueMap.getFirst("withParams"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withParams"))
-				: false;
-		boolean withDesc = StringUtils.hasText(multiValueMap.getFirst("withDesc"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withDesc"))
-				: false;
-		boolean withDelay = StringUtils.hasText(multiValueMap.getFirst("withDelay"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withDelay"))
-				: false;
-		boolean withSchedule = StringUtils.hasText(multiValueMap.getFirst("withSchedule"))
-				? Boolean.parseBoolean(multiValueMap.getFirst("withSchedule"))
-				: false;
+			String username = SecurityUtils.getUsername();
 
-		String username = SecurityUtils.getUsername();
+			/**
+			 * 只查询对应用户的
+			 */
+			JobMainQuery.With with = JobMainQuery.With.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
+					.lastExecuteExecutor(withLastExecuteExecutor).queuedAt(withQueuedAt)
+					.queuedAtInstance(withQueuedAtInstance)
+					.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams)
+							.lastExecuteReturns(withLastExecuteReturns).lastTrigResult(withLastTrigResult).build())
+					.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
+					.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
 
-		/**
-		 * 只查询对应用户的
-		 */
-		JobMainQuery.With with = JobMainQuery.With.builder().createdAt(withCreatedAt).createdBy(withCreatedBy)
-				.lastExecuteExecutor(withLastExecuteExecutor).queuedAt(withQueuedAt)
-				.queuedAtInstance(withQueuedAtInstance)
-				.jobDetail(JobDetailQuery.With.builder().desc(withDesc).params(withParams)
-						.lastExecuteReturns(withLastExecuteReturns).lastTrigResult(withLastTrigResult).build())
-				.delayJob(withDelay ? DelayJobQuery.With.builder().build() : null)
-				.scheduleJob(withSchedule ? ScheduleJobQuery.With.builder().build() : null).build();
+			JobMainQuery query = JobMainQuery.builder().id(id).uuid(uuid).nameLike(nameLike).labelLike(labelLike)
+					.type(type).parallel(parallel).lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte)
+					.createdAtLte(createdAtLte).lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued)
+					.end(end).createdBy(username).page(pageNum).size(pageSize).orderBy("a.id desc").with(with).build();
 
-		JobMainQuery query = JobMainQuery.builder().id(id).uuid(uuid).nameLike(nameLike).labelLike(labelLike).type(type)
-				.parallel(parallel).lastExecuteSuccess(lastExecuteSuccess).createdAtGte(createdAtGte)
-				.createdAtLte(createdAtLte).lastTrigAtGte(lastTrigAtGte).lastTrigAtLte(lastTrigAtLte).queued(queued)
-				.end(end).createdBy(username).page(pageNum).size(pageSize).orderBy("a.id desc").with(with).build();
+			Page<JobMainVO> p = jobMainManager.page(query);
 
-		Page<JobMainVO> p = jobMainManager.page(query);
-
-		return ResponseEntity.ok(getDataTable(p));
+			return ResponseEntity.ok(getDataTable(p));
+		});
 	}
 
 	@GetMapping("view/job/{id}/detail")

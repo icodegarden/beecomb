@@ -2,13 +2,10 @@ package io.github.icodegarden.beecomb.master.controller.ruoyi;
 
 import java.beans.PropertyEditorSupport;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.server.ServerWebExchange;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
@@ -16,8 +13,6 @@ import com.github.pagehelper.PageInfo;
 import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.nutrient.lang.query.BaseQuery;
-import io.github.icodegarden.nutrient.lang.util.ReactiveUtils;
-import reactor.core.scheduler.Schedulers;
 
 /**
  * web层通用数据处理
@@ -38,28 +33,6 @@ public abstract class BaseControllerRy {
 				}
 			}
 		});
-	}
-
-	protected MultiValueMap<String, String> getFormData(ServerWebExchange exchange) {
-		AtomicReference<MultiValueMap<String, String>> reference = new AtomicReference<>();
-
-		exchange.getFormData()
-		.subscribeOn(Schedulers.immediate())
-		.subscribe(m->{
-			reference.set(m);
-			synchronized (reference) {
-				reference.notify();
-			}
-		});
-		
-		synchronized (reference) {
-			try {
-				reference.wait(1000);
-			} catch (InterruptedException e) {
-			}	
-		}
-
-		return reference.get();
 	}
 
 	/**

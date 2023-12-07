@@ -6,13 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ConcurrentModel;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ServerWebExchange;
 
 import com.github.pagehelper.Page;
@@ -29,9 +27,8 @@ import io.github.icodegarden.beecomb.master.ruoyi.AjaxResult;
 import io.github.icodegarden.beecomb.master.ruoyi.TableDataInfo;
 import io.github.icodegarden.beecomb.master.security.UserDetails;
 import io.github.icodegarden.nursery.springboot.security.SecurityUtils;
-import io.github.icodegarden.nutrient.lang.query.BaseQuery;
 import io.github.icodegarden.nutrient.lang.spec.response.ErrorCodeException;
-import jakarta.validation.constraints.Max;
+import reactor.core.publisher.Mono;
 
 /**
  * 
@@ -51,36 +48,41 @@ public class SysUserControllerRy extends BaseControllerRy {
 	}
 
 	@PostMapping("api/user/list")
-	public ResponseEntity<TableDataInfo> pageUsers(ServerWebExchange exchange
+	public Mono<ResponseEntity<TableDataInfo>> pageUsers(ServerWebExchange exchange
 //			@RequestParam(required = false) String usernameLike,
 //			@RequestParam(required = false) String nameLike, @RequestParam(required = false) String phone,
 //			@RequestParam(required = false) Boolean actived, @RequestParam(required = false) PlatformRole platformRole,
 //			@RequestParam(defaultValue = "0") @Max(BaseQuery.MAX_TOTAL_PAGES) int pageNum,
 //			@RequestParam(defaultValue = "10") @Max(BaseQuery.MAX_PAGE_SIZE) int pageSize
 	) {
-		MultiValueMap<String, String> multiValueMap = getFormData(exchange);
+//		MultiValueMap<String, String> multiValueMap = getFormData(exchange);
 
-		String usernameLike = StringUtils.hasText(multiValueMap.getFirst("usernameLike"))
-				? multiValueMap.getFirst("usernameLike")
-				: null;
-		String nameLike = StringUtils.hasText(multiValueMap.getFirst("nameLike")) ? multiValueMap.getFirst("nameLike")
-				: null;
-		String phone = StringUtils.hasText(multiValueMap.getFirst("phone")) ? multiValueMap.getFirst("phone") : null;
-		Boolean actived = StringUtils.hasText(multiValueMap.getFirst("actived"))
-				? Boolean.valueOf(multiValueMap.getFirst("actived"))
-				: null;
-		PlatformRole platformRole = StringUtils.hasText(multiValueMap.getFirst("platformRole"))
-				? PlatformRole.valueOf(multiValueMap.getFirst("platformRole"))
-				: null;
-		int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
-		int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
+		return exchange.getFormData().map(multiValueMap -> {
+			String usernameLike = StringUtils.hasText(multiValueMap.getFirst("usernameLike"))
+					? multiValueMap.getFirst("usernameLike")
+					: null;
+			String nameLike = StringUtils.hasText(multiValueMap.getFirst("nameLike"))
+					? multiValueMap.getFirst("nameLike")
+					: null;
+			String phone = StringUtils.hasText(multiValueMap.getFirst("phone")) ? multiValueMap.getFirst("phone")
+					: null;
+			Boolean actived = StringUtils.hasText(multiValueMap.getFirst("actived"))
+					? Boolean.valueOf(multiValueMap.getFirst("actived"))
+					: null;
+			PlatformRole platformRole = StringUtils.hasText(multiValueMap.getFirst("platformRole"))
+					? PlatformRole.valueOf(multiValueMap.getFirst("platformRole"))
+					: null;
+			int pageNum = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageNum")).orElse("0"));
+			int pageSize = Integer.parseInt(Optional.ofNullable(multiValueMap.getFirst("pageSize")).orElse("10"));
 
-		UserQuery query = UserQuery.builder().usernameLike(usernameLike).actived(actived).nameLike(nameLike)
-				.phone(phone).platformRole(platformRole).page(pageNum).size(pageSize).orderBy("a.id desc").build();
-		query.setWith(UserQuery.With.builder().createdAt(true).createdBy(true).updatedAt(true).updatedBy(true).build());
+			UserQuery query = UserQuery.builder().usernameLike(usernameLike).actived(actived).nameLike(nameLike)
+					.phone(phone).platformRole(platformRole).page(pageNum).size(pageSize).orderBy("a.id desc").build();
+			query.setWith(
+					UserQuery.With.builder().createdAt(true).createdBy(true).updatedAt(true).updatedBy(true).build());
 
-		Page<UserPO> p = userService.page(query);
-		return ResponseEntity.ok(getDataTable(p));
+			Page<UserPO> p = userService.page(query);
+			return ResponseEntity.ok(getDataTable(p));
+		});
 	}
 
 	@GetMapping("view/user/create")
