@@ -75,6 +75,10 @@ public class AuthenticationController {
 			}
 			AuthenticationException e = (AuthenticationException) t.getCause();
 
+			if (e.getCause() != null && !(e.getCause() instanceof AuthenticationServiceException)) {
+				return (ResponseEntity) ResponseEntity.status(401).body(e.getMessage());
+			}
+
 			if (e instanceof AuthenticationServiceException) {
 				log.error("ex on authenticate, username:{}", loginDTO.getUsername(), e);
 				throw e;
