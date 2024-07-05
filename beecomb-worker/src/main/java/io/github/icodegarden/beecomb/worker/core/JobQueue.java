@@ -46,7 +46,8 @@ public class JobQueue {
 	}
 
 	public ScheduledFuture<?> scheduleWithFixedDelay(JobTrigger trigger, long initialDelay, long delay, TimeUnit unit) {
-		ScheduledFuture<?> future = scheduledThreadPoolExecutor.scheduleWithFixedDelay(trigger, initialDelay, delay, unit);
+		ScheduledFuture<?> future = scheduledThreadPoolExecutor.scheduleWithFixedDelay(trigger, initialDelay, delay,
+				unit);
 		trigger.setFuture(future);
 		queuedJobs.put(trigger.getJobId(), trigger);
 		return future;
@@ -70,14 +71,14 @@ public class JobQueue {
 		}
 		return b;
 	}
-
+	
 	/**
 	 * Delay:cancel只有在 已经完成 或 已经取消 的状态下才会false，进行中的任务也能true<br>
 	 * Sheducle:进行中的任务cancel也能true（进行中的任务cancel后下次不会再进入队列，当然不会再触发调度）<br>
 	 * 关于 scheduledThreadPoolExecutor.setRemoveOnCancelPolicy(true);
 	 * 默认false，任务只有在完成时才从队列移除，cancel是不会触发移除的（要等到任务触发时间到了才真正从队列remove）<br>
 	 */
-	private boolean cancelJob(JobTrigger jobTrigger) {
+	public boolean cancelJob(JobTrigger jobTrigger) {
 		ScheduledFuture<?> future = jobTrigger.getFuture();
 		if (!future.isDone() && !future.isCancelled()) {
 			/**
@@ -89,7 +90,7 @@ public class JobQueue {
 		}
 		return true;
 	}
-	
+
 //	public boolean containsJob(Long jobId) {
 //		return queuedJobs.containsKey(jobId);
 //	}

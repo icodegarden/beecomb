@@ -15,6 +15,7 @@ import io.github.icodegarden.beecomb.common.pojo.biz.ExecutableJobBO;
 import io.github.icodegarden.beecomb.common.pojo.biz.ScheduleBO;
 import io.github.icodegarden.beecomb.common.pojo.transfer.RequestExecutorDTO;
 import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
+import io.github.icodegarden.beecomb.worker.core.AbstractJobEngine.JobTrigger;
 import io.github.icodegarden.beecomb.worker.exception.ExceedOverloadJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.InvalidParamJobEngineException;
 import io.github.icodegarden.beecomb.worker.exception.JobEngineException;
@@ -145,6 +146,8 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 				 * 原因同delay
 				 */
 				jobQueue.removeJobTrigger(job.getId());
+				
+				preventDuplication(this);
 
 				Result3<ExecutableJobBO, JobTrigger, JobEngineException> result3 = doEnQueue(job);// 以新的身份重进队列
 				if (result3.isSuccess()) {
@@ -157,6 +160,12 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 					// 失败则通过恢复机制
 				}
 			}
+		}
+		/**
+		 * 针对schedule类型的立即执行，由于不是调度线程池触发的，因为任务对于调度线程池还在还会继续，重新入队列会导致后续多次重复触发，因此需要取消调度线程池中的任务（无论是否立即执行还是调度触发都可以这样安全处理一下，尽管对调度触发的没必要这样做）
+		 */
+		private void preventDuplication(JobTrigger jobTrigger) {
+			jobQueue.cancelJob(jobTrigger);
 		}
 	}
 
