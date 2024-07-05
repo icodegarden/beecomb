@@ -38,8 +38,11 @@ public class DispatcherHandler {
 		return jobRequestReceiver.remove(job);
 	}
 
+	/**
+	 * 立即执行
+	 */
 	public RunJobVO runJob(ExecutableJobBO job) {
-		return jobRequestReceiver.run(job);
+		return jobRequestReceiver.runNow(job);
 	}
 
 	public int queuedSize() {

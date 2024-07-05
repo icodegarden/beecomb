@@ -107,7 +107,7 @@ public class DelayJobEngine extends AbstractJobEngine {
 	}
 
 	@Override
-	public boolean run(ExecutableJobBO job) {
+	public boolean runNow(ExecutableJobBO job) {
 		/**
 		 * delay不支持立即执行
 		 */

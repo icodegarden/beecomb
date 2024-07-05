@@ -107,7 +107,7 @@ public class ScheduleJobEngine extends AbstractJobEngine {
 	}
 
 	@Override
-	public boolean run(ExecutableJobBO job) {
+	public boolean runNow(ExecutableJobBO job) {
 		JobTrigger jobTrigger = jobQueue.getJobTrigger(job.getId());
 		if (jobTrigger == null) {
 			return false;

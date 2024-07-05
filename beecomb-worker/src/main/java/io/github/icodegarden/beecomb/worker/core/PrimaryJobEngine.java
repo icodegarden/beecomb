@@ -55,9 +55,9 @@ public class PrimaryJobEngine implements JobEngine {
 	}
 
 	@Override
-	public boolean run(ExecutableJobBO job) {
+	public boolean runNow(ExecutableJobBO job) {
 		JobEngine jobEngine = getJobEngine(job);
-		return jobEngine.run(job);
+		return jobEngine.runNow(job);
 	}
 
 	@Override

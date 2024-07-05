@@ -29,7 +29,7 @@ public interface JobEngine extends GracefullyShutdown {
 
 	boolean removeQueue(ExecutableJobBO job);
 	
-	boolean run(ExecutableJobBO job);
+	boolean runNow(ExecutableJobBO job);
 
 	/**
 	 * 

@@ -80,8 +80,8 @@ public class JobRequestReceiver {
 		return new RemoveQueueVO(job.getId(), remove);
 	}
 
-	public RunJobVO run(ExecutableJobBO job) {
-		boolean run = jobEngine.run(job);
+	public RunJobVO runNow(ExecutableJobBO job) {
+		boolean run = jobEngine.runNow(job);
 		return new RunJobVO(job.getId(), run);
 	}
 }
