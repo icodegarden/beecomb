@@ -14,6 +14,7 @@ import io.github.icodegarden.beecomb.common.backend.pojo.transfer.UpdateJobOnExe
 import io.github.icodegarden.beecomb.common.backend.pojo.view.DelayJobVO;
 import io.github.icodegarden.beecomb.common.backend.pojo.view.JobMainVO;
 import io.github.icodegarden.beecomb.common.pojo.biz.DelayBO;
+import io.github.icodegarden.beecomb.worker.configuration.InstanceProperties;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteFailedDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnExecuteSuccessDTO;
 import io.github.icodegarden.beecomb.worker.pojo.transfer.UpdateOnNoQualifiedExecutorDTO;
@@ -87,7 +88,8 @@ public class DelayJobService extends BaseJobService {
 						.queuedAtInstanceNull(queuedAtInstanceNull).build();
 
 				RETRY_TEMPLATE.execute(ctx -> {
-					jobExecuteRecordManager.createOnExecuted(mainUpdate);
+					jobExecuteRecordManager.createOnExecuted(InstanceProperties.singleton().getServer().getIpPort(),
+							mainUpdate);
 					update(mainUpdate);
 					return null;
 				});
@@ -111,7 +113,8 @@ public class DelayJobService extends BaseJobService {
 					.queuedAtInstanceNull(true)/* 不需要指定该参数.queued(false) */.build();
 
 			RETRY_TEMPLATE.execute(ctx -> {
-				jobExecuteRecordManager.createOnExecuted(mainUpdate);
+				jobExecuteRecordManager.createOnExecuted(InstanceProperties.singleton().getServer().getIpPort(),
+						mainUpdate);
 				update(mainUpdate);
 				return null;
 			});
@@ -168,7 +171,8 @@ public class DelayJobService extends BaseJobService {
 							.queuedAtInstanceNull(queuedAtInstanceNull).build();
 
 					RETRY_TEMPLATE.execute(ctx -> {
-						jobExecuteRecordManager.createOnExecuted(mainUpdate);
+						jobExecuteRecordManager.createOnExecuted(InstanceProperties.singleton().getServer().getIpPort(),
+								mainUpdate);
 						update(mainUpdate);
 						return null;
 					});
@@ -188,7 +192,8 @@ public class DelayJobService extends BaseJobService {
 							.queuedAtInstanceNull(true)/* .queued(false) */.build();
 
 					RETRY_TEMPLATE.execute(ctx -> {
-						jobExecuteRecordManager.createOnExecuted(mainUpdate);
+						jobExecuteRecordManager.createOnExecuted(InstanceProperties.singleton().getServer().getIpPort(),
+								mainUpdate);
 						update(mainUpdate);
 						return null;
 					});

@@ -75,6 +75,7 @@ DROP TABLE IF EXISTS `job_execute_record`;
 CREATE TABLE `job_execute_record` (
   `id` bigint unsigned NOT NULL,
   `job_id` bigint unsigned NOT NULL,
+  `trig_worker` varchar(21) comment 'ip:port',
   `trig_at` timestamp NOT NULL comment '任务调度触发时间',
   `trig_result` text comment '触发结果,例如没有可选的executor实例64K',
   `execute_executor` varchar(21) comment 'ip:port',

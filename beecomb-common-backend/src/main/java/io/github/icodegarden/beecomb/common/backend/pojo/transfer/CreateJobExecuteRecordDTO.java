@@ -16,6 +16,8 @@ public class CreateJobExecuteRecordDTO {
 	@NotNull
 	private Long jobId;// bigint unsigned NOT NULL,
 	@NotNull
+	private String trigWorker;
+	@NotNull
 	private LocalDateTime trigAt;// timestamp NOT NULL comment '任务调度触发时间',
 	private String trigResult;// text comment '触发结果,例如没有可选的executor实例64K',
 	private String executeExecutor;// varchar(21) comment 'ip:port',

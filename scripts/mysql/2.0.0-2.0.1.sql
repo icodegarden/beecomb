@@ -1,0 +1,1 @@
+alter table `job_execute_record` add column `trig_worker` varchar(21) comment 'ip:port';

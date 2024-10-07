@@ -59,7 +59,7 @@ class JobExecuteRecordManagerTests {
 		dto.setTrigAt(SystemUtils.now());
 		dto.setTrigResult("rrr");
 
-		jobExecuteRecordManager.create(dto);
+		jobExecuteRecordManager.createRecord(dto);
 
 		JobExecuteRecordDO record = jobExecuteRecordMapper.findAll(JobExecuteRecordQuery.builder().build()).get(0);
 

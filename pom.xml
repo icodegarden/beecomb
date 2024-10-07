@@ -38,8 +38,8 @@
     </developers>
 	
 	<properties>
-        <nutrient.version>3.0.0</nutrient.version>
-        <nursery.version>3.0.0</nursery.version>
+        <nutrient.version>3.0.1</nutrient.version>
+        <nursery.version>3.0.1</nursery.version>
     </properties>
 	
 	<modules>

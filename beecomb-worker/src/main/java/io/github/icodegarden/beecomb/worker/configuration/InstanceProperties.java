@@ -58,6 +58,10 @@ public class InstanceProperties {
 		 * 影响任务引擎shutdown时等待正在处理中的任务完毕
 		 */
 		private long engineShutdownBlockingTimeoutMillis = 60000;
+		
+		public String getIpPort() {
+			return SystemUtils.formatIpPort(bindIp, port);
+		}
 	}
 
 	@Setter

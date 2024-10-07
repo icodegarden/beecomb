@@ -36,23 +36,24 @@ public class JobExecuteRecordManager {
 	@Autowired
 	private JobExecuteRecordMapper jobExecuteRecordMapper;
 
-	public void create(CreateJobExecuteRecordDTO dto) {
+	public void createRecord(CreateJobExecuteRecordDTO dto) {
 		JobExecuteRecordPO po = new JobExecuteRecordPO();
 		BeanUtils.copyProperties(dto, po);
-
+		
 		jobExecuteRecordMapper.add(po);
 	}
 
-	public void createOnExecuted(UpdateJobOnExecutedDTO update) {
+	public void createOnExecuted(String trigWorker, UpdateJobOnExecutedDTO update) {
 		CreateJobExecuteRecordDTO createJobExecuteRecordDTO = new CreateJobExecuteRecordDTO();
+		createJobExecuteRecordDTO.setJobId(update.getId());
+		createJobExecuteRecordDTO.setTrigWorker(trigWorker);
+		createJobExecuteRecordDTO.setTrigAt(update.getLastTrigAt());
 		createJobExecuteRecordDTO.setExecuteExecutor(update.getLastExecuteExecutor());
 		createJobExecuteRecordDTO.setExecuteReturns(update.getLastExecuteReturns());
-		createJobExecuteRecordDTO.setJobId(update.getId());
 		createJobExecuteRecordDTO.setSuccess(update.getLastExecuteSuccess());
-		createJobExecuteRecordDTO.setTrigAt(update.getLastTrigAt());
 		createJobExecuteRecordDTO.setTrigResult(update.getLastTrigResult());
 
-		create(createJobExecuteRecordDTO);
+		createRecord(createJobExecuteRecordDTO);
 	}
 
 	public Page<JobExecuteRecordVO> page(JobExecuteRecordQuery query) {

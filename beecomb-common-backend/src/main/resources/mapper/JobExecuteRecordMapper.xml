@@ -5,6 +5,7 @@
 	<resultMap id="baseMap" type="io.github.icodegarden.beecomb.common.backend.pojo.persistence.JobExecuteRecordPO">
 		<id property="id" column="id" />
 		<result property="jobId" column="job_id" />
+		<result property="trigWorker" column="trig_worker" />
 		<result property="trigAt" column="trig_at" />
 		<result property="trigResult" column="trig_result" />
 		<result property="executeExecutor" column="execute_executor" />
@@ -26,6 +27,7 @@
 		insert into `job_execute_record` (
 		<if test="id != null">`id`,</if>
 		<if test="jobId != null">`job_id`,</if>
+		<if test="trigWorker != null">`trig_worker`,</if>
 		<if test="trigAt != null">`trig_at`,</if>
 		<if test="trigResult != null">`trig_result`,</if>
 		<if test="executeExecutor != null">`execute_executor`,</if>
@@ -35,6 +37,7 @@
 		values (
 		<if test="id != null">#{id},</if>
 		<if test="jobId != null">#{jobId},</if>
+		<if test="trigWorker != null">#{trigWorker},</if>
 		<if test="trigAt != null">#{trigAt},</if>
 		<if test="trigResult != null">#{trigResult},</if>
 		<if test="executeExecutor != null">#{executeExecutor},</if>
@@ -47,6 +50,7 @@
 		select 
 			a.id as id,
 			a.job_id as job_id,
+			a.trig_worker as trig_worker,
 			a.trig_at as trig_at,
 			a.execute_executor as execute_executor,
 			a.is_success as is_success
