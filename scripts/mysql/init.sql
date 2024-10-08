@@ -144,3 +144,15 @@ CREATE TABLE `user` (
 INSERT INTO `user` ( `username`, `password`, `name`, `email`, `phone`, `is_actived`, `platform_role`, `created_by`, `created_at`, `updated_by`, `updated_at` )
 VALUES( 'beecomb', '$2a$10$durkgWKpuCHeApmzQ2uyGuis8OsnyhzpRWLAR1k5Gemaa7PC9sy8m', 'beecomb', null, null, 1, 'Admin', 'sys', '2022-02-14 15:39:50', 'sys', '2022-02-14 15:39:50' );
 
+
+
+DROP TABLE IF EXISTS `distributed_lock`;
+CREATE TABLE `distributed_lock` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL UNIQUE,
+  `identifier` varchar(64),
+  `is_locked` bit(1) NOT NULL DEFAULT 0,
+  `expire_seconds` bigint NOT NULL DEFAULT 0,
+  `lock_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
