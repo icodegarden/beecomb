@@ -1,5 +1,6 @@
 package io.github.icodegarden.beecomb.master.ruoyi;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,8 +27,8 @@ public class ISysMenuService {
 
 		addSysMenu(user, getJobLevel0(), result);
 
-		addSysMenu(user, getClusterLevel0(), result);
-		
+		addSysMenu(user, getClusterLevel0(user), result);
+
 		addSysMenu(user, getSysLevel0(), result);
 
 		return result;
@@ -39,6 +40,13 @@ public class ISysMenuService {
 		}
 	}
 
+	private boolean shouldAddSysMenu(UserPO user, PlatformRole p) {
+		if (p == null || user.getPlatformRole() == p) {
+			return true;
+		}
+		return false;
+	}
+
 	private NullableTuple2<PlatformRole, SysMenu> getJobLevel0() {
 		SysMenu m1 = getJobList();
 		SysMenu m2 = getJobExecuteRecordList();
@@ -47,7 +55,7 @@ public class ISysMenuService {
 		SysMenu sysMenu = new SysMenu();
 		sysMenu.setMenuId(1L);
 		sysMenu.setParentId(0L);
-		sysMenu.setChildren(Arrays.asList(m1,m2,m3));
+		sysMenu.setChildren(Arrays.asList(m1, m2, m3));
 		sysMenu.setMenuName("任务管理");
 		sysMenu.setMenuType(null);
 		sysMenu.setOrderNum("1");
@@ -70,7 +78,7 @@ public class ISysMenuService {
 //		sysMenu.setVisible(visible);
 		return sysMenu;
 	}
-	
+
 	private SysMenu getJobExecuteRecordList() {
 		SysMenu sysMenu = new SysMenu();
 		sysMenu.setMenuId(101L);
@@ -84,7 +92,7 @@ public class ISysMenuService {
 //		sysMenu.setVisible(visible);
 		return sysMenu;
 	}
-	
+
 	private SysMenu getJobRecoveryRecordList() {
 		SysMenu sysMenu = new SysMenu();
 		sysMenu.setMenuId(102L);
@@ -98,14 +106,21 @@ public class ISysMenuService {
 //		sysMenu.setVisible(visible);
 		return sysMenu;
 	}
-	
-	private NullableTuple2<PlatformRole, SysMenu> getClusterLevel0() {
+
+	private NullableTuple2<PlatformRole, SysMenu> getClusterLevel0(UserPO user) {
 		SysMenu m1 = getNodeList();
+		SysMenu m2 = getShardingList();
+
+		List<SysMenu> children = new ArrayList<SysMenu>();
+		children.add(m1);
+		if (shouldAddSysMenu(user, PlatformRole.Admin)) {
+			children.add(m2);
+		}
 
 		SysMenu sysMenu = new SysMenu();
 		sysMenu.setMenuId(2L);//
 		sysMenu.setParentId(0L);
-		sysMenu.setChildren(Arrays.asList(m1));
+		sysMenu.setChildren(children);
 		sysMenu.setMenuName("集群管理");
 		sysMenu.setMenuType(null);
 		sysMenu.setOrderNum("2");//
@@ -125,6 +140,20 @@ public class ISysMenuService {
 		sysMenu.setOrderNum("1");
 		sysMenu.setParams(null);
 		sysMenu.setUrl("/view/node/list");
+//		sysMenu.setVisible(visible);
+		return sysMenu;
+	}
+
+	private SysMenu getShardingList() {
+		SysMenu sysMenu = new SysMenu();
+		sysMenu.setMenuId(201L);
+		sysMenu.setParentId(2L);
+		sysMenu.setChildren(null);
+		sysMenu.setMenuName("分库列表");
+		sysMenu.setMenuType(null);
+		sysMenu.setOrderNum("2");
+		sysMenu.setParams(null);
+		sysMenu.setUrl("/view/sharding/list");
 //		sysMenu.setVisible(visible);
 		return sysMenu;
 	}
