@@ -115,7 +115,7 @@ public class ClusterNodeControllerRy extends BaseControllerRy {
 	}
 
 	@GetMapping("view/sharding/notEndJob/list")
-	public String jobList(ServerWebExchange exchange, ConcurrentModel mmap,
+	public String notEndJobList(ServerWebExchange exchange, ConcurrentModel mmap,
 			@RequestParam(required = true) String group) {
 		mmap.put("group", group);
 		return "cluster/sharding/notEndJobList";
